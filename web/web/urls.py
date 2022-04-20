@@ -17,17 +17,21 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from Projects import views
-urlpatterns = [
+urlpatterns = []
+
+urlpatterns += [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("admin/", admin.site.urls),
     path("accounts/", include("Users.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
 ]
 
+urlpatterns += [path('TeleBot/', include('TeleBot.urls')),]
+'''
 urlpatterns += [
-    path(r'^$', views.index, name='index'),
-	path(r'^projects/$', views.ProjectsListView.as_view(), name='projects'),
-	path(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
-	path(r'^users/$', views.UsersListView.as_view(), name='users'),
+    re_path(r'^$', views.index, name='index'),
+	re_path(r'^projects/$', views.ProjectsListView.as_view(), name='projects'),
+	re_path(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
+	re_path(r'^users/$', views.UsersListView.as_view(), name='users'),
 	#re_path(r'^person/(?P<pk>\d+)$', views.PersonDetailView.as_view(), name='person-detail'),
-]
+]'''

@@ -1,0 +1,23 @@
+<html lang="ru">
+{% extends "base_generic.html" %}
+{% load static %}
+<body background = "{% static 'img/fon.png' %}">
+{% block content %}
+    <h1>Список человеков</h1>
+
+    {% if 	user_list %}
+    <ul>
+
+      {% for user in user_list %}
+      <li>
+        {{ user.username }} 
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>Должен быть. Только он пуст</p>
+    {% endif %} 
+{% endblock %}
+</body>
+</html>

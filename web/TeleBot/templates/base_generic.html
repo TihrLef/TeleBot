@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Новая вкладка</title>
+<style>
+{% load static %}
+body {
+    font-family: "Georgia", sans-serif;
+}
+
+.sidenav {
+	height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.6s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #f2f2f2;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    background: #ddd;
+  	color: black;
+}
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 30px;
+    margin-left: 50px;
+}
+
+ 
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  display:flex;
+  flex-direction: row;
+  width:100%;
+  Justify-content:space-between;
+}
+
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 20px 20px;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.navbar a:hover {
+  background: #ddd;
+  color: black;
+}
+.navbar1 {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.navbar1 a {
+  float: right;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 9px 16px;
+  text-decoration: none;
+  font-size: 10px;
+}
+
+.navbar1 a:hover {
+  background: #f2f2f2;
+  color: black;
+}
+#main {
+    transition: margin-left .3s;
+    padding: 16px;
+    /*margin-left: 150px;*/
+    font-size: 20px;
+    padding: 0px 10px;
+    margin-top: 70px;
+    height: 1500px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+
+</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
+  <a href="{% url 'users'%}">Пользователи</a>
+  <a href="{% url 'projects'%}">Мои проекты</a>
+  <a href="#">Мои отчеты</a>
+</div>
+
+<div class="navbar">
+       
+  <a href="#menu"> <span id = "these" style="font-size:14px;cursor:pointer; " onclick="open1()">☰Меню</span></a>
+
+  <a href="#news">Контакты</a>
+  <a href="#contact">Помощь</a>
+  <a href="#exit">Выход</a>
+</div>
+
+
+<div class="navbar1">
+             
+  <a href="#wrong">Сообщить об ошибке</a>
+  <a href="#support">Поддержать нас хорошими словами</a>
+</div>
+
+<div id="main">
+  <p>{% block content %}{% endblock %}</p>
+</div>
+
+<script>
+function open1() {  
+	document.getElementById("mySidenav").style.width = "200px";
+    	document.getElementById("main").style.marginLeft = "200px";
+ 	document.getElementById("these").style.visibility = "hidden";
+}
+
+function close1() {  
+	document.getElementById("mySidenav").style.width = "0";
+	document.getElementById("main").style.marginLeft= "0";
+	document.getElementById("these").style.visibility = "visible";
+}
+</script>
+</body>
+</html> 

@@ -1,0 +1,28 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h1>Проект: {{ project.name }} </h1>
+  
+  <p><strong>Ответственный:</strong> {{ project.responsible_user }}</p>
+  <p><strong>Начался:</strong> {{ project.start_date }}</p>
+  <p><strong>Закончится:</strong> {{ project.end_date }}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Список участников:</h4>
+	<div class="container-fluid">
+    {% for user in project.users.all %}
+		{{user.username}}, 
+    {% endfor %}
+  </div>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Отчёты по проекту</h4>
+	<div class="container-fluid">
+    {% for report in project.report_set.all %}
+	<li>
+		<ul><strong>Неделя:</strong> {{report.report_date}}</ul>
+		<ul><strong>Выложивший:</strong> {{report.user}}</ul>
+		<ul><strong>Отчёт:</strong> {{report.message}}</ul>
+	</li>
+    {% endfor %}
+  </div>
+{% endblock %}

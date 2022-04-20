@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+  <style type="text/css">
+   TABLE {
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+    border: 5px groove #ccc; /* Рамка вокруг таблицы */
+   }
+   TH {
+    background: #4b0082; /* Цвет фона */
+    color: #fffff0; /* Цвет текста */
+	
+   }
+   TD, TH {
+    height: 55px;
+    padding: 3px; /* Поля вокруг содержимого ячеек */
+    border: 5px groove #ccc /* Граница между ячейками */
+   }
+	</style>
+	<br>
+	<h1 align = center>Список проектов</h1>
+	<br>
+    {% if project_list %}
+	<table align = center width = 85% cellspacing="0" border="2">
+		<tr><th width = 25%>Название проекта</th><th width = 20%>Ответственный</th><th width = 10%>Статус</th><th width = 15%>Начался</th><th width = 15%>Закончится</th><th width = 10%>Число<br>людей</th><th width = 10%>Отчётов</th></tr> <!--ряд с ячейками заголовков-->
+      {% for project in project_list %}
+      <tr>
+        <td><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
+		<td>{{project.responsible_user}}</td>
+		<td align=center>{{project.status}}</td>
+		<td align=center>{{project.start_date|date:'d-m-Y'}}</td>
+		<td align=center>{{project.end_date|date:'d-m-Y'}}</td>
+		<td align=center>{{project.users.all.count}}</td>
+		<td align=center>{{project.report_set.all.count}}</td>
+      </tr>
+      {% endfor %}
+	</table>
+	<br><br>
+	<h3 align = center> Всё! Больше проектов нет! </h2>
+    {% else %}
+      <p>Должен быть выше в таблице. Только он пуст</p>
+    {% endif %} 
+{% endblock %}
