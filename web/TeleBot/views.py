@@ -12,9 +12,16 @@ def index(request):
 		context={},
 	)
 	
-
-class ProjectsListView(generic.ListView):
-	model = Project
+	
+def sort_index(request):
+	project_list = Project.objects.order_by("name")
+	return render(
+		request,
+		'Projects/project_list.html',
+		context = {'project_list': project_list})
+#class ProjectsListView(generic.ListView):
+#	model = Project
+	
 	
 class ProjectDetailView(generic.DetailView):
 	model = Project
