@@ -20,6 +20,8 @@ class ProjectDetailView(generic.DetailView):
 	model = Project
 	
 def project_detail_view(request,pk):
+
+	
 	try:
 		project_id=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
