@@ -1,12 +1,123 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+{% block title %}<title>Вход</title>{% endblock %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+form {
+	padding: 20px;
+	margin: 0;
+  	top: 100px;
+  	left: 50%;
+    color:white;
+  	position: absolute;
+  	text-align: left;
+  	transform: translateX(-50%);
+  	background-color: #222;
+  	border-radius: 8px;
+  	border-top: 8px solid #2a12c7;
+  	border-bottom: 8px solid #2a12c7;
+  	width: 400px;
+  	height: 400px;
+  	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
+	
+}
 
-{% block title %}Log In{% endblock %}
+input[type = "password"], input[type=text] {
+  display: block;
+  margin: 20px auto;
+  background: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 14px 10px;
+  width: 320px;
+  outline: none;
+  color: black;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -ms-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
+  
+}
 
-{% block content %}
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
+button {
+  border:0;
+  background: #7f5feb;
+  color: #dfdeee;
+  border-radius: 50px;
+  width: 340px;
+  height: 49px;
+  font-size: 16px;
+  position: absolute;
+  top: 80%;
+  left: 13%;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+
+
+.container {
+    
+}
+
+span.psw {
+    float: right;
+    padding-top: 8px;
+   
+}
+span.reg{
+	position: absolute;
+    top: 92%;
+    left: 16.5%
+}
+
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    span.reg{
+    	display:block;
+        float:none;
+    }
+}
+</style>
+</head>
+<body>
+
+<form action="/action_page.php">
+
+  <div class="container">
+    <label for="header"><h2>Вход </h2></label>
+    
+    <label for="uname"><b>Логин</b></label>
+    <input type="text" placeholder="Введите логин" name="uname" required>
+
+    <label for="psw"><b>Пароль</b></label>
+    <input type="password" placeholder="Введите пароль" name="psw" required>
+        
+    <button type="submit">Войти</button>
+    
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Запомнить меня
+    </label>
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+    <span class="psw"><a href="#">Забыли пароль?</a></span>
+  </div>
+  <div class="container" style="background-color:#f1f1f1">
+    <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
+  </div>
+  
 </form>
-{% endblock %}
+
+</body>
+</html>
