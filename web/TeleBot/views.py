@@ -20,8 +20,6 @@ class ProjectDetailView(generic.DetailView):
 	model = Project
 	
 def project_detail_view(request,pk):
-
-	
 	try:
 		project_id=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
@@ -39,8 +37,7 @@ class UsersListView(generic.ListView):
 class UserDetailView(generic.DetailView):
 	model = User
 	
-	
-def user_detail_view(request,pk):
+def user_detail(request,pk):
 	try:
 		tele_id=User.objects.get(telegram_id=pk)
 	except User.DoesNotExist:
@@ -49,5 +46,5 @@ def user_detail_view(request,pk):
 	return render(
 		request,
 		'user/user_detail.html',
-		context={'user':person_id,}
+		context={'user':tele_id,}
 	)

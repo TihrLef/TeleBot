@@ -41,7 +41,7 @@
       {% for project in project_list %}
       <tr>
         <td><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
-		<td><!--<a href="{{ project.responsible_user.get_absolute_url }}">-->{{project.responsible_user}}</td>
+		<td><a href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
 		<td align=center>{{project.status}}</td>
 		<td align=center>{{project.start_date|date:'d-m-Y'}}</td>
 		<td align=center>{{project.end_date|date:'d-m-Y'}}</td>

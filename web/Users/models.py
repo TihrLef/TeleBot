@@ -16,7 +16,6 @@ class User(AbstractUser):
 		"""String for representing the Model object"""
 		return self.username
 	def get_absolute_url(self):
-		"""Returns the url to access a particular book instance."""
 		return reverse('user-detail', args=[str(self.telegram_id)])
     
 	def my_view(self, request):
