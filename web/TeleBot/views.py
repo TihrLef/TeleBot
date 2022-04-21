@@ -40,17 +40,14 @@ class UserDetailView(generic.DetailView):
 	model = User
 	
 	
-
-'''
-def person_detail_view(request,pk):
+def user_detail_view(request,pk):
 	try:
-		person_id=Person.objects.get(id=pk)
-	except Project.DoesNotExist:
+		tele_id=User.objects.get(telegram_id=pk)
+	except User.DoesNotExist:
 		raise Http404("Такого персонажа не существует!")
 
 	return render(
 		request,
-		'person/person_detail.html',
-		context={'person':person_id,}
+		'user/user_detail.html',
+		context={'user':person_id,}
 	)
-'''
