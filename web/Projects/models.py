@@ -5,7 +5,7 @@ from django.urls import reverse
 # Create your models here.
 class Project(models.Model):
 	name = models.CharField(unique = True, max_length=200)
-	start_date = models.DateField(auto_now_add=True, null=True, blank=True)
+	start_date = models.DateField(default = datetime.now, null=True, blank=True)
 	end_date = models.DateField(null=True, blank=True)
 	users = models.ManyToManyField(User)
 	responsible_user = models.ForeignKey(User, related_name="responsible", on_delete=models.SET_NULL, null=True)
@@ -20,10 +20,10 @@ class Project(models.Model):
 
 	def status(self):
 		if date.today()< self.start_date:
-			return 'Waiting for start'
+			return 'Не начался'
 		if self.end_date is None or self.start_date <= date.today() < self.end_date:
-			return 'In progress'
+			return 'В процессе'
 		if date.today() >= self.end_date:
-			return 'Finished'
+			return 'Завершился'
         
  

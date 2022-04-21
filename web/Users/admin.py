@@ -8,6 +8,6 @@ class MyUserAdmin(UserAdmin):
     add_form = MyUserCreationForm
     form = MyUserChangeForm
     model = User
-    list_display = ["username","email"]
+    list_display = ["username","email", "telegram_id"]
 
 admin.site.register(User, MyUserAdmin)
