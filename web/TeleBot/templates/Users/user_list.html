@@ -5,12 +5,14 @@
 {% block content %}
     <h1>Список человеков</h1>
 
-    {% if 	user_list %}
+    {% if user_list %}
     <ul>
 
-      {% for user in user_list %}
+      {% for us in user_list %}
       <li>
-        {{ user.username }} 
+        <a href="{{ us.get_absolute_url }}">
+		{{ us.username }} 
+		</a>
       </li>
       {% endfor %}
 

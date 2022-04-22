@@ -49,3 +49,14 @@ class UsersListView(generic.ListView):
 class UserDetailView(generic.DetailView):
 	model = User
 	
+def user_detail(request,pk):
+	try:
+		tele_id=User.objects.get(telegram_id=pk)
+	except User.DoesNotExist:
+		raise Http404("Такого персонажа не существует!")
+
+	return render(
+		request,
+		'user/user_detail.html',
+		context={'user':tele_id,}
+	)
