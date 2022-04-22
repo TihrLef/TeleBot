@@ -19,15 +19,19 @@ def sort_index(request):
 		request,
 		'Projects/project_list.html',
 		context = {'project_list': project_list})
-#class ProjectsListView(generic.ListView):
-#	model = Project
-	
+class ProjectsListView(generic.ListView):
+	model = Project
+
+def report(request):
+	return render(
+		request,
+		'Reports/reports_list.html',
+		context = {'reports': Report.objects.all()})
+
 class ProjectDetailView(generic.DetailView):
 	model = Project
 	
 def project_detail_view(request,pk):
-
-	
 	try:
 		project_id=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
@@ -45,18 +49,3 @@ class UsersListView(generic.ListView):
 class UserDetailView(generic.DetailView):
 	model = User
 	
-	
-
-'''
-def person_detail_view(request,pk):
-	try:
-		person_id=Person.objects.get(id=pk)
-	except Project.DoesNotExist:
-		raise Http404("Такого персонажа не существует!")
-
-	return render(
-		request,
-		'person/person_detail.html',
-		context={'person':person_id,}
-	)
-'''

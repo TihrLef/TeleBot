@@ -112,12 +112,15 @@ body {
 </head>
 <body>
 
-<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
-  <a href="{% url 'users'%}">Пользователи</a>
-  <a href="{% url 'projects'%}">Мои проекты</a>
-  <a href="#">Мои отчеты</a>
-</div>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
+        <a href="{% url 'users'%}">Пользователи</a>
+        <a href="{% url 'projects'%}">Мои проекты</a>
+        <a href="{% url 'reports'%}">Мои отчеты</a>
+        <a href="#">Добавить тестового пользователя</a>
+        <a href="#">Добавить тестовый проект</a>
+        <a href="#">Добавить тестовый отчёт</a>
+    </div>
 
 <div class="navbar">
        
