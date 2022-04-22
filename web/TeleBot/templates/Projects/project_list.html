@@ -14,7 +14,9 @@
    TD, TH {
     height: 55px;
     padding: 3px; /* Поля вокруг содержимого ячеек */
-    border: 5px groove #ccc /* Граница между ячейками */
+    border: 5px groove #ccc; /* Граница между ячейками */
+	border-left:0;
+	border-right:0;
    }
 	th.sorted[data-order="-1"]::after {
 		content: "▼"
@@ -23,15 +25,27 @@
 	th.sorted[data-order="1"]::after {
 		content: "▲"
 	}
+	a
+	{	font-family:Arial;
+		font-weight: bold;
+		text-decoration: none;
+		color:#6495ed;
+		font-size:21px;
+	}
+	a:hover
+	{	font-family:Arial;
+		font-size:22px;
+		color:#0f93ff;
+	}
 	</style>
 	<br>
 	<h1 align = center>Список проектов</h1>
 	<br>
     {% if project_list %}
-	<table align = center width = 85% cellspacing="0" border="2" class="table_sort" id="myTable">
+	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
-			<th width = 25% onclick="sortTable(0)">Название проекта</th>
-			<th width = 20% onclick="sortTable(1)">Ответственный</th>
+			<th width = 25% onclick="sortTable(0)"  align=left>   Название проекта</th>
+			<th width = 20% onclick="sortTable(1)"  align=left>   Ответственный</th>
 			<th width = 10% onclick="sortTable(2)">Статус</th>
 			<th width = 15% onclick="sortTable(3)">Начался</th>
 			<th width = 15% onclick="sortTable(4)">Закончится</th>
@@ -40,8 +54,8 @@
 		</tr> 
       {% for project in project_list %}
       <tr>
-        <td><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
-		<td><a href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
+        <td>   <a href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
+		<td>   <a href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
 		<td align=center>{{project.status}}</td>
 		<td align=center>{{project.start_date|date:'d-m-Y'}}</td>
 		<td align=center>{{project.end_date|date:'d-m-Y'}}</td>

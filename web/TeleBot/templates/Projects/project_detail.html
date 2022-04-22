@@ -17,12 +17,24 @@
   <div style="margin-left:20px;margin-top:20px">
     <h4>Отчёты по проекту</h4>
 	<div class="container-fluid">
+	{% if project.report_set.all %}
+	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+		<tr>
+			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
+			<th width = 20% onclick="sortTable(1)" align=left>   Выложивший</th>
+			<th width = 50% onclick="sortTable(2)" align=left>   Отчёт</th>
+		</tr>
     {% for report in project.report_set.all %}
-	<li>
-		<ul><strong>Неделя:</strong> {{report.report_date}}</ul>
-		<ul><strong>Выложивший:</strong> <a href="{{ report.user.get_absolute_url }}">{{report.user}}</ul></a>
-		<ul><strong>Отчёт:</strong> {{report.message}}</ul>
-	</li>
-    {% endfor %}
+		<tr> 
+			<td>{{report.report_date}}</td>
+			<td><a href="{{ report.user.get_absolute_url }}">{{report.user}}</a>
+			<td>{{report.message}}</ul>
+		<tr>
+	{% endfor %}
+	</table>
+	{% else %} 
+	<h3>Которых нет</h3>
+	{% endif %}
+    
   </div>
 {% endblock %}

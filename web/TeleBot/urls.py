@@ -14,4 +14,6 @@ urlpatterns += [
 	re_path(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
 	re_path(r'^users/$', views.UsersListView.as_view(), name='users'),
 	re_path(r'^user/(?P<pk>\d+)$', views.UserDetailView.as_view(), name='user-detail'),
+	#re_path(r'^reports/my)$', views.ReportsListView.as_view(), name='user-detail'),
+	#re_path(r'^reports/$', views.UsersListView.as_view(), name='users'),
 ]
