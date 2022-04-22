@@ -8,7 +8,11 @@ class MyUserAdmin(admin.ModelAdmin):
     add_form = MyUserCreationForm
     form = MyUserChangeForm
     model = User
-    fields = ['username', 'password',  'telegram_id']
-    list_display = ["username","email", "telegram_id"]
+    add_fieldsets = (
+        (None, {"fields": ("username", 
+                           "password", 
+                           "password2", 
+                           "telegram_id")}),)
+    list_display = ["username", "telegram_id"]
 
 admin.site.register(User, MyUserAdmin)
