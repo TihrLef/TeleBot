@@ -100,18 +100,19 @@ span.reg{
 </head>
 <body background = "{% static 'img/night.jpg'%}">
 
-<form action="/action_page.php">
-
+<form method="post" action="{%url 'login' %}">
+ {% csrf_token %}
+	
   <div class="container">
     <label for="header"><h2>Вход </h2></label>
     
-    <label for="uname"><b>Логин</b></label>
-    <input type="text" placeholder="Введите логин" name="uname" required>
+    <p><label for="id_username"><b>Логин</b></label>
+    <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
 
-    <label for="psw"><b>Пароль</b></label>
-    <input type="password" placeholder="Введите пароль" name="psw" required>
-        
-    <button type="submit">Войти</button>
+    <p><label for="id_password"><b>Пароль</b></label>
+    <input type="password" name="password" autocomplete ="current-password" required id = "id_password" placeholder="Введите пароль"></p>
+       
+    <button type="submit" id = "button1">Войти</button>
     
     <label>
       <input type="checkbox" checked="checked" name="remember"> Запомнить меня
@@ -124,8 +125,8 @@ span.reg{
   <div class="container" style="background-color:#f1f1f1">
     <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
   </div>
-  
 </form>
+
 
 </body>
 </html>
