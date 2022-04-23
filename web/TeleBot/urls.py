@@ -11,7 +11,7 @@ urlpatterns = []
 urlpatterns += [
     re_path(r'^$', views.index, name='index'),
 	re_path(r'^projects/$', views.sort_index, name='projects'),
-	re_path(r'^project/(?P<pk>\d+)$', views.ProjectDetailView.as_view(), name='project-detail'),
+	re_path(r'^project/(?P<pk>\d+)$', views.project_detail, name='project-detail'),
 	re_path(r'^users/$', views.UsersListView.as_view(), name='users'),
 
 ]

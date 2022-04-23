@@ -10,9 +10,8 @@
 		border: 5px groove #ccc; /* Рамка вокруг таблицы */
 	   }
 	   TD, TH {
-		height: 80px;
-		margin-left:20px
-		padding: 3px; /* Поля вокруг содержимого ячеек */
+		height: 60px;
+		padding: 7px; /* Поля вокруг содержимого ячеек */
 		border: 5px groove #ccc; /* Граница между ячейками */
 		border-left:0;
 		border-right:0;
@@ -81,15 +80,15 @@
 	</table>
 	<br><br>
 
-    <h2 align = center>Отчёты по проекту</h2>
-	{% if project.report_set.all %}
+    <h2 align = center>{% if user.is_staff or user == project.responsible_user %}Все{% else %}Ваши{% endif %} отчёты по проекту</h2>
+	{% if reports %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
 			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
 			<th width = 25% onclick="sortTable(1)" align=left>Автор</th>
 			<th width = 70% onclick="sortTable(2)" align=center>🌸 🌸 🌸 Отчёт 🌸 🌸 🌸</th>
 		</tr>
-    {% for report in project.report_set.all %}
+    {% for report in reports %}
 		<tr> 
 			<td align=center>{{report.report_date|date:'d-m-Y'}}</td>
 			<td><a class = "mya" href="{{ report.user.get_absolute_url }}">{{report.user}}</a>

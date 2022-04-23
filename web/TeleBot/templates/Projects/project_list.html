@@ -50,15 +50,16 @@
     {% if project_list and user.is_staff or user.project_set.all.count %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
-			<th width = 25% onclick="sortTable(0)" align=left>Название проекта</th>
-			<th width = 20% onclick="sortTable(1)" align=left>Ответственный</th>
+			<th width = 30% onclick="sortTable(0)" align=left>Название проекта        </th>
+			<th width = 19% onclick="sortTable(1)" align=left>Ответственный</th>
 			<th width = 10% onclick="sortTable(2)">Статус</th>
-			<th width = 15% onclick="sortTable(3)">Дата<br>начала</th>
-			<th width = 15% onclick="sortTable(4)">Дата<br>конца</th>
-			<th width = 10% onclick="sortTable(5)">Число<br>людей</th>
-			<th width = 10% onclick="sortTable(6)">Отчётов</th>
+			<th width = 14% onclick="sortTable(3)">Дата<br>начала</th>
+			<th width = 14% onclick="sortTable(4)">Дата<br>конца</th>
+			<th width = 9% onclick="sortTable(5)">Число<br>людей</th>
+			<th width = 9% onclick="sortTable(6)">Отчётов</th>
 		</tr> 
       {% for project in project_list %}
+	  {% if  user in project.users.all %}
       <tr>
         <td><a class="mya" href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
 		<td><a class="mya" href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
@@ -68,6 +69,7 @@
 		<td align=center>{{project.users.all.count}}</td>
 		<td align=center>{{project.report_set.all.count}}</td>
       </tr>
+	  {% endif %} 
       {% endfor %}
 	</table>
 	<br><br>
