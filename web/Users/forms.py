@@ -6,10 +6,10 @@ from .models import User
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "email", "is_superuser", "telegram_id", "is_staff")
+        fields = ("username", "is_superuser", "telegram_id", "is_staff")
 
 class MyUserChangeForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ("username", "email")
+        fields = tuple(["username"])

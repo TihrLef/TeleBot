@@ -1,6 +1,9 @@
 {% extends "base_generic.html" %}
+{% block head %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+{% endblock %}
 {% block content %}
-
   <style type="text/css">
    TABLE {
     border-collapse: collapse; /* Убираем двойные линии между ячейками */
@@ -13,7 +16,8 @@
    }
    TD, TH {
     height: 55px;
-    padding: 3px; /* Поля вокруг содержимого ячеек */
+	margin-left:20px
+    padding: 20px; /* Поля вокруг содержимого ячеек */
     border: 5px groove #ccc; /* Граница между ячейками */
 	border-left:0;
 	border-right:0;
@@ -25,14 +29,14 @@
 	th.sorted[data-order="1"]::after {
 		content: "▲"
 	}
-	a
+	a.mya
 	{	font-family:Arial;
 		font-weight: bold;
 		text-decoration: none;
 		color:#6495ed;
 		font-size:21px;
 	}
-	a:hover
+	a.mya:hover
 	{	font-family:Arial;
 		font-size:22px;
 		color:#0f93ff;
@@ -44,18 +48,18 @@
     {% if project_list %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
-			<th width = 25% onclick="sortTable(0)"  align=left>   Название проекта</th>
-			<th width = 20% onclick="sortTable(1)"  align=left>   Ответственный</th>
+			<th width = 25% onclick="sortTable(0)"  align=left>Название проекта</th>
+			<th width = 20% onclick="sortTable(1)"  align=left>Ответственный</th>
 			<th width = 10% onclick="sortTable(2)">Статус</th>
-			<th width = 15% onclick="sortTable(3)">Начался</th>
-			<th width = 15% onclick="sortTable(4)">Закончится</th>
+			<th width = 15% onclick="sortTable(3)">Дата<br>начала</th>
+			<th width = 15% onclick="sortTable(4)">Дата<br>конца</th>
 			<th width = 10% onclick="sortTable(5)">Число<br>людей</th>
 			<th width = 10% onclick="sortTable(6)">Отчётов</th>
 		</tr> 
       {% for project in project_list %}
       <tr>
-        <td>   <a href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
-		<td>   <a href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
+        <td><a class="mya" href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
+		<td><a class="mya" href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
 		<td align=center>{{project.status}}</td>
 		<td align=center>{{project.start_date|date:'d-m-Y'}}</td>
 		<td align=center>{{project.end_date|date:'d-m-Y'}}</td>
@@ -66,63 +70,6 @@
 	</table>
 	<br><br>
 	<h3 align = center> Всё! Больше проектов нет! </h2>
-	<script>
-	function sortTable(n) {
-	  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-	  table = document.getElementById("myTable");
-	  switching = true;
-	  // Set the sorting direction to ascending:
-	  dir = "asc";
-	  /* Make a loop that will continue until
-	  no switching has been done: */
-	  while (switching) {
-		// Start by saying: no switching is done:
-		switching = false;
-		rows = table.getElementsByTagName("TR");
-		/* Loop through all table rows (except the
-		first, which contains table headers): */
-		for (i = 1; i < (rows.length - 1); i++) {
-		  // Start by saying there should be no switching:
-		  shouldSwitch = false;
-		  /* Get the two elements you want to compare,
-		  one from current row and one from the next: */
-		  x = rows[i].getElementsByTagName("TD")[n];
-		  y = rows[i + 1].getElementsByTagName("TD")[n];
-		  /* Check if the two rows should switch place,
-		  based on the direction, asc or desc: */
-		  if (dir == "asc") {
-			if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-			  // If so, mark as a switch and break the loop:
-			  shouldSwitch = true;
-			  break;
-			}
-		  } else if (dir == "desc") {
-			if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-			  // If so, mark as a switch and break the loop:
-			  shouldSwitch = true;
-			  break;
-			}
-		  }
-		}
-		if (shouldSwitch) {
-		  /* If a switch has been marked, make the switch
-		  and mark that a switch has been done: */
-		  rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-		  switching = true;
-		  // Each time a switch is done, increase this count by 1:
-		  switchcount ++;
-		} else {
-		  /* If no switching has been done AND the direction is "asc",
-		  set the direction to "desc" and run the while loop again. */
-		  if (switchcount == 0 && dir == "asc") {
-			dir = "desc";
-			switching = true;
-		  }
-		}
-	  }
-	}
-	</script>
-	
 	
     {% else %}
       <p>Должен быть выше в таблице. Только он пуст</p>

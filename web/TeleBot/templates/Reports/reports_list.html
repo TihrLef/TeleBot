@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div style="margin-left:20px;margin-top:20px">
+
+    <div style="margin-left:20px;margin-top:20px">
+        <div class="container-fluid">
+            {% for report in reports %}
+            <li>
+                <ul><strong>Week:</strong> {{report.report_date}}</ul>
+                <ul><strong>User:</strong> {{report.user}}</ul>
+                <ul><strong>Message:</strong> {{report.message}}</ul>
+            </li>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

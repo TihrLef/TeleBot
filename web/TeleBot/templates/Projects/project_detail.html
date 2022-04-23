@@ -1,33 +1,96 @@
 {% extends "base_generic.html" %}
+{% block head %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+{% endblock %}
 {% block content %}
-  <h1>Проект: {{ project.name }} </h1>
-  
-  <p><strong>Ответственный:</strong> <a href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
-  <p><strong>Начался:</strong> {{ project.start_date }}</p>
-  <p><strong>Закончится:</strong> {{ project.end_date }}</p>
+    <style type="text/css">
+	   TABLE {
+		border-collapse: collapse; /* Убираем двойные линии между ячейками */
+		border: 5px groove #ccc; /* Рамка вокруг таблицы */
+	   }
+	   TD, TH {
+		height: 80px;
+		margin-left:20px
+		padding: 3px; /* Поля вокруг содержимого ячеек */
+		border: 5px groove #ccc; /* Граница между ячейками */
+		border-left:0;
+		border-right:0;
+	   }
+	   TH {
+		background: #4b0082; /* Цвет фона */
+		color: #fffff0; /* Цвет текста */
+		height: 55px;
+		
+	   }
+		th.sorted[data-order="-1"]::after {
+			content: "▼"
+		}
+
+		th.sorted[data-order="1"]::after {
+			content: "▲"
+		}
+		table.empty
+		{	border: none;
+		
+		}
+		td.empty
+		{	border: none;
+			align: center;
+		}
+		a.mya
+		{	font-family:Arial;
+			font-weight: bold;
+			text-decoration: none;
+			color:#6495ed;
+			font-size:21px;
+		}
+		a.mya:hover
+		{	font-family:Arial;
+			font-size:22px;
+			color:#0f93ff;
+		}
+	</style>
+  <table class="empty" align = center width = 100% >
+  <tr class="empty">
+	<td class="empty" width = 55%><h1 align = center>{{ project.name }} </h1></td>
+	<td class="empty" width = 10%></td>
+	<td class="empty" width = 35%> 
+		<p><strong>Ответственный:</strong> <a class = "mya" href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
+		<p><strong>
+			{% if project.status == "Не начался" %} Начнётся:
+			{% else %} Начался:
+			{% endif %} 
+		</strong>{{ project.start_date|date:'d-m-Y'}}</p>
+		<p><strong>
+			{% if project.status == "Завершился" %} Завершился:
+			{% else %} Завершится:
+			{% endif %}
+		</strong> {{ project.end_date|date:'d-m-Y'}}</p>
+		<p><strong>Список участников:</strong></p> 
+		{% for user in project.users.all %}
+			<a class = "mya" href="{{ user.get_absolute_url }}">{{user.username}}</a>   
+		{% endfor %}						
+	</td>
+  </tr>
+  </table>
+  <br><br>
+
 
   <div style="margin-left:20px;margin-top:20px">
-    <h4>Список участников:</h4>
-	<div class="container-fluid">
-    {% for user in project.users.all %}
-		<a href="{{ user.get_absolute_url }}">{{user.username}}</a>, 
-    {% endfor %}
-  </div>
-
-  <div style="margin-left:20px;margin-top:20px">
-    <h4>Отчёты по проекту</h4>
+    <h2 align = center>Отчёты по проекту</h2>
 	<div class="container-fluid">
 	{% if project.report_set.all %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
 			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
-			<th width = 20% onclick="sortTable(1)" align=left>   Выложивший</th>
-			<th width = 50% onclick="sortTable(2)" align=left>   Отчёт</th>
+			<th width = 25% onclick="sortTable(1)" align=left>🎀 🎀 🎀 Автор 🎀 🎀 🎀</th>
+			<th width = 70% onclick="sortTable(2)" align=center>🌸 🌸 🌸 Отчёт 🌸 🌸 🌸</th>
 		</tr>
     {% for report in project.report_set.all %}
 		<tr> 
-			<td>{{report.report_date}}</td>
-			<td><a href="{{ report.user.get_absolute_url }}">{{report.user}}</a>
+			<td align=center>{{report.report_date|date:'d-m-Y'}}</td>
+			<td><a class = "mya" href="{{ report.user.get_absolute_url }}">{{report.user}}</a>
 			<td>{{report.message}}</ul>
 		<tr>
 	{% endfor %}
