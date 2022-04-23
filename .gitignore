@@ -1,12 +1,6 @@
 *.pyc
-<<<<<<< HEAD
 *.sqlite3
 Makefile
 .project
 .pydevproject
-=======
-*.sqlite
-Makefile
-.project
-.pydecproject
->>>>>>> 7c47170424f033d7092beb46f5ec064dc83bfc9b
+
