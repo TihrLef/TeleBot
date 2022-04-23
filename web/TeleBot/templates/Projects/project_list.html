@@ -16,8 +16,7 @@
    }
    TD, TH {
     height: 55px;
-	margin-left:20px
-    padding: 20px; /* Поля вокруг содержимого ячеек */
+    padding: 6px; /* Поля вокруг содержимого ячеек */
     border: 5px groove #ccc; /* Граница между ячейками */
 	border-left:0;
 	border-right:0;
@@ -40,16 +39,19 @@
 	{	font-family:Arial;
 		font-size:22px;
 		color:#0f93ff;
+		
 	}
 	</style>
 	<br>
-	<h1 align = center>Список проектов</h1>
-	<br>
-    {% if project_list %}
+	<h1 align = center>Список {% if user.is_staff %}всех{% else %}ваших{% endif %} проектов</h1>
+	{% if user.is_staff  %}
+		<h4 align = center><big> <big>  </big></big>  <a class="mya" href = "{% url 'project-add'%}"> (добавить) </a> </h5>
+	{% endif %}
+    {% if project_list and user.is_staff or user.project_set.all.count %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
-			<th width = 25% onclick="sortTable(0)"  align=left>Название проекта</th>
-			<th width = 20% onclick="sortTable(1)"  align=left>Ответственный</th>
+			<th width = 25% onclick="sortTable(0)" align=left>Название проекта</th>
+			<th width = 20% onclick="sortTable(1)" align=left>Ответственный</th>
 			<th width = 10% onclick="sortTable(2)">Статус</th>
 			<th width = 15% onclick="sortTable(3)">Дата<br>начала</th>
 			<th width = 15% onclick="sortTable(4)">Дата<br>конца</th>
@@ -72,6 +74,7 @@
 	<h3 align = center> Всё! Больше проектов нет! </h2>
 	
     {% else %}
-      <p>Должен быть выше в таблице. Только он пуст</p>
+	<br><br><br><br><br><br><br><br>
+      <h4 align = center>Должен быть здесь в таблице. Только он пуст</h4>
     {% endif %} 
 {% endblock %}

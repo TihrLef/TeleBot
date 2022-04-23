@@ -47,44 +47,46 @@
 		}
 		a.mya:hover
 		{	font-family:Arial;
-			font-size:22px;
+			font-size:21.5px;
 			color:#0f93ff;
 		}
 	</style>
-  <table class="empty" align = center width = 100% >
-  <tr class="empty">
-	<td class="empty" width = 55%><h1 align = center>{{ project.name }} </h1></td>
-	<td class="empty" width = 10%></td>
-	<td class="empty" width = 35%> 
-		<p><strong>Ответственный:</strong> <a class = "mya" href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
-		<p><strong>
-			{% if project.status == "Не начался" %} Начнётся:
-			{% else %} Начался:
-			{% endif %} 
-		</strong>{{ project.start_date|date:'d-m-Y'}}</p>
-		<p><strong>
-			{% if project.status == "Завершился" %} Завершился:
-			{% else %} Завершится:
-			{% endif %}
-		</strong> {{ project.end_date|date:'d-m-Y'}}</p>
-		<p><strong>Список участников:</strong></p> 
-		{% for user in project.users.all %}
-			<a class = "mya" href="{{ user.get_absolute_url }}">{{user.username}}</a>   
-		{% endfor %}						
-	</td>
-  </tr>
-  </table>
-  <br><br>
+	<table class="empty" align = center width = 100% >
+		<tr class="empty">
+			<td class="empty" width = 55%>
+				<h1 align = center>{{ project.name }} </h1>	
+				{% if user.is_staff %}
+					<h4 align = center><big><big>  </big></big><a class="mya" href = "{{ project.get_change_url}}">(изменить)</a></h5>
+				{% endif %}
+			</td>
+			<td class="empty" width = 10%></td>
+			<td class="empty" width = 35%> 
+				<p><strong>Ответственный:</strong><big><big> </big></big><a class = "mya" href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
+				<p><strong>
+					{% if project.status == "Не начался" %} Начнётся:
+					{% else %} Начался:
+					{% endif %} 
+				</strong>{{ project.start_date|date:'d-m-Y'}}</p>
+				<p><strong>
+					{% if project.status == "Завершился" %} Завершился:
+					{% else %} Завершится:
+					{% endif %}
+				</strong> {{ project.end_date|date:'d-m-Y'}}</p>
+				<p><strong>Список участников:</strong></p> <big><big>  </big></big>
+				{% for user in project.users.all %}
+					<a class = "mya" href="{{ user.get_absolute_url }}">{{user.username}}</a>   
+				{% endfor %}						
+			</td>
+		</tr>
+	</table>
+	<br><br>
 
-
-  <div style="margin-left:20px;margin-top:20px">
     <h2 align = center>Отчёты по проекту</h2>
-	<div class="container-fluid">
 	{% if project.report_set.all %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
 		<tr>
 			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
-			<th width = 25% onclick="sortTable(1)" align=left>🎀 🎀 🎀 Автор 🎀 🎀 🎀</th>
+			<th width = 25% onclick="sortTable(1)" align=left>Автор</th>
 			<th width = 70% onclick="sortTable(2)" align=center>🌸 🌸 🌸 Отчёт 🌸 🌸 🌸</th>
 		</tr>
     {% for report in project.report_set.all %}
@@ -96,8 +98,63 @@
 	{% endfor %}
 	</table>
 	{% else %} 
-	<h3>Которых нет</h3>
+	<br><br><br>
+	<h3 align = center>(которых нет)</h3>
 	{% endif %}
-    
-  </div>
+<script type="text/javascript">
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  // Set the sorting direction to ascending:
+  dir = "asc";
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+	// Start by saying: no switching is done:
+	switching = false;
+	rows = table.getElementsByTagName("TR");
+	/* Loop through all table rows (except the
+	first, which contains table headers): */
+	for (i = 1; i < (rows.length - 1); i++) {
+	  // Start by saying there should be no switching:
+	  shouldSwitch = false;
+	  /* Get the two elements you want to compare,
+	  one from current row and one from the next: */
+	  x = rows[i].getElementsByTagName("TD")[n];
+	  y = rows[i + 1].getElementsByTagName("TD")[n];
+	  /* Check if the two rows should switch place,
+	  based on the direction, asc or desc: */
+	  if (dir == "asc") {
+		if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+		  // If so, mark as a switch and break the loop:
+		  shouldSwitch = true;
+		  break;
+		}
+	  } else if (dir == "desc") {
+		if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+		  // If so, mark as a switch and break the loop:
+		  shouldSwitch = true;
+		  break;
+		}
+	  }
+	}
+	if (shouldSwitch) {
+	  /* If a switch has been marked, make the switch
+	  and mark that a switch has been done: */
+	  rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+	  switching = true;
+	  // Each time a switch is done, increase this count by 1:
+	  switchcount ++;
+	} else {
+	  /* If no switching has been done AND the direction is "asc",
+	  set the direction to "desc" and run the while loop again. */
+	  if (switchcount == 0 && dir == "asc") {
+		dir = "desc";
+		switching = true;
+	  }
+	}
+  }
+}
+</script>
 {% endblock %}

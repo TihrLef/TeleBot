@@ -16,4 +16,6 @@ urlpatterns += [
 ]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)$', views.UserDetailView.as_view(), name='user-detail') ]
 urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
+urlpatterns += [re_path(r'^projects/add$', views.project_add, name = "project-add")]
+urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', views.project_change, name = "project-change")]
 #urlpatterns += [re_path(r'^help/(&P<id>\d+)$', views.make_tests, name = "maker")]

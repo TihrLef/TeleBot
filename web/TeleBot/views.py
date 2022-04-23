@@ -19,6 +19,7 @@ def sort_index(request):
 		request,
 		'Projects/project_list.html',
 		context = {'project_list': project_list})
+
 class ProjectsListView(generic.ListView):
 	model = Project
 
@@ -43,6 +44,23 @@ def project_detail_view(request,pk):
 		context={'project':project_id,}
 	)
 
+def project_add(request):
+	return render(
+		request,
+		'Projects/project_add.html')
+	
+def project_change(request,pk):
+	try:
+		project=Project.objects.get(pk=pk)
+	except Project.DoesNotExist:
+		raise Http404("Такого проекта не существует!")
+
+	return render(
+		request,
+		'Projects/project_change.html',
+		context={'project':project}
+	)
+
 class UsersListView(generic.ListView):
 	model = User
 	
@@ -60,3 +78,19 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+	
+	
+
+'''
+def person_detail_view(request,pk):
+	try:
+		person_id=Person.objects.get(id=pk)
+	except Project.DoesNotExist:
+		raise Http404("Такого персонажа не существует!")
+
+	return render(
+		request,
+		'person/person_detail.html',
+		context={'person':person_id,}
+	)
+'''
