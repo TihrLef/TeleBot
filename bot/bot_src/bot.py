@@ -1,6 +1,8 @@
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
+
+FIRST, SECOND, THIRD = range(3)
 
 
 def start(update, _):
@@ -10,100 +12,119 @@ def start(update, _):
                               "\nОтправьте /addreport для добавления отчета.")
 
 
-def projectSelect(update, callback):
+def projectSelect(update, context):
     inlineButtons = [
         [InlineKeyboardButton("Создание бота", callback_data="bot")],
         [InlineKeyboardButton("Создание веб-интерфейса", callback_data="web")]
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
-    callback.bot.send_message(update.effective_chat.id, "Выберите проект:", reply_markup=inlineMarkup)
-    """update.message.reply_text("Выберите проект:", reply_markup=inlineMarkup)"""
+    if update.effective_message.text == "/addreport":
+        context.bot.send_message(update.effective_chat.id, "Выберите проект:", reply_markup=inlineMarkup)
+    else:
+        query = update.callback_query
+        query.answer()
+        query.edit_message_text("Выберите проект:", reply_markup=inlineMarkup)
+
+    return FIRST
 
 
-def botProject(update, callback):
+def botProject(update, _):
     query = update.callback_query
     query.answer()
-    query.edit_message_text('Выбран проект "Создание бота"')
 
     inlineButtons = [
         [InlineKeyboardButton("11.04.2022-16.04.2022", callback_data="first")],
-        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="return_to_project")]
+        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
-    callback.bot.send_message(update.effective_chat.id, "Выберите дату:", reply_markup=inlineMarkup)
+    if query.data == "back_to_weeks":
+        msg = update.effective_message.text
+        query.edit_message_text(msg[:msg.find('\n')] +
+                                '\nВыберите дату:', reply_markup=inlineMarkup)
+    else:
+        query.edit_message_text('Выбран проект "Создание бота"'
+                                '\nВыберите дату:', reply_markup=inlineMarkup)
 
-    return 2
+    # context.bot.send_message(update.effective_chat.id, "Выберите дату:", reply_markup=inlineMarkup)
+
+    return SECOND
 
 
-def menu(update, callback):
+def menu(update, _):
     query = update.callback_query
     query.answer()
-    query.edit_message_text("Дата: хх.хх.хххх")
 
     inlineButtons = [
         [InlineKeyboardButton("Добавить отчет", callback_data="add")],
         [InlineKeyboardButton("Изменить отчет", callback_data="edit")],
         [InlineKeyboardButton("Удалить отчет", callback_data="remove")],
-        [InlineKeyboardButton("Вернуться к списку недель", callback_data="back_to_weeks")]
+        [InlineKeyboardButton("Вернуться к списку недель", callback_data="back_to_weeks")],
+        [InlineKeyboardButton("Готово", callback_data="complete")]
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
-    callback.bot.send_message(update.effective_chat.id, "Выберите действие, которое необходимо совершить:",
-                              reply_markup=inlineMarkup)
+    msg = update.effective_message.text
+    query.edit_message_text(msg[:msg.find('\n')] +
+                            "\nДата: хх.хх.хххх"
+                            "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
+    # context.bot.send_message(update.effective_chat.id, "Выберите действие, которое необходимо совершить:",
+    #                           reply_markup=inlineMarkup)
 
-    return 1
+    return THIRD
 
 
 def addReport(update, _):
-    a = 0
-    return 1
+    return THIRD
 
 
 def removeReport(update, _):
-    a = 0
-    return 1
+    return THIRD
 
 
 def editReport(update, _):
-    a = 0
-    return 1
+    return THIRD
 
 
-def returnToWeeks(update, _):
+def completeChanging(update, _):
+    update.effective_message.reply_text("Все изменения успешно сохранены.")
     return ConversationHandler.END
-
-
-def echo(update, _):
-    update.message.reply_text('Сообщение: "' + update.message.text + '"')
 
 
 def main():
     botUpdater = Updater(TOKEN)
-
     botDispatcher = botUpdater.dispatcher
-    botDispatcher.add_handler(CommandHandler("start", start))
-    botDispatcher.add_handler(CommandHandler("addreport", projectSelect))
-    botDispatcher.add_handler(CallbackQueryHandler(projectSelect, pattern='^' + "return_to_project" + '$'))
 
-    menuConversation = ConversationHandler(
-        entry_points=[CallbackQueryHandler(botProject, pattern='^' + "bot" + '$')],
+    # Commands
+    botDispatcher.add_handler(CommandHandler("start", start))
+
+    conversationWithUser = ConversationHandler(
+        entry_points=[CommandHandler("addreport", projectSelect)],
         states={
-            1: [
+            FIRST: [
+                CallbackQueryHandler(botProject, pattern='^' + "bot" + '$'),
+                CallbackQueryHandler(botProject, pattern='^' + "web" + '$')
+            ],
+            SECOND: [
+                CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
+                CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
+            ],
+            THIRD: [
                 CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
                 CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
                 CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
-                CallbackQueryHandler(returnToWeeks, pattern='^' + "return_to_weeks" + '$')
-            ],
-            2: [
-                CallbackQueryHandler(menu, pattern='^' + "first" + '$')
+                CallbackQueryHandler(botProject, pattern='^' + "back_to_weeks" + '$'),
+                CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
             ]
         },
-        fallbacks=[CallbackQueryHandler(botProject)]
+        fallbacks=[CommandHandler("addreport", projectSelect)]
     )
-    botDispatcher.add_handler(menuConversation)
 
+    # Conversations
+    botDispatcher.add_handler(conversationWithUser)
+
+    # Running the bot
     botUpdater.start_polling()
     botUpdater.idle()
 
