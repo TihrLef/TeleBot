@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import user_passes_test
 from Projects.models import Project
 from Users.models import User
 from Reports.models import Report
@@ -10,6 +11,7 @@ import webbrowser
 
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
+@user_passes_test(User.is_verified)
 def index(request):
 	return render(
 		request,
@@ -20,7 +22,7 @@ def index(request):
 class UsersListView(generic.ListView):
 	model = User
 
-
+@user_passes_test(User.is_verified)
 def sort_index(request):
 	project_list = Project.objects.order_by("name")
 	return render(
@@ -28,9 +30,11 @@ def sort_index(request):
 		'Projects/project_list.html',
 		context = {'project_list': project_list})
 
+
 class ProjectsListView(generic.ListView):
 	model = Project
 
+@user_passes_test(User.is_verified)
 def report(request):
 	users = User.objects.all()
 	projects = Project.objects.all()
@@ -80,13 +84,16 @@ def report(request):
 		'Reports/reports_list.html',
 		context = context)
 
+
+@user_passes_test(User.is_verified)
 def make_pdf(request):
 	webbrowser.open_new(r"TeleBot\static\TempPdf\simple_demo.pdf")
 	return redirect('reports')
 
 class ProjectDetailView(generic.DetailView):
 	model = Project
-	
+
+@user_passes_test(User.is_verified)	
 def project_detail(request,pk):
 	try:
 		project=Project.objects.get(pk=pk)
@@ -102,11 +109,13 @@ def project_detail(request,pk):
 		context={'project':project, 'reports':reports}
 	)
 
+@user_passes_test(User.is_verified)
 def project_add(request):
 	return render(
 		request,
 		'Projects/project_add.html')
-	
+
+@user_passes_test(User.is_verified)	
 def project_change(request,pk):
 	try:
 		project=Project.objects.get(pk=pk)
@@ -118,10 +127,11 @@ def project_change(request,pk):
 		'Projects/project_change.html',
 		context={'project':project}
 	)
-	
+
 class UserDetailView(generic.DetailView):
 	model = User
-	
+
+@user_passes_test(User.is_verified)	
 def user_detail(request,pk):
 	try:
 		tele_id=User.objects.get(telegram_id=pk)
@@ -133,6 +143,8 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+
+
 
 '''
 def person_detail_view(request,pk):

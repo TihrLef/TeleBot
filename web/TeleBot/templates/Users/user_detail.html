@@ -6,17 +6,26 @@
 	This is your personal page.<br>
 	{%endif%}
 	Username: {{user.username }}<br>
-	Role:
-	{% if user.is_superuser%}
-		  Staff<br>
-	{%else%}
-		Verified User<br>
-	{%endif%} 
-		Telegram ID = {{user.telegram_id}} <br>
+	Роль: {{user.get_role}} <br>
+	Имя: {{user.first_name }}<br>
+	Фамилия: {{user.last_name }}<br>
 	
 	{%if request.user == user%}
 	<span class="reg"><a href="{%url 'password_change'%}">Изменить пароль<br></a></span>	
 	<span class="reg"><a href="{%url 'edit'%}">Редактировать профиль<br></a></span>
 	{%endif%}
+	
+	Привязанные проекты:<br>
+	{% for project in user.project_set.all|dictsort:"start_date" %}
+		<td><a class="mya" href="{{ project.get_absolute_url }}">{{project.name}}({{project.status}})<br></a></td>
+		{%if request.user == user%}
+			{%for report in project.report_set.all|dictsort:"report_date"%}
+				{%if report.user == user %}
+					&emsp;<td><a class="mya" href="{{ report.get_absolute_url }}">{{report.report_date}}<br></a></td>
+				{%endif%}
+			{%endfor%}
+		{%endif%}
+		<br>
+	{% endfor %}
 
 {% endblock %}
