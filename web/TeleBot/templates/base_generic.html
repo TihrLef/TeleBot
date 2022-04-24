@@ -455,7 +455,7 @@ nav li:hover > .submenu {
   <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
   <a href="{% url 'users'%}">Пользователи</a>
   <a href="{% url 'projects'%}">Мои проекты</a>
-  <a href="#">Мои отчеты</a>
+  <a href="{% url 'reports'%}">Мои отчеты</a>
 </div>
 <nav>
   <ul class="topmenu">
@@ -492,7 +492,7 @@ nav li:hover > .submenu {
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Проекты</a>
-  			<li> <a href="#">Отчеты</a>
+  			<li> <a href="{% url 'reports'%}">Отчеты</a>
             <li> <a href="{% url 'users'%}">Пользователи</a>
         </ul>
     </nav>
@@ -505,7 +505,7 @@ nav li:hover > .submenu {
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Мои проекты</a>
-  			<li> <a href="#">Мои отчеты</a>
+  			<li> <a href="{% url 'reports'%}">Мои отчеты</a>
             <li> <a href="{% url 'users'%}">Пользователи</a>
         </ul>
     </nav>
