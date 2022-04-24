@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'Users',
     'Projects',
 	'Reports',
-	'TeleBot.apps.TelebotConfig'
+	'TeleBot.apps.TelebotConfig',
+    'pytelegrambot'
 ]
 
 MIDDLEWARE = [
