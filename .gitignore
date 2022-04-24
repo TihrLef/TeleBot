@@ -139,4 +139,10 @@ dmypy.json
 cython_debug/
 
 
-!/web/db.sqlite3
+/web/db.sqlite3
+/.idea/dataSources/8da09073-224d-4f4b-bdd5-416309c5926b.xml
+/.idea/dataSources.local.xml
+/.idea/dataSources.xml
+/.idea/misc.xml
+/.idea/TeleBot.iml
+/.idea/workspace.xml
