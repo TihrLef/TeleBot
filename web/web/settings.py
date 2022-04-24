@@ -133,3 +133,7 @@ AUTH_USER_MODEL = "Users.User"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+#Настройки бота
+TOKEN = '5376241946:AAFp4NequCp5M3jeUFsfULhcuDIe40UuCqM'
+
