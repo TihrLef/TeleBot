@@ -17,4 +17,4 @@ urlpatterns += [
 ]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)$', views.UserDetailView.as_view(), name='user-detail') ]
 urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
-#urlpatterns += [re_path(r'^help/(&P<id>\d+)$', views.make_tests, name = "maker")]
+urlpatterns += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
