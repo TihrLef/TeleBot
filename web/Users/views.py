@@ -33,7 +33,7 @@ def profile_edit(request):
         if user_form.is_valid():
             user_form.save()
             messages.success(request, 'Your profile is updated successfully')
-            return redirect(to='profile')
+            return redirect(to='/TeleBot/success')
     else:
         user_form = UpdateUserForm(instance=request.user)
 

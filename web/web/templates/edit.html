@@ -22,11 +22,18 @@
                         <label class="small mb-1">Username:</label>
                             {{ user_form.username }}
                     </div>
+                    <div class="form-group">
+                        <label class="small mb-1">Имя:</label>
+						    {{ user_form.first_name }}
+					</div>
+                    <div class="form-group">
+                        <label class="small mb-1">Фамилия:</label>
+						    {{ user_form.last_name }}
+					</div>
 
             </div>
             <br><br>
             <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
-            <button type="reset" class="btn btn-dark btn-lg">Reset</button>
         </form>
     </div>
 {% endblock content %}
