@@ -146,3 +146,4 @@ cython_debug/
 /.idea/misc.xml
 /.idea/TeleBot.iml
 /.idea/workspace.xml
+web/db.sqlite3
