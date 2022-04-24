@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from Projects import views
+from Users import views
+import Users.views
+from Users.views import SignUpView, ChangePasswordView, profile_edit
 urlpatterns = []
 
 urlpatterns += [
@@ -10,4 +13,6 @@ urlpatterns += [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path('TeleBot/', include('TeleBot.urls')),
+    path("password_change/", ChangePasswordView.as_view(), name='password_change'),
+	path("edit/", views.profile_edit, name="edit"),
 ]

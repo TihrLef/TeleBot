@@ -17,6 +17,8 @@ class Project(models.Model):
 	def get_absolute_url(self):
 		"""Returns the url to access a particular book instance."""
 		return reverse('project-detail', args=[str(self.id)])
+	def get_change_url(self):
+		return reverse('project-change', args=[str(self.id)])
 
 	def status(self):
 		if date.today()< self.start_date:

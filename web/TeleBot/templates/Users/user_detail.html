@@ -2,4 +2,21 @@
 {% block content %}
 
 
+	{%if request.user == user%}
+	This is your personal page.<br>
+	{%endif%}
+	Username: {{user.username }}<br>
+	Role:
+	{% if user.is_superuser%}
+		  Staff<br>
+	{%else%}
+		Verified User<br>
+	{%endif%} 
+		Telegram ID = {{user.telegram_id}} <br>
+	
+	{%if request.user == user%}
+	<span class="reg"><a href="{%url 'password_change'%}">Изменить пароль<br></a></span>	
+	<span class="reg"><a href="{%url 'edit'%}">Редактировать профиль<br></a></span>
+	{%endif%}
+
 {% endblock %}

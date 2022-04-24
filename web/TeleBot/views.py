@@ -87,16 +87,36 @@ def make_pdf(request):
 class ProjectDetailView(generic.DetailView):
 	model = Project
 	
-def project_detail_view(request,pk):
+def project_detail(request,pk):
 	try:
-		project_id=Project.objects.get(pk=pk)
+		project=Project.objects.get(pk=pk)
+	except Project.DoesNotExist:
+		raise Http404("Такого проекта не существует!")
+	if request.user.is_staff or request.user == project.responsible_user:
+		reports = project.report_set.all()
+	else:
+		reports = project.report_set.all().filter(user=request.user)
+	return render(
+		request,
+		'Projects/project_detail.html',
+		context={'project':project, 'reports':reports}
+	)
+
+def project_add(request):
+	return render(
+		request,
+		'Projects/project_add.html')
+	
+def project_change(request,pk):
+	try:
+		project=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
 		raise Http404("Такого проекта не существует!")
 
 	return render(
 		request,
-		'project/project_detail.html',
-		context={'project':project_id,}
+		'Projects/project_change.html',
+		context={'project':project}
 	)
 	
 class UserDetailView(generic.DetailView):
@@ -107,9 +127,23 @@ def user_detail(request,pk):
 		tele_id=User.objects.get(telegram_id=pk)
 	except User.DoesNotExist:
 		raise Http404("Такого персонажа не существует!")
-
+	
 	return render(
 		request,
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+
+'''
+def person_detail_view(request,pk):
+	try:
+		person_id=Person.objects.get(id=pk)
+	except Project.DoesNotExist:
+		raise Http404("Такого персонажа не существует!")
+
+	return render(
+		request,
+		'person/person_detail.html',
+		context={'person':person_id,}
+	)
+'''

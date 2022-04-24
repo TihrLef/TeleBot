@@ -1,7 +1,10 @@
 *.pyc
+*.sqlite3
 *.sqlite*
 Makefile
 .project
 .pydecproject
 /web/TeleBot/templates/simple_demo.pdf
 /web/simple_demo.pdf
+.pydevproject
+
