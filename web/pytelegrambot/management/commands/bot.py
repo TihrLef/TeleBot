@@ -1,7 +1,11 @@
+import sys
+
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from .config import TOKEN
 from django.core.management.base import BaseCommand
+
+
 from Users.models import User
 from Projects.models import Project
 from Reports.models import Report
@@ -11,17 +15,21 @@ FIRST, SECOND, THIRD = range(3)
 
 def start(update, _):
     user = update.message.from_user
-    update.message.reply_text("Привет, " + user.first_name +
+    update.message.reply_text("Привет, " + user.first_name + "!"
                               "\nЭтот бот предназначен для управления существующими проектами."
                               "\nОтправьте /addreport для добавления отчета.")
 
 
 
 def projectSelect(update, context):
-    inlineButtons = [
-        [InlineKeyboardButton("Создание бота", callback_data="bot")],
-        [InlineKeyboardButton("Создание веб-интерфейса", callback_data="web")]
-    ]
+    #TODO НУЖНО ПОЛУЧАТЬ ТОЛЬКО ПРОЕКТЫ ПОЛЬЗОВАТЕЛЯ!!!
+    projectsList = Project.objects.all()
+
+    inlineButtons = [InlineKeyboardButton(project.name, callback_data=str(project.pk)) for project in projectsList]
+    # inlineButtons = [
+    #     [InlineKeyboardButton("Создание бота", callback_data="bot")],
+    #     [InlineKeyboardButton("Создание веб-интерфейса", callback_data="web")]
+    # ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
     if update.effective_message.text == "/addreport":
