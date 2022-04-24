@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .forms import MyUserCreationForm, MyUserChangeForm
+from .forms import UserCreationForm, UserChangeForm
 from .models import User
 
-class MyUserAdmin(admin.ModelAdmin):
-    add_form = MyUserCreationForm
-    form = MyUserChangeForm
+class UserAdmin(admin.ModelAdmin):
+    add_form = UserCreationForm
+    form = UserChangeForm
     model = User
     add_fieldsets = (
         (None, {"fields": ("username", 
@@ -15,4 +15,4 @@ class MyUserAdmin(admin.ModelAdmin):
                            "telegram_id")}),)
     list_display = ["username", "telegram_id"]
 
-admin.site.register(User, MyUserAdmin)
+admin.site.register(User, UserAdmin)
