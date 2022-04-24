@@ -63,8 +63,8 @@ def report(request):
 	if reports:
 		pdf = FPDF()
 		pdf.add_page()
-		pdf.add_font("Sans", style = "", fname = r"C:\Users\Георгий\Desktop\Work\Programming\Projects\Python\Работа в ЛЭТИ\TeleBot\web\TeleBot\static\Fonts\OpenSans\OpenSans-Regular.ttf", uni=True)
-		pdf.add_font("Sans", style = "B", fname = r"C:\Users\Георгий\Desktop\Work\Programming\Projects\Python\Работа в ЛЭТИ\TeleBot\web\TeleBot\static\Fonts\OpenSans\OpenSans-Bold.ttf", uni=True)
+		pdf.add_font("Sans", style = "", fname = r"TeleBot\static\Fonts\OpenSans\OpenSans-Regular.ttf", uni=True)
+		pdf.add_font("Sans", style = "B", fname = r"TeleBot\static\Fonts\OpenSans\OpenSans-Bold.ttf", uni=True)
 		for report in reports:
 			pdf.set_font("Sans", style = "B", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = 'Project name: ' + report.project.name, align = "L", ln = 1)
