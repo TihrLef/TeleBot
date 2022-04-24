@@ -3,13 +3,22 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 
-class MyUserCreationForm(UserCreationForm):
+class UserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "is_superuser", "telegram_id", "is_staff")
 
-class MyUserChangeForm(UserChangeForm):
+class UserChangeForm(UserChangeForm):
 
     class Meta:
         model = User
         fields = tuple(["username"])
+		
+class UpdateUserForm(forms.ModelForm):
+    username = forms.CharField(max_length=100,
+                               required=True,
+                               widget=forms.TextInput(attrs={'class': 'form-control'}))
+    
+    class Meta:
+        model = User
+        fields = ['username']
