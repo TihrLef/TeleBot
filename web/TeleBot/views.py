@@ -9,6 +9,9 @@ from .forms import FilterForm
 from fpdf import FPDF
 import webbrowser
 from django.views.generic.edit import CreateView, UpdateView
+from django.forms import ModelForm
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
@@ -110,33 +113,62 @@ def project_detail(request,pk):
 		context={'project':project, 'reports':reports}
 	)
 
-class ProjectCreate(CreateView):
-	model = Project
-	fields = '__all__'
-
-class ProjectUpdate(UpdateView):
-	model = Project
-	fields = '__all__'
-
-
-@user_passes_test(User.is_verified)
-def project_add(request):
-	return render(
-		request,
-		'Projects/project_add.html')
+	
+class ProjectModelForm(ModelForm):
+	class Meta:
+		model = Project
+		fields = '__all__'
 
 @user_passes_test(User.is_verified)	
-def project_change(request,pk):
+def project_add(request):
+	# Если данный запрос типа POST, тогда
+	if request.method == 'POST':
+		# Создаём экземпляр формы и заполняем данными из запроса (связывание, binding):
+		form = ProjectModelForm(request.POST)
+		# Проверка валидности данных формы:
+		if form.is_valid():
+			# Обработка данных из form.cleaned_data
+			project = Project.objects.create(name = form.cleaned_data['name'])
+			for user in form.cleaned_data['users']:
+				project.users.add(user)
+			project.responsible_user = form.cleaned_data['responsible_user']
+			if project.responsible_user not in form.cleaned_data['users']:
+				project.users.add(project.responsible_user)
+			project.start_date = form.cleaned_data['start_date']
+			project.end_date = form.cleaned_data['end_date']
+			project.save()
+			return HttpResponseRedirect(reverse('project-detail', args=[project.pk]))
+	# Если это GET (или какой-либо ещё), создать форму по умолчанию.
+	else:
+		form = ProjectModelForm()
+	return render(request, 'Projects/project_form.html', {'form': form})
+
+@user_passes_test(User.is_verified)	
+def project_change(request, pk):
 	try:
 		project=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
-		raise Http404("Такого проекта не существует!")
-	users=Project.objects.all
-	return render(
-		request,
-		'Projects/project_change.html',
-		context={'project':project, 'users': users}
-	)
+		raise Http404("Такого персонажа не существует!")
+	# Если данный запрос типа POST, тогда
+	if request.method == 'POST':
+		# Создаём экземпляр формы и заполняем данными из запроса (связывание, binding):
+		form = ProjectModelForm(request.POST)
+		# Проверка валидности данных формы:
+		if form.is_valid():
+			project.name = form.cleaned_data['name']
+			for user in form.cleaned_data['users']:
+				project.users.add(user)
+			project.responsible_user = form.cleaned_data['responsible_user']
+			if project.responsible_user not in form.cleaned_data['users']:
+				project.users.add(project.responsible_user)
+			project.start_date = form.cleaned_data['start_date']
+			project.end_date = form.cleaned_data['end_date']
+			project.save()
+			return HttpResponseRedirect(reverse('project-detail', args=[project.pk]))
+	# Если это GET (или какой-либо ещё), создать форму по умолчанию.
+	else:
+		form = ProjectModelForm(instance=project)
+	return render(request, 'Projects/project_form.html', {'form': form})
 
 class UserDetailView(generic.DetailView):
 	model = User
