@@ -135,13 +135,11 @@ def projectSelect(update, context):
 def weekSelect(update, context):
     query = update.callback_query
     query.answer()
-    context.chat_data["project"] = Project.objects.get(pk=int(query.data))
 
-    project_pk = int(query.data)
-
-    project = Project.objects.get(
-        id=project_pk
-    )
+    if query.data != 'back_to_weeks':
+        project = context.chat_data["project"] = Project.objects.get(pk=int(query.data))
+    else:
+        project = context.chat_data["project"]
 
     start_date = project.start_date
     end_date = project.end_date if project.end_date else date.today()
@@ -156,7 +154,7 @@ def weekSelect(update, context):
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
 
     inlineButtons = [
-        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d%m%Y"), callback_data=str(week))]
+        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y"), callback_data=str(week))]
         for week in weeks
     ]
     inlineButtons.append( #Путь назад
@@ -174,9 +172,19 @@ def weekSelect(update, context):
 
     return ACTION_CHOICE
 
+@log_errors
+def daySelect(update, context):
+    query = update.callback_query
+    query.answer()
+    week = context.chat_data["week"] = Week.fromstring(query.data)
+
+
+
 def menu(update, context):
     query = update.callback_query
     query.answer()
+
+    week = context.chat_data["week"] = Week.fromstring(query.data)
 
     inlineButtons = [
         [InlineKeyboardButton("Добавить отчет", callback_data="add")],
@@ -189,12 +197,15 @@ def menu(update, context):
 
     msg = update.effective_message.text
     query.edit_message_text(msg[:msg.find('\n')] +
-                            "\nДата: хх.хх.хххх"
+                            "\nНеделя: " + week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y") +
                             "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
 
     context.chat_data["week"] = query.data
 
     return PROCESSING_ACTION
+
+
+
 
 
 def addReport(update, _):
@@ -288,7 +299,7 @@ class Command(BaseCommand):
                     CallbackQueryHandler(weekSelect)
                 ],
                 ACTION_CHOICE: [
-                    CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
+                    CallbackQueryHandler(menu),
                     CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
                 ],
                 PROCESSING_ACTION: [
