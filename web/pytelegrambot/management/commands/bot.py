@@ -154,8 +154,8 @@ def weekSelect(update, context):
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
 
     inlineButtons = [
-        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y"), callback_data=str(week))]
-        for week in weeks
+        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y"),
+                              callback_data=str(week))] for week in weeks
     ]
     inlineButtons.append( #Путь назад
         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
@@ -179,7 +179,6 @@ def daySelect(update, context):
     week = context.chat_data["week"] = Week.fromstring(query.data)
 
 
-
 def menu(update, context):
     query = update.callback_query
     query.answer()
@@ -195,17 +194,14 @@ def menu(update, context):
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
-    msg = update.effective_message.text
-    query.edit_message_text(msg[:msg.find('\n')] +
-                            "\nНеделя: " + week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y") +
+    period = week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y")
+    query.edit_message_text('Выбран проект "' + context.chat_data["project"].name + '"'
+                            "\nНеделя: " + period +
                             "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
 
     context.chat_data["week"] = query.data
 
     return PROCESSING_ACTION
-
-
-
 
 
 def addReport(update, _):
@@ -219,19 +215,45 @@ def addingReport(update, _):
 
 
 def editReport(update, context):
+    query = update.callback_query
+    query.answer()
+
     dataDict = context.chat_data
-    reportList = Report.objects.get(
+    reportsList = Report.objects.filter(
         user=dataDict["user"],
         project=dataDict["project"],
 
     )
-    return
+    inlineButtons = [
+        [InlineKeyboardButton(str(rep.report_date), callback_data=str(rep.pk))] for rep in reportsList
+    ]
+    inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+
+    week = Week.fromstring(context.chat_data["week"])
+    period = week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y")
+    query.edit_message_text('Выбран проект "' + context.chat_data["project"].name + '"'
+                            "\nВыбрана неделя " + period +
+                            "\nОтчет за какую дату вам необходимо изменить?", reply_markup=inlineMarkup)
+    return EDITING_REP
 
 
-def editingReport(update, _):
-    """report.message = message
-    report.save()"""
-    return
+def editingReport(update, context):
+    query = update.callback_query
+    query.answer()
+
+    update.effective_message.reply_text("Введите новый текст отчета")
+    context.chat_data["report"] = Report.objects.get(pk=int(query.data))
+
+    return EDITING_REP
+
+
+def savingEdit(update, context):
+    report = context.chat_data["report"]
+    report.message = update.message.text
+    report.save()
+
+    update.message.reply_text("Изменения успешно сохранены")
+    return PROCESSING_ACTION
 
 
 def removeReport(update, _):
@@ -275,10 +297,6 @@ class Command(BaseCommand):
         )
         botDispatcher = botUpdater.dispatcher
 
-        # Commands
-        """start_handler = CommandHandler("start", start)
-        botDispatcher.add_handler(start_handler)"""
-
         userIdentification = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
             states={
@@ -310,10 +328,11 @@ class Command(BaseCommand):
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
-                    # MessageHandler(Filters.text, addingReport)
+                    CallbackQueryHandler(addingReport)
                 ],
                 EDITING_REP: [
-
+                    CallbackQueryHandler(editingReport),
+                    MessageHandler(Filters.text, savingEdit)
                 ],
                 DELETING_REP: [
 
