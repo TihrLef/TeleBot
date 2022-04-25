@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import MyUpdateUserForm
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
-
 from .forms import MyUserCreationForm
 from .forms import MyUserCreationFormreg
 #from .forms import VerifiedToken
+
 
 class SignUpView(CreateView):
     form_class = MyUserCreationFormreg

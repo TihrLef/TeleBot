@@ -466,8 +466,9 @@ nav li:hover > .submenu {
       <ul class="submenu">
         <li><a href="{% url 'password_change'%}">Изменить пароль</a>
 	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
-        <li><a href="{% url 'login'%}">Выход</a></li>
-        
+	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
+	
+        <li><a href="{% url 'logout' %}">Выход</a></li>        
       </ul>
     </li>
   

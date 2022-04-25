@@ -13,7 +13,7 @@ urlpatterns = []
 
 urlpatterns += [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name='admin'),
     path("accounts/", include("django.contrib.auth.urls")),
     path('TeleBot/', include('TeleBot.urls')),
     path("password_change/", ChangePasswordView.as_view(), name='password_change'),
