@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 from Projects import views
 from Users import views
+from Users.models import User
 import Users.views
 from Users.views import SignUpView, ChangePasswordView, profile_edit
 urlpatterns = []
