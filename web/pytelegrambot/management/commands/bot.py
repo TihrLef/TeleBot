@@ -30,63 +30,62 @@ def log_errors(f):
 
 @log_errors
 def start(update, _):
-    user = update.message.from_user
-    inDB = False
+    telegram_user = update.message.from_user
 
-    for us in User.objects.all():
-        if us.telegram_id == user.id:
-            inDB = True
-            user = us
-            break
+    try:
+        user = User.objects.get(telegram_id=telegram_user.id)  # Finding user
 
-    if not inDB:
-        return userNotFound(update, _)
-    else:
-        if not user.is_active:
-            return userNotConfirmed(update, _)
-        else:
+        if user.is_active:
             return userConfirmed(update, _)
 
+        return userNotConfirmed(update, _)
 
+    except User.DoesNotExist:  # user is new
+        return userNotFound(update, _)
+
+
+@log_errors
 def userNotFound(update, _):
-    user = update.message.from_user
-    inDB = False
+    telegram_user = update.message.from_user
 
-    for us in User.objects.all():
-        if us.telegram_id == user.id:
-            inDB = True
-            break
+    new_user = User.objects.create(
+        is_active=False,
+        telegram_id=telegram_user.id,
+    )
 
-    if not inDB:
-        update.message.reply_text(
-            "К сожалению, вас нет в списке участников какого-либо проекта."
-            "\nЗарегистрируйтесь через специальное веб-приложение."
-        )
-        return USER_NOT_FOUND
-    else:
-        userNotConfirmed(update, _)
+    update.message.reply_text(
+        "К сожалению, вас нет в списке участников какого-либо проекта."
+        "\n Мы создали Вам неподтвержденный аккаунт."
+        "\n Ваш персональный токен: " + str(new_user.personal_token)
+
+    )
+    return USER_NOT_FOUND
 
 
+@log_errors
 def userNotConfirmed(update, _):
-    user = update.message.from_user
+    telegram_user = update.message.from_user
 
-    for us in User.objects.all():
-        if us.telegram_id == user.id:
-            user = us
-            break
+    user = User.objects.get(
+        telegram_id=telegram_user.id
+    )
 
-    if not user.is_active:
-        update.message.reply_text(
-            "К сожалению, администратор ещё не проверил ваш аккаунт."
-            "\nОжидайте проверки и назначения проектов."
-        )
-        return USER_NOT_CONFIRMED
-    else:
-        userConfirmed(update, _)
+    update.message.reply_text(
+        "К сожалению, администратор ещё не проверил ваш аккаунт."
+        "\nОжидайте проверки и назначения проектов."
+        "\nВаш персональный токен: " + str(user.personal_token)
+    )
+    return USER_NOT_CONFIRMED
 
 
+@log_errors
 def userConfirmed(update, _):
-    user = update.message.from_user
+    telegram_user = update.message.from_user
+
+    user = User.objects.get(
+        telegram_id=telegram_user.id
+    )
+
     update.message.reply_text(
         "Привет, " + user.first_name + "!"
         "\nЭтот бот предназначен для управления существующими проектами. "
@@ -99,22 +98,18 @@ def userConfirmed(update, _):
 @log_errors
 def projectSelect(update, context):
     # TODO НУЖНО ПОЛУЧАТЬ ТОЛЬКО ПРОЕКТЫ ПОЛЬЗОВАТЕЛЯ!!!
-    user = update.effective_message.from_user
-    for us in User.objects.all():
-        if us.telegram_id == user.id:
-            user = us
-            break
+    telegram_user = update.effective_message.from_user
+    user = User.objects.get(
+        telegram_id=telegram_user.id
+    )
+
     projectsList = user.project_set.all()
 
-    print([project.name for project in projectsList])
     inlineButtons = [
         [InlineKeyboardButton(str(project.name), callback_data=project.pk)]
         for project in projectsList
     ]
-    # inlineButtons = [
-    #     [InlineKeyboardButton("Создание бота", callback_data="bot")],
-    #     [InlineKeyboardButton("Создание веб-интерфейса", callback_data="web")]
-    # ]
+
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
     if update.effective_message.text == "/addreport":
@@ -203,72 +198,74 @@ def echo(update, _):
 
 class Command(BaseCommand):
     help = 'Телеграм-бот'
-    # 1 -- правильное подключение
-    request = Request(
-        connect_timeout=0.5,
-        read_timeout=1.0,
-    )
 
-    bot = Bot(
-        request=request,
-        token=settings.TOKEN,
-    )
+    def handle(self, *args, **options):
+        # 1 -- правильное подключение
+        request = Request(
+            connect_timeout=0.5,
+            read_timeout=1.0,
+        )
 
-    # 2 -- обработчики
-    botUpdater = Updater(
-        bot=bot,
-        use_context=True,
-    )
-    botDispatcher = botUpdater.dispatcher
+        bot = Bot(
+            request=request,
+            token=settings.TOKEN,
+        )
 
-    # Commands
-    """start_handler = CommandHandler("start", start)
-    botDispatcher.add_handler(start_handler)"""
+        # 2 -- обработчики
+        botUpdater = Updater(
+            bot=bot,
+            use_context=True,
+        )
+        botDispatcher = botUpdater.dispatcher
 
-    userIdentification = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
-        states={
-            USER_NOT_FOUND: [
-                MessageHandler(Filters.all, userNotFound)
-            ],
-            USER_NOT_CONFIRMED: [
-                MessageHandler(Filters.all, userNotConfirmed)
-            ],
-            USER_CONFIRMED: [
-                MessageHandler(Filters.text("ggg"), userConfirmed)
-            ]
-        },
-        fallbacks=[CommandHandler("addreport", projectSelect)]
-    )
+        # Commands
+        """start_handler = CommandHandler("start", start)
+        botDispatcher.add_handler(start_handler)"""
 
-    conversationWithUser = ConversationHandler(
-        entry_points=[CommandHandler("addreport", projectSelect)],
-        states={
-            FIRST: [
-                CallbackQueryHandler(botProject, pattern='^' + "bot" + '$'),
-                CallbackQueryHandler(botProject, pattern='^' + "web" + '$')
-            ],
-            SECOND: [
-                CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
-                CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
-            ],
-            THIRD: [
-                CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
-                CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
-                CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
-                CallbackQueryHandler(botProject, pattern='^' + "back_to_weeks" + '$'),
-                CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
-            ]
-        },
-        fallbacks=[CommandHandler("addreport", projectSelect)]
-    )
+        userIdentification = ConversationHandler(
+            entry_points=[CommandHandler("start", start)],
+            states={
+                USER_NOT_FOUND: [
+                    MessageHandler(Filters.all, userNotFound)
+                ],
+                USER_NOT_CONFIRMED: [
+                    MessageHandler(Filters.all, userNotConfirmed)
+                ],
+                USER_CONFIRMED: [
+                    MessageHandler(Filters.text("ggg"), userConfirmed)
+                ]
+            },
+            fallbacks=[CommandHandler("addreport", projectSelect)]
+        )
 
-    # Conversations
-    botDispatcher.add_handler(userIdentification)
-    botDispatcher.add_handler(conversationWithUser)
+        conversationWithUser = ConversationHandler(
+            entry_points=[CommandHandler("addreport", projectSelect)],
+            states={
+                FIRST: [
+                    CallbackQueryHandler(botProject, pattern='^' + "bot" + '$'),
+                    CallbackQueryHandler(botProject, pattern='^' + "web" + '$')
+                ],
+                SECOND: [
+                    CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
+                    CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
+                ],
+                THIRD: [
+                    CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
+                    CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
+                    CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
+                    CallbackQueryHandler(botProject, pattern='^' + "back_to_weeks" + '$'),
+                    CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
+                ]
+            },
+            fallbacks=[CommandHandler("addreport", projectSelect)]
+        )
 
-    # Running the bot
-    # 3 - Бесконечная обработка сообщений
+        # Conversations
+        botDispatcher.add_handler(userIdentification)
+        botDispatcher.add_handler(conversationWithUser)
 
-    botUpdater.start_polling()
-    botUpdater.idle()
+        # Running the bot
+        # 3 - Бесконечная обработка сообщений
+
+        botUpdater.start_polling()
+        botUpdater.idle()
