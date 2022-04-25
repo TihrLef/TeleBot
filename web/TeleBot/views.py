@@ -7,7 +7,6 @@ from Users.models import User
 from Reports.models import Report
 from .forms import FilterForm
 from fpdf import FPDF
-import webbrowser
 from django.views.generic.edit import CreateView, UpdateView
 
 # Ответ на вызов основного сайта
@@ -41,30 +40,30 @@ def report(request):
 	projects = Project.objects.all()
 	reports = Report.objects.all()
 	error_message = ''
-	print()
-	print(str(projects[0].responsible_user) == str(projects[0].responsible_user))
-	print()
+	
 	if request.method == 'POST':
 		data = FilterForm(request.POST)
 		if(data.is_valid()):
-			print(request.user)
 			data = data.cleaned_data
 			print(data)
-			FaceControl = lambda rep: str(rep.project) in [str(project.name) for project in data['project']] and\
-									str(rep.user) in [str(user.username) for user in data['user']] and\
-									data['left_date'] <= rep.report_date <= data['right_date'] and\
-									(str(request.user) == str(rep.user) or\
+			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
+									(not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
+									(not data['left_date'] or data['left_date'] <= rep.report_date) and\
+									(not data['right_date'] or rep.report_date<= data['right_date']) and\
+									(str(request.user) == str(rep.user) or request.user.is_staff or\
 									str(request.user) == str(rep.project.responsible_user))
 			reports = list(filter(FaceControl, reports))
 		else:
 			error_message = 'incorrect input data'
 			reports = None
-	form = FilterForm()
+
+	form = FilterForm(request.POST) if request.method == 'POST' else FilterForm
 	context = {'reports': reports,
 			 'projects': projects,
 			 'users': users,
 			 'error_message': error_message,
 			 'form': form}
+
 	if reports:
 		pdf = FPDF()
 		pdf.add_page()
