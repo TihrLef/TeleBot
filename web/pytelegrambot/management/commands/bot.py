@@ -7,6 +7,8 @@ from telegram.utils.request import Request
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
+from datetime import date, timedelta
+
 from Users.models import User
 from Projects.models import Project
 from Reports.models import Report
@@ -123,14 +125,21 @@ def projectSelect(update, context):
 
 
 @log_errors
-def botProject(update, _):
+def weekSelect(update, _):
     query = update.callback_query
     query.answer()
 
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
+    project_pk = int(update.callback_query.data)
+    project = Project.objects.get(id = project_pk)
+    start_date = project.start_date
+    today_date = date.today()
+    start_week_num = int(start_date.strftime("%W"))
+    today_week_num = int(today_date.strftime("%W"))
+    week_counter = today_week_num - start_week_num + 1
     inlineButtons = [
-        [InlineKeyboardButton("11.04.2022-16.04.2022", callback_data="first")],
-        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
+        [InlineKeyboardButton("11.04.2022-16.04.2022",
+                              callback_data=str(project_pk)+" "+str((start_week_num+week_counter)))] for i in range(week_counter)
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
@@ -242,8 +251,7 @@ class Command(BaseCommand):
             entry_points=[CommandHandler("addreport", projectSelect)],
             states={
                 FIRST: [
-                    CallbackQueryHandler(botProject, pattern='^' + "bot" + '$'),
-                    CallbackQueryHandler(botProject, pattern='^' + "web" + '$')
+                    CallbackQueryHandler(weekSelect),
                 ],
                 SECOND: [
                     CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
@@ -253,7 +261,7 @@ class Command(BaseCommand):
                     CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
                     CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
                     CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
-                    CallbackQueryHandler(botProject, pattern='^' + "back_to_weeks" + '$'),
+                    CallbackQueryHandler(weekSelect, pattern='^' + "back_to_weeks" + '$'),
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ]
             },
