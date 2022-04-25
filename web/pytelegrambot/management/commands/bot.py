@@ -13,8 +13,8 @@ from Users.models import User
 from Projects.models import Project
 from Reports.models import Report
 
-FIRST, SECOND, THIRD = range(3)
-USER_NOT_FOUND, USER_NOT_CONFIRMED, USER_CONFIRMED = range(3)
+WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELETING_REP = range(6)
+USER_NOT_CONFIRMED, USER_CONFIRMED = range(2)
 
 
 # Декоратор для логирования ошибок
@@ -61,7 +61,7 @@ def userNotFound(update, _):
         "\n Ваш персональный токен: " + str(new_user.personal_token)
 
     )
-    return USER_NOT_FOUND
+    return USER_NOT_CONFIRMED
 
 
 @log_errors
@@ -71,6 +71,9 @@ def userNotConfirmed(update, _):
     user = User.objects.get(
         telegram_id=telegram_user.id
     )
+
+    if user.is_active:
+        return userConfirmed(update, _)
 
     update.message.reply_text(
         "К сожалению, администратор ещё не проверил ваш аккаунт."
@@ -104,8 +107,12 @@ def projectSelect(update, context):
     user = User.objects.get(
         telegram_id=telegram_user.id
     )
+    context.chat_data["user"] = user
 
     projectsList = user.project_set.all()
+    if not projectsList:
+        context.bot.send_message(update.effective_chat.id, "У вас нет активных проектов.")
+        return ConversationHandler.END
 
     inlineButtons = [
         [InlineKeyboardButton(str(project.name), callback_data=project.pk)]
@@ -121,17 +128,18 @@ def projectSelect(update, context):
         query.answer()
         query.edit_message_text("Выберите проект:", reply_markup=inlineMarkup)
 
-    return FIRST
+    return WEEK_SELECTION
 
 
 @log_errors
-def weekSelect(update, _):
+def weekSelect(update, context):
     query = update.callback_query
     query.answer()
+    context.chat_data["project"] = Project.objects.get(pk=int(query.data))
 
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
     project_pk = int(update.callback_query.data)
-    project = Project.objects.get(id = project_pk)
+    project = Project.objects.get(id=project_pk)
     start_date = project.start_date
     today_date = date.today()
     start_week_num = int(start_date.strftime("%W"))
@@ -139,7 +147,9 @@ def weekSelect(update, _):
     week_counter = today_week_num - start_week_num + 1
     inlineButtons = [
         [InlineKeyboardButton("11.04.2022-16.04.2022",
-                              callback_data=str(project_pk)+" "+str((start_week_num+week_counter)))] for i in range(week_counter)
+                              callback_data=str(project_pk)+" "+str((start_week_num+week_counter)))] for i in
+        (range(week_counter),
+         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")])
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
@@ -151,12 +161,9 @@ def weekSelect(update, _):
         query.edit_message_text('Выбран проект "Создание бота"'
                                 '\nВыберите дату:', reply_markup=inlineMarkup)
 
-    # context.bot.send_message(update.effective_chat.id, "Выберите дату:", reply_markup=inlineMarkup)
+    return ACTION_CHOICE
 
-    return SECOND
-
-
-def menu(update, _):
+def menu(update, context):
     query = update.callback_query
     query.answer()
 
@@ -173,23 +180,46 @@ def menu(update, _):
     query.edit_message_text(msg[:msg.find('\n')] +
                             "\nДата: хх.хх.хххх"
                             "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
-    # context.bot.send_message(update.effective_chat.id, "Выберите действие, которое необходимо совершить:",
-    #                           reply_markup=inlineMarkup)
 
-    return THIRD
+    context.chat_data["week"] = query.data
 
-
-def addReport(report):
-    report.save()  # Сохраняет отчёт в БД
+    return PROCESSING_ACTION
 
 
-def removeReport(report):
-    report.delete()  # Удаляет отчёт из БД
+def addReport(update, _):
+    update.effective_message.reply_text("Введите текст отчета")
+    return ADDING_REP
 
 
-def editReport(report, message):
-    report.message = message
-    report.save()  # Изменяет отчёт БД
+def addingReport(update, _):
+    # report.save()
+    return
+
+
+def editReport(update, context):
+    dataDict = context.chat_data
+    reportList = Report.objects.get(
+        user=dataDict["user"],
+        project=dataDict["project"],
+
+    )
+    return
+
+
+def editingReport(update, _):
+    """report.message = message
+    report.save()"""
+    return
+
+
+def removeReport(update, _):
+
+    return DELETING_REP
+
+
+def deletingReport(update, _):
+    # report.delete()
+    return
 
 
 def completeChanging(update, _):
@@ -199,10 +229,6 @@ def completeChanging(update, _):
 
 def returnToWeeks(update, _):
     return ConversationHandler.END
-
-
-def echo(update, _):
-    update.message.reply_text('Сообщение: "' + update.message.text + '"')
 
 
 class Command(BaseCommand):
@@ -234,14 +260,11 @@ class Command(BaseCommand):
         userIdentification = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
             states={
-                USER_NOT_FOUND: [
-                    MessageHandler(Filters.all, userNotFound)
-                ],
                 USER_NOT_CONFIRMED: [
                     MessageHandler(Filters.all, userNotConfirmed)
                 ],
                 USER_CONFIRMED: [
-                    MessageHandler(Filters.text("ggg"), userConfirmed)
+                    MessageHandler(Filters.all, userConfirmed)
                 ]
             },
             fallbacks=[CommandHandler("addreport", projectSelect)]
@@ -250,19 +273,28 @@ class Command(BaseCommand):
         conversationWithUser = ConversationHandler(
             entry_points=[CommandHandler("addreport", projectSelect)],
             states={
-                FIRST: [
-                    CallbackQueryHandler(weekSelect),
+                WEEK_SELECTION: [
+                    CallbackQueryHandler(weekSelect)
                 ],
-                SECOND: [
+                ACTION_CHOICE: [
                     CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
                     CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
                 ],
-                THIRD: [
+                PROCESSING_ACTION: [
                     CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
                     CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
                     CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
                     CallbackQueryHandler(weekSelect, pattern='^' + "back_to_weeks" + '$'),
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
+                ],
+                ADDING_REP: [
+                    # MessageHandler(Filters.text, addingReport)
+                ],
+                EDITING_REP: [
+
+                ],
+                DELETING_REP: [
+
                 ]
             },
             fallbacks=[CommandHandler("addreport", projectSelect)]
