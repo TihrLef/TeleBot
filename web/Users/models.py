@@ -22,3 +22,17 @@ class User(AbstractUser):
 		username = None
 		if request.user.is_authenticated():
 			username = request.user.username
+
+	@property
+	def get_role(self):
+		if self.is_staff:
+			return "Staff"
+		else:
+			if self.is_active:
+				return "Verified"
+			else:
+				return "Unverified"
+	
+	def is_verified(self):
+		return (self.is_active) or (self.is_staff)
+	

@@ -372,7 +372,7 @@ nav ul {
   position: absolute;
   left: -1px;
   z-index: 5;
-  width: 240px;
+  width: 140px;
   border-bottom: 1px solid #ECF1F2;
   visibility: hidden;
   opacity: 0;  
@@ -455,22 +455,22 @@ nav li:hover > .submenu {
   <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
   <a href="{% url 'users'%}">Пользователи</a>
   <a href="{% url 'projects'%}">Мои проекты</a>
-  <a href="#">Мои отчеты</a>
+  <a href="{% url 'reports'%}">Мои отчеты</a>
 </div>
 <nav>
   <ul class="topmenu">
   	<li><a href="">Контакты</a></li>
     <li><a href="">Помощь</a></li>
-    <li><a href="" class="active">Профиль</a>
+    
+    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">Профиль</a>
       <ul class="submenu">
-        <li><a href="">Настройки</a>
-        <li><a href="">Выход</a></li>
+        <li><a href="{% url 'password_change'%}">Изменить пароль</a>
+	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
+        <li><a href="{% url 'login'%}">Выход</a></li>
         
       </ul>
     </li>
   
-    
-    
   </ul>
 </nav>
 
@@ -488,11 +488,11 @@ nav li:hover > .submenu {
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Администратор</a> 
+            <a href="{{user.get_absolute_url}}">Администратор</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Проекты</a>
-  			<li> <a href="#">Отчеты</a>
+  			<li> <a href="{% url 'reports'%}">Отчеты</a>
             <li> <a href="{% url 'users'%}">Пользователи</a>
         </ul>
     </nav>
@@ -501,11 +501,11 @@ nav li:hover > .submenu {
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Пользователь</a> 
+            <a href="{{user.get_absolute_url}}">Пользователь</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Мои проекты</a>
-  			<li> <a href="#">Мои отчеты</a>
+  			<li> <a href="{% url 'reports'%}">Мои отчеты</a>
             <li> <a href="{% url 'users'%}">Пользователи</a>
         </ul>
     </nav>
