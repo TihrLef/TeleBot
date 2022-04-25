@@ -13,6 +13,8 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+
+
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
 @user_passes_test(User.is_verified)
@@ -172,6 +174,12 @@ def project_change(request, pk):
 
 class UserDetailView(generic.DetailView):
 	model = User
+	def check(request):
+		if request.method == 'GET':
+			a = request.user
+			a.is_active = True
+			a.save()
+		return redirect('')
 
 @user_passes_test(User.is_verified)	
 def user_detail(request,pk):
@@ -185,6 +193,8 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+
+
 
 '''
 def person_detail_view(request,pk):

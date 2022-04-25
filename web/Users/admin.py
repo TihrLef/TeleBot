@@ -12,10 +12,9 @@ class UserAdmin(admin.ModelAdmin):
     form = UserChangeForm
     model = User
     fieldsets = (
-       (None, {'fields': ('username', 'password')}),
+       (None, {'fields': ('username', 'password','telegram_id')}),
        ('Personal info', {'fields': ('first_name', 'last_name')}),
-		       ('Permissions', {'fields': ('is_active', 'is_staff')}),
-       ('Important dates', {'fields': ('last_login', 'date_joined')}))
+		       ('Permissions', {'fields': ('is_active', 'is_staff')}),)
     add_fieldsets = (
         (None, {"fields": ( 'username','first_name','last_name','telegram_id',
 						    'password1', 'password2'),}),)
