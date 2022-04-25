@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 
 from Users.models import User
@@ -40,6 +42,7 @@ class Command(BaseCommand):
         p1 = Project.objects.create(
             name='BOT',
             responsible_user=u1,
+            end_date=datetime.date(2022,5,25)
         )
 
         for u in users:
