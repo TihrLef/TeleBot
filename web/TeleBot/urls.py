@@ -5,6 +5,7 @@ from Projects.models import Project
 from Users.models import User
 from Reports.models import Report
 
+
 #Не трогайте эту строчку! Добавляйте новые ниже!
 urlpatterns = []
 

@@ -27,7 +27,7 @@ form {
   	border-top: 8px solid #7f5feb;
   	border-bottom: 8px solid #7f5feb;
   	width: 400px;
-  	height: 400px;
+  	height: 450px;
   	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
 	
 }
@@ -85,7 +85,9 @@ span.reg{
     top: 92%;
     left: 16.5%
 }
-
+   .colortext {
+     color: red; /* Красный цвет выделения */
+   }
 @media screen and (max-width: 300px) {
     span.psw {
        display: block;
@@ -100,7 +102,11 @@ span.reg{
 </head>
 <body background = "{% static 'img/night.jpg'%}">
 
+
 <form method="post" action="{%url 'login' %}">
+{% if form.errors %}
+  <label for="id_error"><span class="colortext">Неверные Логин или Пароль. Попробуйте снова.</span></label>
+{% endif %}
  {% csrf_token %}
 	
   <div class="container">
@@ -123,7 +129,7 @@ span.reg{
     <span class="psw"><a href="#">Забыли пароль?</a></span>
   </div>
   <div class="container" style="background-color:#f1f1f1">
-    <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
+    <span class="reg"><a href="{%url 'signup_reg'%}">Нет аккаунта? Нажмите для регистрации</a></span>
   </div>
 </form>
 

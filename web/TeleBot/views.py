@@ -81,6 +81,9 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+def token_valid(request):
+	pass
+
 
 '''
 def person_detail_view(request,pk):
