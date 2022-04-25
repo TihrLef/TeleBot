@@ -1,4 +1,6 @@
-import sys
+from datetime import date
+
+from  isoweek import Week
 
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
@@ -123,15 +125,35 @@ def projectSelect(update, context):
 
 
 @log_errors
-def botProject(update, _):
+def weekSelect(update, _):
     query = update.callback_query
     query.answer()
 
+    project_pk = int(query.data)
+
+    project = Project.objects.get(
+        id=project_pk
+    )
+
+    start_date = project.start_date
+    end_date = project.end_date if project.end_date else date.today()
+
+    start_week = Week.withdate(start_date)
+    end_week = Week.withdate(end_date)
+
+    weeks_num = end_week.week - start_week.week + 1
+
+    weeks = [start_week + i for i in range(weeks_num)]
+
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
+
     inlineButtons = [
-        [InlineKeyboardButton("11.04.2022-16.04.2022", callback_data="first")],
-        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
+        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d%m%Y"), callback_data=str(week))]
+        for week in weeks
     ]
+    inlineButtons.append( #Путь назад
+        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
+    )
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
     if query.data == "back_to_weeks":
@@ -139,7 +161,7 @@ def botProject(update, _):
         query.edit_message_text(msg[:msg.find('\n')] +
                                 '\nВыберите дату:', reply_markup=inlineMarkup)
     else:
-        query.edit_message_text('Выбран проект "Создание бота"'
+        query.edit_message_text('Выбран проект "' + project.name + '"'
                                 '\nВыберите дату:', reply_markup=inlineMarkup)
 
     # context.bot.send_message(update.effective_chat.id, "Выберите дату:", reply_markup=inlineMarkup)
@@ -242,8 +264,7 @@ class Command(BaseCommand):
             entry_points=[CommandHandler("addreport", projectSelect)],
             states={
                 FIRST: [
-                    CallbackQueryHandler(botProject, pattern='^' + "bot" + '$'),
-                    CallbackQueryHandler(botProject, pattern='^' + "web" + '$')
+                    CallbackQueryHandler(weekSelect),
                 ],
                 SECOND: [
                     CallbackQueryHandler(menu, pattern='^' + "first" + '$'),
@@ -253,7 +274,7 @@ class Command(BaseCommand):
                     CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
                     CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
                     CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
-                    CallbackQueryHandler(botProject, pattern='^' + "back_to_weeks" + '$'),
+                    CallbackQueryHandler(weekSelect, pattern='^' + "back_to_weeks" + '$'),
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ]
             },
