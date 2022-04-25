@@ -1,4 +1,6 @@
-import sys
+from datetime import date
+
+from  isoweek import Week
 
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
@@ -6,8 +8,6 @@ from telegram.utils.request import Request
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
-
-from datetime import date, timedelta
 
 from Users.models import User
 from Projects.models import Project
@@ -137,20 +137,31 @@ def weekSelect(update, context):
     query.answer()
     context.chat_data["project"] = Project.objects.get(pk=int(query.data))
 
-    # TODO Сгенерировать список недель, по которым возомжно оставить отчет
-    project_pk = int(update.callback_query.data)
-    project = Project.objects.get(id=project_pk)
+    project_pk = int(query.data)
+
+    project = Project.objects.get(
+        id=project_pk
+    )
+
     start_date = project.start_date
-    today_date = date.today()
-    start_week_num = int(start_date.strftime("%W"))
-    today_week_num = int(today_date.strftime("%W"))
-    week_counter = today_week_num - start_week_num + 1
+    end_date = project.end_date if project.end_date else date.today()
+
+    start_week = Week.withdate(start_date)
+    end_week = Week.withdate(end_date)
+
+    weeks_num = end_week.week - start_week.week + 1
+
+    weeks = [start_week + i for i in range(weeks_num)]
+
+    # TODO Сгенерировать список недель, по которым возомжно оставить отчет
+
     inlineButtons = [
-        [InlineKeyboardButton("11.04.2022-16.04.2022",
-                              callback_data=str(project_pk)+" "+str((start_week_num+week_counter)))] for i in
-        (range(week_counter),
-         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")])
+        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d%m%Y"), callback_data=str(week))]
+        for week in weeks
     ]
+    inlineButtons.append( #Путь назад
+        [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
+    )
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
     if query.data == "back_to_weeks":
@@ -158,7 +169,7 @@ def weekSelect(update, context):
         query.edit_message_text(msg[:msg.find('\n')] +
                                 '\nВыберите дату:', reply_markup=inlineMarkup)
     else:
-        query.edit_message_text('Выбран проект "Создание бота"'
+        query.edit_message_text('Выбран проект "' + project.name + '"'
                                 '\nВыберите дату:', reply_markup=inlineMarkup)
 
     return ACTION_CHOICE
