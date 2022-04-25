@@ -131,6 +131,9 @@ def projectSelect(update, context):
     return WEEK_SELECTION
 
 
+def week_to_str(week):
+    return week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y")
+
 @log_errors
 def weekSelect(update, context):
     query = update.callback_query
@@ -142,6 +145,7 @@ def weekSelect(update, context):
         project = context.chat_data["project"]
 
     start_date = project.start_date
+    print(project.end_date)
     end_date = project.end_date if project.end_date else date.today()
 
     start_week = Week.withdate(start_date)
@@ -154,8 +158,8 @@ def weekSelect(update, context):
     # TODO Сгенерировать список недель, по которым возомжно оставить отчет
 
     inlineButtons = [
-        [InlineKeyboardButton(week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y"),
-                              callback_data=str(week))] for week in weeks
+        [InlineKeyboardButton(week_to_str(week), callback_data=str(week))]
+        for week in weeks
     ]
     inlineButtons.append( #Путь назад
         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
@@ -173,17 +177,101 @@ def weekSelect(update, context):
     return ACTION_CHOICE
 
 @log_errors
-def daySelect(update, context):
+def del_days_out_of_project(days, project):
+    # Урезаем дни недели вне проекта
+    days = [day for day in days if day >= project.start_date]
+    if project.end_date:  # Если есть дата закрытия проекта
+        days = [day for day in days if date <= project.end_date]
+
+    return days
+
+@log_errors
+def get_existing_reports(week, project, user):
+    week_days = week.days()
+    possible_days = del_days_out_of_project(week_days, project) # получили возможные дни недели
+    # получили все отчёты юзера по проетку
+    reports = Report.objects.filter(
+        user_id=user.telegram_id,
+        project_id=project.id,
+    )
+
+    reports = [report for report in reports if report.report_date in possible_days]
+
+    return reports
+
+@log_errors
+def get_days_without_reports(week, project, user):
+    week_days = week.days()
+    possible_days = del_days_out_of_project(week_days, project)  # получили возможные дни недели
+
+    existing_reports = get_existing_reports(week, project, user)
+    busy_days = [report.report_date for report in existing_reports]
+
+    free_days = [day for day in possible_days if day not in busy_days]
+
+    return free_days
+
+@log_errors
+def reportSelect(update, context):
     query = update.callback_query
     query.answer()
-    week = context.chat_data["week"] = Week.fromstring(query.data)
+    week = context.chat_data["week"]
+    project = context.chat_data["project"]
+    user = context.chat_data["user"]
+    if query.data == 'add':
+        # добавление
+        free_days = get_days_without_reports(week, project, user)
+        inlineButtons = [
+            [InlineKeyboardButton(day.strftime("%d.%m.%Y"), callback_data=day.strftime("%d.%m.%Y"))]
+            for day in free_days
+        ]
+        inlineButtons.append([InlineKeyboardButton("Назад", callback_data='back_to_actions')])
+
+        inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+
+        if len(free_days) != 0:
+            query.edit_message_text(
+                'Выбран проект "' + project.name + '"'
+                'Неделя "' + week_to_str(week) + '"'
+                '\nВыберите дату:', reply_markup=inlineMarkup)
+            return ADDING_REP
+
+        query.edit_message_text(
+            'Нет возможности добавить новый отчет на этой неделе',
+            reply_markup=inlineMarkup)
+        return ACTION_CHOICE
+    else: #изменение или удаление
+        existing_reports = get_existing_reports(week, project, user)
+
+        inlineButtons = [
+            [InlineKeyboardButton(report.report_date.strftime("%d.%m.%Y"), callback_data=report.id)]
+            for report in existing_reports
+        ]
+        inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+        if len(existing_reports) != 0:
+            query.edit_message_text(
+                'Выбран проект "' + project.name + '"'
+                'Неделя ' + week_to_str(week) +
+                '\nВыберите дату:', reply_markup=inlineMarkup)
+            return DELETING_REP if query.data == 'remove' else EDITING_REP
+
+        # Если не нашлись отчеты
+        query.edit_message_text(
+            'Нет отчетов на этой неделе',
+            reply_markup=inlineMarkup)
+        return ACTION_CHOICE
+
+
 
 
 def menu(update, context):
     query = update.callback_query
     query.answer()
 
-    week = context.chat_data["week"] = Week.fromstring(query.data)
+    if query.data != 'back_to_menu':
+        week = context.chat_data["week"] = Week.fromstring(query.data)
+    else:
+        week = context.chat_data["week"]
 
     inlineButtons = [
         [InlineKeyboardButton("Добавить отчет", callback_data="add")],
@@ -194,12 +282,12 @@ def menu(update, context):
     ]
     inlineMarkup = InlineKeyboardMarkup(inlineButtons)
 
-    period = week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y")
-    query.edit_message_text('Выбран проект "' + context.chat_data["project"].name + '"'
-                            "\nНеделя: " + period +
+    msg = update.effective_message.text
+    query.edit_message_text(msg[:msg.find('\n')] +
+                            "\nНеделя: " + week_to_str(week) +
                             "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
 
-    context.chat_data["week"] = query.data
+    #context.chat_data["week"] = query.data
 
     return PROCESSING_ACTION
 
@@ -321,18 +409,21 @@ class Command(BaseCommand):
                     CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$')
                 ],
                 PROCESSING_ACTION: [
-                    CallbackQueryHandler(addReport, pattern='^' + "add" + '$'),
-                    CallbackQueryHandler(editReport, pattern='^' + "edit" + '$'),
-                    CallbackQueryHandler(removeReport, pattern='^' + "remove" + '$'),
+                    CallbackQueryHandler(reportSelect, pattern='^' + "add" + '$'),
+                    CallbackQueryHandler(reportSelect, pattern='^' + "edit" + '$'),
+                    CallbackQueryHandler(reportSelect, pattern='^' + "remove" + '$'),
                     CallbackQueryHandler(weekSelect, pattern='^' + "back_to_weeks" + '$'),
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
                     CallbackQueryHandler(addingReport)
+                    # MessageHandler(Filters.text, addingReport)
+                    #CallbackQueryHandler(addReport)
                 ],
                 EDITING_REP: [
                     CallbackQueryHandler(editingReport),
                     MessageHandler(Filters.text, savingEdit)
+                    #CallbackQueryHandler(editReport)
                 ],
                 DELETING_REP: [
 
