@@ -8,6 +8,7 @@ from Reports.models import Report
 from .forms import FilterForm
 from fpdf import FPDF
 import webbrowser
+from django.views.generic.edit import CreateView, UpdateView
 
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
@@ -67,8 +68,8 @@ def report(request):
 	if reports:
 		pdf = FPDF()
 		pdf.add_page()
-		pdf.add_font("Sans", style = "", fname = r"TeleBot\static\Fonts\OpenSans\OpenSans-Regular.ttf", uni=True)
-		pdf.add_font("Sans", style = "B", fname = r"TeleBot\static\Fonts\OpenSans\OpenSans-Bold.ttf", uni=True)
+		pdf.add_font("Sans", style = "", fname = r"TeleBot/static/Fonts/OpenSans/OpenSans-Regular.ttf", uni=True)
+		pdf.add_font("Sans", style = "B", fname = r"TeleBot/static/Fonts/OpenSans/OpenSans-Bold.ttf", uni=True)
 		for report in reports:
 			pdf.set_font("Sans", style = "B", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = 'Project name: ' + report.project.name, align = "L", ln = 1)
@@ -78,7 +79,7 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(r"TeleBot\static\TempPdf\simple_demo.pdf", "F")
+		pdf.output(r"TeleBot/static/TempPdf/simple_demo.pdf", "F")
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -87,7 +88,7 @@ def report(request):
 
 @user_passes_test(User.is_verified)
 def make_pdf(request):
-	webbrowser.open_new(r"TeleBot\static\TempPdf\simple_demo.pdf")
+	webbrowser.open_new(r"TeleBot/static/TempPdf/simple_demo.pdf")
 	return redirect('reports')
 
 class ProjectDetailView(generic.DetailView):
@@ -109,6 +110,15 @@ def project_detail(request,pk):
 		context={'project':project, 'reports':reports}
 	)
 
+class ProjectCreate(CreateView):
+	model = Project
+	fields = '__all__'
+
+class ProjectUpdate(UpdateView):
+	model = Project
+	fields = '__all__'
+
+
 @user_passes_test(User.is_verified)
 def project_add(request):
 	return render(
@@ -121,11 +131,11 @@ def project_change(request,pk):
 		project=Project.objects.get(pk=pk)
 	except Project.DoesNotExist:
 		raise Http404("Такого проекта не существует!")
-
+	users=Project.objects.all
 	return render(
 		request,
 		'Projects/project_change.html',
-		context={'project':project}
+		context={'project':project, 'users': users}
 	)
 
 class UserDetailView(generic.DetailView):
@@ -143,8 +153,6 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
-
-
 
 '''
 def person_detail_view(request,pk):

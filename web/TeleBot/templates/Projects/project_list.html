@@ -45,7 +45,7 @@
 	<br>
 	<h1 align = center>Список {% if user.is_staff %}всех{% else %}ваших{% endif %} проектов</h1>
 	{% if user.is_staff  %}
-		<h4 align = center><big> <big>  </big></big>  <a class="mya" href = "{% url 'project-add'%}"> (добавить) </a> </h5>
+		<h4 align = center><big> <big>  </big></big>  <a class="mya" href = "{% url 'project-create'%}"> (добавить) </a> </h5>
 	{% endif %}
     {% if project_list and user.is_staff or user.project_set.all.count %}
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">

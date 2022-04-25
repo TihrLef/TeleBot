@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<style>
+input, select, input.project{
+    width:  200px;
+    padding: 5px 10px 5px 10px;
+    border:1px solid #999;
+    font-size:18px;
+    font-family: Tahoma;
+}
+input.project{
+    font-size:26px;
+	width:  400px;
+}
+input.button {
+	border:0;
+	background: #21145e;
+	color: #dfdeee;
+	border-radius: 50px;
+	width: 200px;
+	height: 49px;
+	font-size: 16px;
+	transition: 0.3s;
+	cursor: pointer;
+	opacity: 0.85;
+}
+
+input.button:hover {
+	opacity: 0.7;
+}
+
+</style>
+    <form action="" method="post">
+        {% csrf_token %}
+		<table class="empty" align = center width = 100% >
+			<tr class="empty">
+				<td class="empty" width = 55% align = center>
+					<h1 align = center>Название проекта</h1>
+					{{form.name.errors}}
+					<input type="text" name="name" maxlength="200" required="" id="id_name" class = "project" value={%if form.name.value %} {{form.name.value}} {% endif %}>
+				</td>
+				<td class="empty" width = 10%></td>
+				<td class="empty" width = 35%> 
+					<table class="empty" align=center>
+						<tr class="empty" height = 50>
+							<td><strong>Ответственный: </strong></td><td>{{form.responsible_user}} {{form.responsible_user.errors}}</select></td>
+						</tr>
+						<tr class="empty" height = 50>
+							<td><strong>Дата начала:</strong></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
+						</tr>
+						<tr class="empty" height = 50>
+							<td><strong>Дата конца:</strong></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
+						</tr>
+					</table>
+					<p align=center><strong>Список участников:</strong><br><br> 
+					{{form.users}}{{form.users.errors}}
+				</td>
+			</tr>
+		</table>
+		<br> 
+		<p align=center>
+        <input class="button" type="submit" value= {%if form.name.value %} "Сохранить" {% else %} "Добавить" {% endif %}/>
+    </form>
+	
+{% endblock %}
