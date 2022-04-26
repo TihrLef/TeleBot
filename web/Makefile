@@ -4,4 +4,4 @@ all:
 	python3.10 ./manage.py runserver 0.0.0.0:8000
 
 run:
-	python3.10 ./manage.py runserver 0.0.0.0:8000
+	python3.10 ./manage.py runserver 0.0.0.0
