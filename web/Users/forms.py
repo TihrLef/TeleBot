@@ -4,12 +4,29 @@ from .models import User
 
 
 class MyUserCreationForm(UserCreationForm):
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
+    
     class Meta:
         model = User
-        fields = ("username", "email", "is_superuser", "telegram_id", "is_staff")
+        fields = ("username", "first_name", "last_name")
+    ''' 
+    def clean_password2(self):
+        cd = self.cleaned_data
+        if cd['password'] != cd['password2']:
+            raise.forms.ValidationError()
+        '''
 
-class MyUserChangeForm(UserChangeForm):
+class VerifiedToken(forms.Form):
+    personal_token = forms.UUIDField( help_text="Unique ID for this particular book across whole library")
+    #telegram_id = forms.IntegerField()
 
+
+class MyUpdateUserForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ("username", "email")
+        fields = tuple(["username"])
+class MyUserCreationFormreg(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ("telegram_id",)

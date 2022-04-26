@@ -1,3 +1,11 @@
+*.pyc
+*.sqlite3
+*.sqlite*
+Makefile
+.project
+.pydecproject
+*.pdf
+.pydevproject
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -147,4 +155,3 @@ cython_debug/
 /.idea/TeleBot.iml
 /.idea/workspace.xml
 web/db.sqlite3
-*.pyc

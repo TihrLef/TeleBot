@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["nevalera.ru", "127.0.0.1"]
 
-
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,10 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Users',
     'Projects',
 	'Reports',
 	'TeleBot.apps.TelebotConfig',
+	'Users.apps.UsersConfig',
     'pytelegrambot'
 ]
 
@@ -131,7 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "Users.User"
 
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "/TeleBot"
 LOGOUT_REDIRECT_URL = "home"
 
 #Настройки бота

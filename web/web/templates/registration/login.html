@@ -1,12 +1,137 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+{% load static %}
+{% block title %}<title>Вход</title>{% endblock %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
 
-{% block title %}Log In{% endblock %}
+	font-family: Arial, Helvetica, sans-serif;
+-moz-background-size: 100%; /* Firefox 3.6+ */
+    -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
+    -o-background-size: 100%; /* Opera 9.6+ */
+    background-size: 100%; /* Современные браузеры */
+}
+form {
+	padding: 20px;
+	margin: 0;
+  	top: 100px;
+  	left: 50%;
+    	color:black;
+  	position: absolute;
+  	text-align: left;
+  	transform: translateX(-50%);
+  	background-color: #f0f2f5;
+  	border-radius: 8px;
+  	border-top: 8px solid #7f5feb;
+  	border-bottom: 8px solid #7f5feb;
+  	width: 400px;
+  	height: 450px;
+  	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
+	
+}
 
-{% block content %}
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
+input[type = "password"], input[type=text] {
+  display: block;
+  margin: 20px auto;
+  background: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 14px 10px;
+  width: 320px;
+  outline: none;
+  color: black;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -ms-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
+  
+}
+
+button {
+  border:0;
+  background: #7f5feb;
+  color: #dfdeee;
+  border-radius: 50px;
+  width: 340px;
+  height: 49px;
+  font-size: 16px;
+  position: absolute;
+  top: 80%;
+  left: 13%;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+
+
+.container {
+    
+}
+
+span.psw {
+    float: right;
+    padding-top: 8px;
+   
+}
+span.reg{
+	position: absolute;
+    top: 92%;
+    left: 16.5%
+}
+   .colortext {
+     color: red; /* Красный цвет выделения */
+   }
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    span.reg{
+    	display:block;
+        float:none;
+    }
+}
+</style>
+</head>
+<body background = "{% static 'img/night.jpg'%}">
+
+
+<form method="post" action="{%url 'login' %}">
+{% if form.errors %}
+  <label for="id_error"><span class="colortext">Неверные Логин или Пароль. Попробуйте снова.</span></label>
+{% endif %}
+ {% csrf_token %}
+  <div class="container">
+    <label for="header"><h2>Вход </h2></label>
+    
+    <p><label for="id_username"><b>Логин</b></label>
+    <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
+
+    <p><label for="id_password"><b>Пароль</b></label>
+    <input type="password" name="password" autocomplete ="current-password" required id = "id_password" placeholder="Введите пароль"></p>
+       
+    <button type="submit" id = "button1">Войти</button>
+    
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Запомнить меня
+    </label>
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+    
+  </div>
+  <div class="container" style="background-color:#f1f1f1">
+    <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
+  </div>
 </form>
-{% endblock %}
+
+
+</body>
+</html>

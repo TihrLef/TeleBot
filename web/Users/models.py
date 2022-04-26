@@ -16,10 +16,23 @@ class User(AbstractUser):
 		"""String for representing the Model object"""
 		return self.username
 	def get_absolute_url(self):
-		"""Returns the url to access a particular book instance."""
-		return reverse('user-detail', args=[str(self.id)])
+		return reverse('user-detail', args=[str(self.telegram_id)])
     
 	def my_view(self, request):
 		username = None
 		if request.user.is_authenticated():
 			username = request.user.username
+
+	@property
+	def get_role(self):
+		if self.is_staff:
+			return "Администратор"
+		else:
+			if self.is_active:
+				return "Подтвержденный"
+			else:
+				return "Неподтвержденный"
+	
+	def is_verified(self):
+		return (self.is_active) or (self.is_staff)
+	

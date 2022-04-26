@@ -1,0 +1,30 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{form.user}}
+    {{form.project}}<br />
+    {{form.left_date}}<br />
+    {{form.right_date}}<br />
+    <button type="submit">Filter</button>
+</form>
+<span>{{error_message}}</span>
+<div style="margin-left:20px;margin-top:20px">
+    <div style="margin-left:20px;margin-top:20px">
+		<a href="{% static pdfname %}">Download pdf</a>
+        <div class="container-fluid">
+            <ul>
+                {% for report in reports %}
+                <li>
+                    <strong>Project_name: {{report.project}}</strong><br />
+                    <strong>Week:</strong> {{report.report_date}}<br />
+                    <strong>User:</strong> {{report.user}}<br />
+                    <strong>Message:</strong> {{report.message}}<br /> <br />
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
