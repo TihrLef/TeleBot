@@ -14,6 +14,14 @@ WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELET
 USER_NOT_CONFIRMED, USER_CONFIRMED = range(2)
 
 
+def help(update, _):
+    update.message.reply_text("Этот бот предназначен для создания, редактирования и удаления отчетов к проектам."
+                              "\n\n/start - регистрация/вход в систему."
+                              "\n/reports - выбор отчета и манипуляции.")
+
+    return ConversationHandler.END
+
+
 def start(update, _):
     telegram_user = update.message.from_user
 
@@ -39,9 +47,9 @@ def user_not_found(update, _):
 
     update.message.reply_text(
         "К сожалению, вас нет в списке участников какого-либо проекта."
-        "\n Мы создали Вам неподтвержденный аккаунт."
-        "\n Ваш персональный токен: " + str(new_user.personal_token)
-
+        "\nМы создали Вам неподтвержденный аккаунт."
+        "\nВаш персональный токен: " + str(new_user.personal_token) + "."
+        "\n\nОтправьте /help для получения информации о боте."
     )
     return USER_NOT_CONFIRMED
 
@@ -59,7 +67,8 @@ def user_not_confirmed(update, _):
     update.message.reply_text(
         "К сожалению, администратор ещё не проверил ваш аккаунт."
         "\nОжидайте проверки и назначения проектов."
-        "\nВаш персональный токен: " + str(user.personal_token)
+        "\nВаш персональный токен: " + str(user.personal_token) + "."
+        "\n\nОтправьте /help для получения информации о боте."
     )
     return USER_NOT_CONFIRMED
 
@@ -73,8 +82,8 @@ def user_confirmed(update, _):
 
     update.message.reply_text(
         "Привет, " + user.first_name + "!"
-                                       "\nЭтот бот предназначен для управления существующими проектами. "
-                                       "\nОтправьте /reports для добавления отчета."
+        "\nОтправьте /reports для добавления отчета."
+        "\n\nОтправьте /help для получения информации о боте."
     )
 
     return ConversationHandler.END
@@ -377,6 +386,8 @@ class Command(BaseCommand):
         )
         bot_dispatchder = bot_updater.dispatcher
 
+        help_command = CommandHandler("help", help)
+
         user_identification = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
             states={
@@ -387,7 +398,7 @@ class Command(BaseCommand):
                     MessageHandler(Filters.all, user_confirmed)
                 ]
             },
-            fallbacks=[CommandHandler("reports", project_select)]
+            fallbacks=[CommandHandler("help", help)]
         )
 
         conversation_with_user = ConversationHandler(
@@ -420,10 +431,11 @@ class Command(BaseCommand):
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ]
             },
-            fallbacks=[CommandHandler("reports", project_select)]
+            fallbacks=[CommandHandler("help", help)]
         )
 
         # Conversations
+        bot_dispatchder.add_handler(help_command)
         bot_dispatchder.add_handler(user_identification)
         bot_dispatchder.add_handler(conversation_with_user)
 
