@@ -1,36 +1,19 @@
-from datetime import date, datetime
+from datetime import date
 
-from isoweek import Week
-
-from telegram.ext import Updater, Handler, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
-from telegram.utils.request import Request
-
-from django.core.management.base import BaseCommand
-from django.conf import settings
-
-from Users.models import User
 from Projects.models import Project
 from Reports.models import Report
+from Users.models import User
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from isoweek import Week
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
+from telegram.utils.request import Request
 
 WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELETING_REP = range(6)
 USER_NOT_CONFIRMED, USER_CONFIRMED = range(2)
 
 
-# Декоратор для логирования ошибок
-def log_errors(f):
-    def inner(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            error_message = f'Произошла ошибка {e}'
-            print(error_message)
-            raise e
-
-    return inner
-
-
-@log_errors
 def start(update, _):
     telegram_user = update.message.from_user
 
@@ -38,16 +21,15 @@ def start(update, _):
         user = User.objects.get(telegram_id=telegram_user.id)  # Finding user
 
         if user.is_active:
-            return userConfirmed(update, _)
+            return user_confirmed(update, _)
 
-        return userNotConfirmed(update, _)
+        return user_not_confirmed(update, _)
 
     except User.DoesNotExist:  # user is new
-        return userNotFound(update, _)
+        return user_not_found(update, _)
 
 
-@log_errors
-def userNotFound(update, _):
+def user_not_found(update, _):
     telegram_user = update.message.from_user
 
     new_user = User.objects.create(
@@ -64,8 +46,7 @@ def userNotFound(update, _):
     return USER_NOT_CONFIRMED
 
 
-@log_errors
-def userNotConfirmed(update, _):
+def user_not_confirmed(update, _):
     telegram_user = update.message.from_user
 
     user = User.objects.get(
@@ -73,7 +54,7 @@ def userNotConfirmed(update, _):
     )
 
     if user.is_active:
-        return userConfirmed(update, _)
+        return user_confirmed(update, _)
 
     update.message.reply_text(
         "К сожалению, администратор ещё не проверил ваш аккаунт."
@@ -83,8 +64,7 @@ def userNotConfirmed(update, _):
     return USER_NOT_CONFIRMED
 
 
-@log_errors
-def userConfirmed(update, _):
+def user_confirmed(update, _):
     telegram_user = update.message.from_user
 
     user = User.objects.get(
@@ -100,35 +80,34 @@ def userConfirmed(update, _):
     return ConversationHandler.END
 
 
-@log_errors
-def projectSelect(update, context):
-    if update.message: # Первый заход
+def project_select(update, context):
+    if update.message:  # Первый заход
         telegram_user = update.effective_message.from_user
         user = User.objects.get(
             telegram_id=telegram_user.id
         )
         context.chat_data["user"] = user
-    else: #Возвращение назад
+    else:  # Возвращение назад
         user = context.chat_data["user"]
 
-    projectsList = user.project_set.all()
-    if not projectsList:
+    projects_list = user.project_set.all()
+    if not projects_list:
         context.bot.send_message(update.effective_chat.id, "У вас нет активных проектов.")
         return ConversationHandler.END
 
-    inlineButtons = [
+    inline_buttons = [
         [InlineKeyboardButton(str(project.name), callback_data=str(project.id))]
-        for project in projectsList
+        for project in projects_list
     ]
 
-    inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+    inline_markup = InlineKeyboardMarkup(inline_buttons)
 
     if update.effective_message.text == "/reports":
-        context.bot.send_message(update.effective_chat.id, "Выберите проект:", reply_markup=inlineMarkup)
+        context.bot.send_message(update.effective_chat.id, "Выберите проект:", reply_markup=inline_markup)
     else:
         query = update.callback_query
         query.answer()
-        query.edit_message_text("Выберите проект:", reply_markup=inlineMarkup)
+        query.edit_message_text("Выберите проект:", reply_markup=inline_markup)
 
     return WEEK_SELECTION
 
@@ -137,8 +116,7 @@ def week_to_str(week):
     return week.monday().strftime("%d.%m.%Y") + " - " + week.sunday().strftime("%d.%m.%Y")
 
 
-@log_errors
-def weekSelect(update, context):
+def week_select(update, context):
     query = update.callback_query
     query.answer()
 
@@ -159,10 +137,10 @@ def weekSelect(update, context):
 
     weeks = [start_week + i for i in range(weeks_num)]
 
-    inlineButtons = []
+    inline_buttons = []
     for week in weeks:
         try:
-            report = Report.objects.get(
+            Report.objects.get(
                 project=project,
                 user=user,
                 report_date=week.monday()
@@ -171,23 +149,22 @@ def weekSelect(update, context):
         except Report.DoesNotExist:
             report_exist = False
 
-        inlineButtons.append(
+        inline_buttons.append(
             [InlineKeyboardButton(week_to_str(week) + (" ✅ " if report_exist else " ❌ "), callback_data=str(week))]
         )
 
-
-    inlineButtons.append(  # Путь назад
+    inline_buttons.append(  # Путь назад
         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
     )
-    inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+    inline_markup = InlineKeyboardMarkup(inline_buttons)
 
     if query.data == "back_to_weeks":
         msg = update.effective_message.text
         query.edit_message_text(msg[:msg.find('\n')] +
-                                '\nВыберите дату:', reply_markup=inlineMarkup)
+                                '\nВыберите дату:', reply_markup=inline_markup)
     else:
         query.edit_message_text('Выбран проект "' + project.name + '"'
-                                                                   '\nВыберите дату:', reply_markup=inlineMarkup)
+                                                                   '\nВыберите дату:', reply_markup=inline_markup)
     return ACTION_CHOICE
 
 
@@ -203,57 +180,56 @@ def menu(update, context):
     user = context.chat_data["user"]
     project = context.chat_data["project"]
 
-    inlineButtons = []
+    inline_buttons = []
 
     try:
-        report = Report.objects.get(
+        Report.objects.get(
             user=user,
             project=project,
             report_date=week.monday()
         )
-        inlineButtons.extend(
+        inline_buttons.extend(
             [
                 [InlineKeyboardButton("Изменить отчет", callback_data="edit")],
                 [InlineKeyboardButton("Удалить отчет", callback_data="remove")],
             ]
         )
     except Report.DoesNotExist:
-        inlineButtons.append(
+        inline_buttons.append(
             [InlineKeyboardButton("Добавить отчет", callback_data="add")]
         )
 
-    inlineButtons.extend(
+    inline_buttons.extend(
         [
             [InlineKeyboardButton("Вернуться к списку недель", callback_data="back_to_weeks")],
             [InlineKeyboardButton("Готово", callback_data="complete")]
         ]
     )
-    inlineMarkup = InlineKeyboardMarkup(inlineButtons)
+    inline_markup = InlineKeyboardMarkup(inline_buttons)
 
     msg = update.effective_message.text
     query.edit_message_text(msg[:msg.find('\n')] +
                             "\nНеделя: " + week_to_str(week) +
-                            "\nВыберите действие, которое необходимо совершить:", reply_markup=inlineMarkup)
+                            "\nВыберите действие, которое необходимо совершить:", reply_markup=inline_markup)
 
     return PROCESSING_ACTION
 
 
-def addRequest(update, context):
+def add_request(update, context):
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
-    user = context.chat_data["user"]
+
     week = context.chat_data["week"]
 
     query.edit_message_text('Выбран проект: "' + project.name + '"'
-                            "\nНеделя: " + week_to_str(week) +
+                                                                "\nНеделя: " + week_to_str(week) +
                             "\nВведите текст отчёта")
 
     return ADDING_REP
 
 
-def addReport(update, context):
-
+def add_report(update, context):
     project = context.chat_data["project"]
     user = context.chat_data["user"]
     week = context.chat_data["week"]
@@ -266,7 +242,7 @@ def addReport(update, context):
         report_date=week.monday(),
         message=message
     )
-    #TODO Проверка, что report успешно сохранился
+    # TODO Проверка, что report успешно сохранился
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
                               f'Текст: {report.message}\n'
@@ -275,8 +251,7 @@ def addReport(update, context):
     return ConversationHandler.END
 
 
-def editRequest(update, context):
-
+def edit_request(update, context):
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
@@ -292,14 +267,13 @@ def editRequest(update, context):
     inline_button = [[InlineKeyboardButton("Отменить", callback_data="back_to_menu")]]
     inline_markup = InlineKeyboardMarkup(inline_button)
     query.edit_message_text('Выбран проект: "' + project.name + '"'
-                            "\nНеделя: " + week_to_str(week) +
+                                                                "\nНеделя: " + week_to_str(week) +
                             "\nТекущий текст: " + report.message +
                             "\nВведите новый текст отчёта", reply_markup=inline_markup)
     return EDITING_REP
 
 
 def editReport(update, context):
-
     project = context.chat_data["project"]
     user = context.chat_data["user"]
     week = context.chat_data["week"]
@@ -322,10 +296,7 @@ def editReport(update, context):
     return ConversationHandler.END
 
 
-
-
 def deleteRequest(update, context):
-
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
@@ -365,7 +336,7 @@ def deleteReport(update, context):
 
     report.delete()
     query.edit_message_text('Проект: "' + project.name + '"'
-                            "\nНеделя: " + week_to_str(week) +
+                                                         "\nНеделя: " + week_to_str(week) +
                             "\nОтчет удален")
 
     return ConversationHandler.END
@@ -373,10 +344,6 @@ def deleteReport(update, context):
 
 def completeChanging(update, _):
     update.effective_message.reply_text("Все изменения успешно сохранены.")
-    return ConversationHandler.END
-
-
-def returnToWeeks(update, _):
     return ConversationHandler.END
 
 
@@ -396,49 +363,49 @@ class Command(BaseCommand):
         )
 
         # 2 -- обработчики
-        botUpdater = Updater(
+        bot_updater = Updater(
             bot=bot,
             use_context=True,
         )
-        botDispatcher = botUpdater.dispatcher
+        bot_dispatchder = bot_updater.dispatcher
 
-        userIdentification = ConversationHandler(
+        user_identification = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
             states={
                 USER_NOT_CONFIRMED: [
-                    MessageHandler(Filters.all, userNotConfirmed)
+                    MessageHandler(Filters.all, user_not_confirmed)
                 ],
                 USER_CONFIRMED: [
-                    MessageHandler(Filters.all, userConfirmed)
+                    MessageHandler(Filters.all, user_confirmed)
                 ]
             },
-            fallbacks=[CommandHandler("reports", projectSelect)]
+            fallbacks=[CommandHandler("reports", project_select)]
         )
 
-        conversationWithUser = ConversationHandler(
-            entry_points=[CommandHandler("reports", projectSelect)],
+        conversation_with_user = ConversationHandler(
+            entry_points=[CommandHandler("reports", project_select)],
             states={
                 WEEK_SELECTION: [
-                    CallbackQueryHandler(weekSelect)
+                    CallbackQueryHandler(week_select)
                 ],
                 ACTION_CHOICE: [
-                    CallbackQueryHandler(projectSelect, pattern='^' + "back_to_projects" + '$'),
+                    CallbackQueryHandler(project_select, pattern='^' + "back_to_projects" + '$'),
                     CallbackQueryHandler(menu)
                 ],
                 PROCESSING_ACTION: [
-                    CallbackQueryHandler(addRequest, pattern='^' + "add" + '$'),
-                    CallbackQueryHandler(editRequest, pattern='^' + "edit" + '$'),
+                    CallbackQueryHandler(add_request, pattern='^' + "add" + '$'),
+                    CallbackQueryHandler(edit_request, pattern='^' + "edit" + '$'),
                     CallbackQueryHandler(deleteRequest, pattern='^' + "remove" + '$'),
-                    CallbackQueryHandler(weekSelect, pattern='^' + "back_to_weeks" + '$'),
+                    CallbackQueryHandler(week_select, pattern='^' + "back_to_weeks" + '$'),
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
-                    #CallbackQueryHandler(addRequest, pattern='^' + "add" + '$'),
-                    MessageHandler(Filters.text, addReport)
+                    # CallbackQueryHandler(addRequest, pattern='^' + "add" + '$'),
+                    MessageHandler(Filters.text, add_report)
                     # CallbackQueryHandler(addReport)
                 ],
                 EDITING_REP: [
-                    #CallbackQueryHandler(editingReport),
+                    # CallbackQueryHandler(editingReport),
                     MessageHandler(Filters.text, editReport),
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                     # CallbackQueryHandler(editReport)
@@ -448,15 +415,15 @@ class Command(BaseCommand):
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ]
             },
-            fallbacks=[CommandHandler("reports", projectSelect)]
+            fallbacks=[CommandHandler("reports", project_select)]
         )
 
         # Conversations
-        botDispatcher.add_handler(userIdentification)
-        botDispatcher.add_handler(conversationWithUser)
+        bot_dispatchder.add_handler(user_identification)
+        bot_dispatchder.add_handler(conversation_with_user)
 
         # Running the bot
         # 3 - Бесконечная обработка сообщений
 
-        botUpdater.start_polling()
-        botUpdater.idle()
+        bot_updater.start_polling()
+        bot_updater.idle()
