@@ -146,6 +146,7 @@ def weekSelect(update, context):
         project = context.chat_data["project"] = Project.objects.get(pk=int(query.data))
     else:
         project = context.chat_data["project"]
+    user = context.chat_data["user"]
 
     start_date = project.start_date
 
@@ -158,10 +159,23 @@ def weekSelect(update, context):
 
     weeks = [start_week + i for i in range(weeks_num)]
 
-    inlineButtons = [
-        [InlineKeyboardButton(week_to_str(week), callback_data=str(week))]
-        for week in weeks
-    ]
+    inlineButtons = []
+    for week in weeks:
+        try:
+            report = Report.objects.get(
+                project=project,
+                user=user,
+                report_date=week.monday()
+            )
+            report_exist = True
+        except Report.DoesNotExist:
+            report_exist = False
+
+        inlineButtons.append(
+            [InlineKeyboardButton(week_to_str(week) + (" ✅ " if report_exist else " ❌ "), callback_data=str(week))]
+        )
+
+
     inlineButtons.append(  # Путь назад
         [InlineKeyboardButton("Вернуться к выбору проекта", callback_data="back_to_projects")]
     )
@@ -176,60 +190,6 @@ def weekSelect(update, context):
                                                                    '\nВыберите дату:', reply_markup=inlineMarkup)
     return ACTION_CHOICE
 
-
-#
-# @log_errors
-# def reportSelect(update, context):
-#     query = update.callback_query
-#     query.answer()
-#     week = context.chat_data["week"]
-#     project = context.chat_data["project"]
-#     user = context.chat_data["user"]
-#     if query.data == 'add':
-#         # добавление
-#         free_days = get_days_without_reports(week, project, user)
-#         inlineButtons = [
-#             [InlineKeyboardButton(day.strftime("%d.%m.%Y"), callback_data=day.strftime("%d.%m.%Y"))]
-#             for day in free_days
-#         ]
-#         inlineButtons.append([InlineKeyboardButton("Назад", callback_data='back_to_actions')])
-#
-#         inlineMarkup = InlineKeyboardMarkup(inlineButtons)
-#
-#         if len(free_days) != 0:
-#             query.edit_message_text(
-#                 'Выбран проект "' + project.name + '"'
-#                 'Неделя "' + week_to_str(week) + '"'
-#                 '\nВыберите дату:', reply_markup=inlineMarkup)
-#             return ADDING_REP
-#
-#         query.edit_message_text(
-#             'Нет возможности добавить новый отчет на этой неделе',
-#             reply_markup=inlineMarkup)
-#         return ACTION_CHOICE
-#     else: #изменение или удаление
-#         existing_reports = get_existing_reports(week, project, user)
-#
-#         inlineButtons = [
-#             [InlineKeyboardButton(report.report_date.strftime("%d.%m.%Y"), callback_data=report.id)]
-#             for report in existing_reports
-#         ]
-#
-#         inlineButtons.append([InlineKeyboardButton("Назад", callback_data='back_to_actions')])
-#
-#         inlineMarkup = InlineKeyboardMarkup(inlineButtons)
-#         if len(existing_reports) != 0:
-#             query.edit_message_text(
-#                 'Выбран проект "' + project.name + '"'
-#                 'Неделя ' + week_to_str(week) +
-#                 '\nВыберите дату:', reply_markup=inlineMarkup)
-#             return DELETING_REP if query.data == 'remove' else EDITING_REP
-#
-#         # Если не нашлись отчеты
-#         query.edit_message_text(
-#             'Нет отчетов на этой неделе',
-#             reply_markup=inlineMarkup)
-#         return ACTION_CHOICE
 
 def menu(update, context):
     query = update.callback_query
