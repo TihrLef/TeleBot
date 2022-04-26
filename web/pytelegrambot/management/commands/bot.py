@@ -167,13 +167,9 @@ def week_select(update, context):
     )
     inline_markup = InlineKeyboardMarkup(inline_buttons)
 
-    if query.data == "back_to_weeks":
-        msg = update.effective_message.text
-        query.edit_message_text(msg[:msg.find('\n')] +
-                                '\nВыберите дату:', reply_markup=inline_markup)
-    else:
-        query.edit_message_text('Выбран проект "' + project.name + '"'
-                                                                   '\nВыберите дату:', reply_markup=inline_markup)
+    query.edit_message_text('Выбран проект "' + project.name + '"'
+                                                               '\nВыберите дату:', reply_markup=inline_markup)
+
     return ACTION_CHOICE
 
 
@@ -301,7 +297,7 @@ def editReport(update, context):
 
     inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
 
-    update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
+    update.message.reply_text(f'Успешно изменён отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
                               f'Текст: {report.message}\n', reply_markup=inline_markup)
 
@@ -423,9 +419,11 @@ class Command(BaseCommand):
                 ],
                 EDITING_REP: [
                     MessageHandler(Filters.text, editReport),
+                    CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 DELETING_REP: [
                     CallbackQueryHandler(deleteReport, pattern="^delete$"),
+                    CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 TO_MENU: [
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
