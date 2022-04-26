@@ -59,7 +59,7 @@
         <td><a class="mya" href="{{ us.get_absolute_url }}">{{ us.username }}</a></td>
 		<td>				{{us.first_name}}</a></td>
 		<td align=center>	{{us.last_name}}</td>
-		<td align=center>	{{us.role}}</td>
+		<td align=center>	{{us.get_role}}</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
 		<td align=center>	{{us.report_set.all.count}}</td>
       </tr>

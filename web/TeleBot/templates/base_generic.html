@@ -372,7 +372,7 @@ nav ul {
   position: absolute;
   left: -1px;
   z-index: 5;
-  width: 240px;
+  width: 140px;
   border-bottom: 1px solid #ECF1F2;
   visibility: hidden;
   opacity: 0;  
@@ -435,7 +435,7 @@ nav li:hover > .submenu {
     font-size: 20px;
     padding: 0px 10px;
     margin-top: 50px;
-    height: 1000px;
+    /*height: 1000px;*/
 }
 
 @media screen and (max-height: 450px) {
@@ -461,16 +461,17 @@ nav li:hover > .submenu {
   <ul class="topmenu">
   	<li><a href="">Контакты</a></li>
     <li><a href="">Помощь</a></li>
-    <li><a href="" class="active">Профиль</a>
+    
+    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">{{user.username}}</a>
       <ul class="submenu">
-        <li><a href="">Настройки</a>
-        <li><a href="{% url 'logout' %}">Выход</a></li>
-        
+        <li><a href="{% url 'password_change'%}">Изменить пароль</a>
+	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
+	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
+	
+        <li><a href="{% url 'logout' %}">Выход</a></li>        
       </ul>
     </li>
   
-    
-    
   </ul>
 </nav>
 
@@ -488,7 +489,7 @@ nav li:hover > .submenu {
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Администратор</a> 
+            <a href="{{user.get_absolute_url}}">Администратор</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Проекты</a>
@@ -501,7 +502,7 @@ nav li:hover > .submenu {
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Пользователь</a> 
+            <a href="{{user.get_absolute_url}}">Пользователь</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Мои проекты</a>

@@ -1,18 +1,36 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from .forms import UserCreationForm
+from .forms import MyUserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UpdateUserForm
+from .forms import MyUpdateUserForm
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
+from .forms import MyUserCreationForm
+from .forms import MyUserCreationFormreg
+from .forms import VerifiedToken
 
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = MyUserCreationFormreg
     success_url = reverse_lazy("login")
+    #template_name = "registration/signup.html"
     template_name = "registration/signup.html"
+
+def VerifiedTokenFunction(request):
+	error_message = ''
+	if request.method == 'POST':
+		data = VerifiedToken(request.POST)
+		if(data.is_valid()):
+			data = data.cleaned_data
+			if data['personal_token'] == request.user.personal_token:
+				return redirect('registration/signup.html')
+		else:
+			error_message = "Incorrect data"
+		print(data.cleaned_data)
+	return render(request, 'registration/signup_reg.html', context = {"form": VerifiedToken(), "ermsg": error_message})       
+    
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'change_password.html'
@@ -36,6 +54,4 @@ def profile_edit(request):
         user_form = UpdateUserForm(instance=request.user)
 
     return render(request, "edit.html", {'user_form': user_form})
-
-
 

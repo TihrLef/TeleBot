@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 
 
+
 #Не трогайте эту строчку! Добавляйте новые ниже!
 urlpatterns = []
 

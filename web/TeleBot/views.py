@@ -12,6 +12,9 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+import web.urls
+
+
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
 @user_passes_test(User.is_verified)
@@ -41,7 +44,7 @@ class ProjectsListView(generic.ListView):
 def report(request):
 	users = User.objects.all()
 	projects = Project.objects.all()
-	reports = Report.objects.all()
+	reports = Report.objects.order_by("project")
 	error_message = ''
 	
 	if request.method == 'POST':
@@ -81,7 +84,8 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(r"TeleBot/static/TempPdf/simple_demo.pdf", "F")
+		pdf.output(r"TeleBot/static/TempPdf/simple_demo" + str(request.user) + ".pdf", "F")
+	context['pdfname'] = r"/TempPdf/simple_demo" + str(request.user) + ".pdf"
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -171,6 +175,12 @@ def project_change(request, pk):
 
 class UserDetailView(generic.DetailView):
 	model = User
+	def check(request):
+		if request.method == 'GET':
+			a = request.user
+			a.is_active = True
+			a.save()
+		return redirect('')
 
 @user_passes_test(User.is_verified)	
 def user_detail(request,pk):
@@ -184,6 +194,11 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+def token_valid(request):
+	pass
+
+
+
 
 '''
 def person_detail_view(request,pk):
@@ -191,7 +206,6 @@ def person_detail_view(request,pk):
 		person_id=Person.objects.get(id=pk)
 	except Project.DoesNotExist:
 		raise Http404("Такого персонажа не существует!")
-
 	return render(
 		request,
 		'person/person_detail.html',
