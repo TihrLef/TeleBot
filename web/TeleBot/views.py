@@ -12,6 +12,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+import web.urls
 
 
 # Ответ на вызов основного сайта
@@ -43,7 +44,9 @@ class ProjectsListView(generic.ListView):
 def report(request):
 	users = User.objects.all()
 	projects = Project.objects.all()
-	reports = Report.objects.all()
+	reports = list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
+					str(request.user) == str(rep.project.responsible_user)), 
+			 Report.objects.order_by("project"))
 	error_message = ''
 	
 	if request.method == 'POST':
@@ -54,9 +57,7 @@ def report(request):
 			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
 									(not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
 									(not data['left_date'] or data['left_date'] <= rep.report_date) and\
-									(not data['right_date'] or rep.report_date<= data['right_date']) and\
-									(str(request.user) == str(rep.user) or request.user.is_staff or\
-									str(request.user) == str(rep.project.responsible_user))
+									(not data['right_date'] or rep.report_date<= data['right_date'])
 			reports = list(filter(FaceControl, reports))
 		else:
 			error_message = 'incorrect input data'
@@ -83,7 +84,8 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(r"TeleBot/static/TempPdf/simple_demo.pdf", "F")
+		pdf.output(r"TeleBot/static/TempPdf/simple_demo" + str(request.user) + ".pdf", "F")
+	context['pdfname'] = r"TempPdf/simple_demo" + str(request.user) + ".pdf"
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -192,6 +194,9 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+def token_valid(request):
+	pass
+
 
 
 
@@ -201,7 +206,6 @@ def person_detail_view(request,pk):
 		person_id=Person.objects.get(id=pk)
 	except Project.DoesNotExist:
 		raise Http404("Такого персонажа не существует!")
-
 	return render(
 		request,
 		'person/person_detail.html',

@@ -26,12 +26,12 @@ class User(AbstractUser):
 	@property
 	def get_role(self):
 		if self.is_staff:
-			return "Staff"
+			return "Администратор"
 		else:
 			if self.is_active:
-				return "Verified"
+				return "Подтвержденный"
 			else:
-				return "Unverified"
+				return "Неподтвержденный"
 	
 	def is_verified(self):
 		return (self.is_active) or (self.is_staff)
