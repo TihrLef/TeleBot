@@ -22,7 +22,7 @@ urlpatterns += [
 	]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)$',  user_passes_test(User.is_verified)(views.UserDetailView.as_view()), name='user-detail') ]
 urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
-urlpatterns += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
+# += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
 urlpatterns += [re_path(r'^projects/create$',  views.project_add, name = "project-create")]
 urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', views.project_change, name = "project-change")]
 

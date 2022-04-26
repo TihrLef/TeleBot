@@ -11,8 +11,30 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import tempfile
+from tempfile import TemporaryDirectory as td
+
+from threading import Thread
+import time
 
 import web.urls
+
+class TempDir:
+	def __init__(self):
+		self.name = None
+	def MakeDir(self, path = None, prefix = '', lifetime = 0):
+		th = Thread(target = self.creation, args=(path, prefix, lifetime))
+		th.start()
+		while self.name is None:
+			time.sleep(0.01)
+
+	def creation(self, path = None, prefix = '', lifetime = 0):
+		if path:
+			tempfile.tempdir = path
+		temp = td(prefix = prefix)
+		self.name = str(temp.name)
+		time.sleep(lifetime)
+
 
 
 # Ответ на вызов основного сайта
@@ -40,20 +62,19 @@ def sort_index(request):
 class ProjectsListView(generic.ListView):
 	model = Project
 
+
 @user_passes_test(User.is_verified)
 def report(request):
-	users = User.objects.all()
-	projects = Project.objects.all()
+	context = {}
 	reports = list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
 					str(request.user) == str(rep.project.responsible_user)), 
-			 Report.objects.order_by("project"))
+			 Report.objects.order_by("project")))
 	error_message = ''
 	
 	if request.method == 'POST':
 		data = FilterForm(request.POST)
 		if(data.is_valid()):
 			data = data.cleaned_data
-			print(data)
 			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
 									(not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
 									(not data['left_date'] or data['left_date'] <= rep.report_date) and\
@@ -62,14 +83,11 @@ def report(request):
 		else:
 			error_message = 'incorrect input data'
 			reports = None
-
-	form = FilterForm(request.POST) if request.method == 'POST' else FilterForm
-	context = {'reports': reports,
-			 'projects': projects,
-			 'users': users,
-			 'error_message': error_message,
-			 'form': form}
-
+	
+	path = r"TeleBot\static"
+	temp = TempDir()
+	temp.MakeDir(path = path, prefix = 'TempPdf', lifetime = 180)
+	name = temp.name
 	if reports:
 		pdf = FPDF()
 		pdf.add_page()
@@ -84,8 +102,29 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(r"TeleBot/static/TempPdf/simple_demo" + str(request.user) + ".pdf", "F")
-	context['pdfname'] = r"TempPdf/simple_demo" + str(request.user) + ".pdf"
+		pdf.output(name + r"/simple_demo" + str(request.user) + ".pdf", "F")
+	
+	projects = list(filter(lambda proj: request.user.is_staff or\
+										str(request.user) in map(lambda proj: str(proj), proj.users.all()),
+					  [Project.objects.all()]))[0]		#Такая запись связана с тем, что мы получаем [QuerySet[...]]
+	users = []
+	if request.user.is_staff:
+		users = list(User.objects.all())
+	else:
+		users += [request.user]
+		for project in projects:
+			if(str(request.user) == str(project.responsible_user)):
+				users += [user for user in project.users.all()]
+		users = list(set(users))
+	form = FilterForm(request.POST) if request.method == 'POST' else FilterForm()
+	user = 'admin' if request.user.is_staff else 'simple'
+	context = {'reports': reports,
+			 'projects': projects,
+			 'user': user, 
+			 'available_users': users,
+			 'error_message': error_message,
+			 'form': form}
+	context['pdfname'] = name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"
 	return render(
 		request,
 		'Reports/reports_list.html',
