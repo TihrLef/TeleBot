@@ -24,20 +24,21 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
 def VerifiedTokenFunction(request):
-    error_message = ''
-    token = None
-    if request.method == 'POST':
-        token = request.POST['personal_token']
-        try:
-            user = User.objects.get(personal_token=token)
-            return HttpResponseRedirect(reverse('signup_reg', args=[user.pk]))
-        except ValidationError:
-            error_message = "eto ne token"
-        except User.DoesNotExist:
-            error_message = "personagha s takim tokenom ne suschestvuet"
-
-    print(token)
-    return render(request, 'registration/signup_reg.html', context = {"form": VerifiedToken(), "ermsg": error_message})    
+	error_message = ''
+	token = None
+	if request.method == 'POST':
+		token = request.POST['personal_token']
+		try:
+			user = User.objects.get(personal_token=token)
+			if user.first_name:
+				error_message = "Вы уже зарегистрированы в системе!"
+			else:
+				return HttpResponseRedirect(reverse('signup_reg', args=[user.pk]))
+		except ValidationError:
+			error_message = "Введённое вами <i>нечто</i> токеном не является!"
+		except User.DoesNotExist:
+			error_message = "Пользователя с таким токеном не существует"
+	return render(request, 'registration/signup_reg.html', context = {"form": VerifiedToken(), "ermsg": error_message})    
    
 def user_change(request, pk):
     try:
@@ -51,7 +52,7 @@ def user_change(request, pk):
             user.username = form.cleaned_data['username']
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-            user.password = form.cleaned_data['password1']
+            user.set_password(form.cleaned_data['password1'])
             user.save()
             return HttpResponseRedirect(reverse('login'))
     # Если это GET (или какой-либо ещё), создать форму по умолчанию.

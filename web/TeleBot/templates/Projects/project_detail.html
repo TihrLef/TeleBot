@@ -54,7 +54,7 @@
 		<tr class="empty">
 			<td class="empty" width = 55%>
 				<h1 align = center>{{ project.name }} </h1>	
-				{% if user.is_staff %}
+				{% if user.is_staff or project.responsible_user == user %}
 					<h4 align = center><big><big>  </big></big><a class="mya" href = "{{ project.get_change_url}}">(изменить)</a></h5>
 				{% endif %}
 			</td>

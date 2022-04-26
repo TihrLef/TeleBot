@@ -46,7 +46,7 @@ def report(request):
 	projects = Project.objects.all()
 	reports = list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
 					str(request.user) == str(rep.project.responsible_user)), 
-			 Report.objects.order_by("project"))
+			 Report.objects.order_by("project")))
 	error_message = ''
 	
 	if request.method == 'POST':

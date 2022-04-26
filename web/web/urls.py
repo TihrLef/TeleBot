@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
+from django.views.generic import RedirectView
 from Projects import views 
 from Users import views
 from Users.models import User
@@ -15,7 +16,7 @@ urlpatterns = []
 
 urlpatterns += [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path("admin/", admin.site.urls, name='admin'),
+    path("admin/", admin.site.urls, name="admin"),
     path("accounts/", include("django.contrib.auth.urls")),
     path('TeleBot/', include('TeleBot.urls')),
     path("password_change/", ChangePasswordView.as_view(), name='password_change'),
@@ -25,3 +26,4 @@ urlpatterns += [
     path('User/', include('Users.urls')),
 ]
 urlpatterns += [re_path("signup_reg/(?P<pk>\d+)$", user_change, name="signup_reg"),]
+urlpatterns += [path("adminka", RedirectView.as_view(url='/admin', permanent=True), name="adminka"),]
