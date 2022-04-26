@@ -1,4 +1,5 @@
 {% extends "base_generic.html" %}
+{% load static %}
 {% block content %}
 <form method="post">
     {% csrf_token %}
@@ -11,7 +12,7 @@
 <span>{{error_message}}</span>
 <div style="margin-left:20px;margin-top:20px">
     <div style="margin-left:20px;margin-top:20px">
-        <a href="{% url 'maker_pdf' %}">Maker pdf</a>
+		<a href="{% static pdfname %}">Download pdf</a>
         <div class="container-fluid">
             <ul>
                 {% for report in reports %}

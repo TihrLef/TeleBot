@@ -30,6 +30,11 @@ input.button:hover {
 	opacity: 0.7;
 }
 
+.errorlist{
+	font-size: 14px;
+	color:red;
+	list-style-type: none;
+}
 </style>
     <form action="" method="post">
         {% csrf_token %}
@@ -37,20 +42,20 @@ input.button:hover {
 			<tr class="empty">
 				<td class="empty" width = 55% align = center>
 					<h1 align = center>Название проекта</h1>
-					{{form.name.errors}}
+					<span class="errorlist">{{form.name.errors}}</span>
 					<input type="text" name="name" maxlength="200" required="" id="id_name" class = "project" value={%if form.name.value %} {{form.name.value}} {% endif %}>
 				</td>
 				<td class="empty" width = 10%></td>
 				<td class="empty" width = 35%> 
 					<table class="empty" align=center>
 						<tr class="empty" height = 50>
-							<td><strong>Ответственный: </strong></td><td>{{form.responsible_user}} {{form.responsible_user.errors}}</select></td>
+							<td><b>Ответственный: </b></td><td>{{form.responsible_user}} {{form.responsible_user.errors}}</select></td>
 						</tr>
 						<tr class="empty" height = 50>
-							<td><strong>Дата начала:</strong></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
+							<td><b>Дата начала:</b></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
 						</tr>
 						<tr class="empty" height = 50>
-							<td><strong>Дата конца:</strong></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
+							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
 						</tr>
 					</table>
 					<p align=center><strong>Список участников:</strong><br><br> 

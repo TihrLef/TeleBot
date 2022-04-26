@@ -179,10 +179,11 @@ input:not([type="submit"]):active + .input-requirements {
 <body background = "{% static 'img/night.jpg'%}">
 
 
-<form method="post" action="{%url 'login' %}" >
+<form method="post" >
 
  {% csrf_token %}
 <div class="container">
+   {{form.errors}}
 		<h2>Регистрация</h2>
         <p><label for="id_first_name">Имя</label>
     	<input type="text" placeholder="Введите имя" maxlength="150" name="first_name" id="id_first_name" required></p>
@@ -205,7 +206,7 @@ input:not([type="submit"]):active + .input-requirements {
     <span class="reg"><a href="{%url 'login'%}">Назад</a></span>
   </div>
     </form>
-    
+
 <script>
 function CustomValidation() {
 	this.invalidities = [];

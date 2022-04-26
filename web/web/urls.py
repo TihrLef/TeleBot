@@ -4,9 +4,11 @@ from django.views.generic.base import TemplateView
 from Projects import views 
 from Users import views
 from Users.models import User
-import Users.views
+import Users.views 
+from Users.views import VerifiedTokenFunction
 from Users.views import SignUpView, ChangePasswordView, profile_edit
-
+from Users.views import user_change
+from django.urls import re_path
 
 
 urlpatterns = []
@@ -18,8 +20,8 @@ urlpatterns += [
     path('TeleBot/', include('TeleBot.urls')),
     path("password_change/", ChangePasswordView.as_view(), name='password_change'),
     path("edit/", views.profile_edit, name="edit"),
-    path("sign_up/", SignUpView.as_view(), name="signup"),
+    path("signup/", VerifiedTokenFunction, name="signup"),
     path("success", views.home, name="home"),
     path('User/', include('Users.urls')),
-
 ]
+urlpatterns += [re_path("signup_reg/(?P<pk>\d+)$", user_change, name="signup_reg"),]

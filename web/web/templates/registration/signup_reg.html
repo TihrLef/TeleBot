@@ -103,7 +103,7 @@ span.reg{
 <body background = "{% static 'img/night.jpg'%}">
 
 
-<form method="post" action="{%url 'signup' %}">
+<form method="post">
 
  {% csrf_token %}
 <div class="container">
@@ -111,8 +111,7 @@ span.reg{
     
     <p><label for="id_personal_token"><b>Токен</b></label>
     <input type="text" name="personal_token"  id="id_personal_token" placeholder="Введите токен" required></p>
-    <p><label for="id_telegram_id"><b>Ваш telegram id</b></label>
-    <input type="text" name="telegram_id"  id="id_telegram_id" placeholder="Введите свой id в telegram" required></p>
+    <p><span class="colortext">{{ermsg}}</span></p>
 
     <button type="submit" id = "button2">Отправить</button>
   </div>

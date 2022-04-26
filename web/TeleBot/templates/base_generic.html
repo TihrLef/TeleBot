@@ -435,7 +435,7 @@ nav li:hover > .submenu {
     font-size: 20px;
     padding: 0px 10px;
     margin-top: 50px;
-    height: 1000px;
+    /*height: 1000px;*/
 }
 
 @media screen and (max-height: 450px) {
@@ -462,7 +462,7 @@ nav li:hover > .submenu {
   	<li><a href="">Контакты</a></li>
     <li><a href="">Помощь</a></li>
     
-    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">Профиль</a>
+    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">{{user.username}}</a>
       <ul class="submenu">
         <li><a href="{% url 'password_change'%}">Изменить пароль</a>
 	<li><a href="{% url 'edit'%}">Редактировать профиль</a>
