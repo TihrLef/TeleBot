@@ -10,7 +10,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 from telegram.utils.request import Request
 
-WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELETING_REP = range(6)
+WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELETING_REP, TO_MENU = range(7)
 USER_NOT_CONFIRMED, USER_CONFIRMED = range(2)
 
 
@@ -242,13 +242,15 @@ def add_report(update, context):
         report_date=week.monday(),
         message=message
     )
+
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+
     # TODO Проверка, что report успешно сохранился
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
-                              f'Текст: {report.message}\n'
-                              )
+                              f'Текст: {report.message}\n', reply_markup=inline_markup)
 
-    return ConversationHandler.END
+    return ACTION_CHOICE
 
 
 def edit_request(update, context):
@@ -288,12 +290,13 @@ def editReport(update, context):
     report.message = message
     report.save()
 
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
-                              f'Текст: {report.message}\n'
-                              )
+                              f'Текст: {report.message}\n', reply_markup=inline_markup)
 
-    return ConversationHandler.END
+    return TO_MENU
 
 
 def deleteRequest(update, context):
@@ -333,17 +336,22 @@ def deleteReport(update, context):
         user=user,
         report_date=week.monday()
     )
-
     report.delete()
-    query.edit_message_text('Проект: "' + project.name + '"'
-                                                         "\nНеделя: " + week_to_str(week) +
-                            "\nОтчет удален")
 
-    return ConversationHandler.END
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+
+    query.edit_message_text('Проект: "' + project.name + '"'
+                            "\nНеделя: " + week_to_str(week) +
+                            "\nОтчет удален", reply_markup=inline_markup)
+
+    return TO_MENU
 
 
 def completeChanging(update, _):
-    update.effective_message.reply_text("Все изменения успешно сохранены.")
+    query = update.callback_query
+    query.answer()
+
+    query.edit_message_text("Все изменения успешно сохранены.")
     return ConversationHandler.END
 
 
@@ -400,18 +408,15 @@ class Command(BaseCommand):
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
-                    # CallbackQueryHandler(addRequest, pattern='^' + "add" + '$'),
                     MessageHandler(Filters.text, add_report)
-                    # CallbackQueryHandler(addReport)
                 ],
                 EDITING_REP: [
-                    # CallbackQueryHandler(editingReport),
                     MessageHandler(Filters.text, editReport),
-                    CallbackQueryHandler(menu, pattern="^back_to_menu$")
-                    # CallbackQueryHandler(editReport)
                 ],
                 DELETING_REP: [
                     CallbackQueryHandler(deleteReport, pattern="^delete$"),
+                ],
+                TO_MENU: [
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ]
             },
