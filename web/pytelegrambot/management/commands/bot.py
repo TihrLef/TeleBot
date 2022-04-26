@@ -43,6 +43,7 @@ def user_not_found(update, _):
     new_user = User.objects.create(
         is_active=False,
         telegram_id=telegram_user.id,
+        username=telegram_user.username,
     )
 
     update.message.reply_text(
