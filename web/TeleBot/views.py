@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 from Projects.models import Project
 from Users.models import User
@@ -65,29 +65,34 @@ class ProjectsListView(generic.ListView):
 
 @user_passes_test(User.is_verified)
 def report(request):
-	context = {}
-	reports = list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
-					str(request.user) == str(rep.project.responsible_user)), 
-			 Report.objects.order_by("project")))
+	users = User.objects.all()
+	projects = Project.objects.all()
+	reports = Report.objects.all()
 	error_message = ''
 	
 	if request.method == 'POST':
 		data = FilterForm(request.POST)
 		if(data.is_valid()):
 			data = data.cleaned_data
+			print(data)
 			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
 									(not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
 									(not data['left_date'] or data['left_date'] <= rep.report_date) and\
-									(not data['right_date'] or rep.report_date<= data['right_date'])
+									(not data['right_date'] or rep.report_date<= data['right_date']) and\
+									(str(request.user) == str(rep.user) or request.user.is_staff or\
+									str(request.user) == str(rep.project.responsible_user))
 			reports = list(filter(FaceControl, reports))
 		else:
 			error_message = 'incorrect input data'
 			reports = None
-	
-	path = r"TeleBot\static"
-	temp = TempDir()
-	temp.MakeDir(path = path, prefix = 'TempPdf', lifetime = 180)
-	name = temp.name
+
+	form = FilterForm(request.POST) if request.method == 'POST' else FilterForm
+	context = {'reports': reports,
+			 'projects': projects,
+			 'users': users,
+			 'error_message': error_message,
+			 'form': form}
+
 	if reports:
 		pdf = FPDF()
 		pdf.add_page()
@@ -102,29 +107,7 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(name + r"/simple_demo" + str(request.user) + ".pdf", "F")
-	
-	projects = list(filter(lambda proj: request.user.is_staff or\
-										str(request.user) in map(lambda proj: str(proj), proj.users.all()),
-					  [Project.objects.all()]))[0]		#Такая запись связана с тем, что мы получаем [QuerySet[...]]
-	users = []
-	if request.user.is_staff:
-		users = list(User.objects.all())
-	else:
-		users += [request.user]
-		for project in projects:
-			if(str(request.user) == str(project.responsible_user)):
-				users += [user for user in project.users.all()]
-		users = list(set(users))
-	form = FilterForm(request.POST) if request.method == 'POST' else FilterForm()
-	user = 'admin' if request.user.is_staff else 'simple'
-	context = {'reports': reports,
-			 'projects': projects,
-			 'user': user, 
-			 'available_users': users,
-			 'error_message': error_message,
-			 'form': form}
-	context['pdfname'] = name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"
+		pdf.output(r"TeleBot/static/TempPdf/simple_demo.pdf", "F")
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -214,12 +197,6 @@ def project_change(request, pk):
 
 class UserDetailView(generic.DetailView):
 	model = User
-	def check(request):
-		if request.method == 'GET':
-			a = request.user
-			a.is_active = True
-			a.save()
-		return redirect('')
 
 @user_passes_test(User.is_verified)	
 def user_detail(request,pk):
@@ -233,18 +210,37 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+
 def token_valid(request):
 	pass
 
-
-
+@staff_member_required
+def user_list(request):
+	user_list = User.objects.all
+	if request.method == "POST":
+		id_list = request.POST.getlist('boxes')
+		if request.POST['action'] == "Удалить":
+			for user_id in id_list:
+				try:
+					User.objects.filter(pk=int(user_id)).delete()
+				except User.DoesNotExist:
+					pass
+		else:
+			for user_id in id_list:
+				try:
+					User.objects.filter(pk=int(user_id)).update(is_active=True)
+				except User.DoesNotExist:
+					pass
+	return render(request, 'Users/user_list.html', {"user_list" : user_list})
 
 '''
+
 def person_detail_view(request,pk):
 	try:
 		person_id=Person.objects.get(id=pk)
 	except Project.DoesNotExist:
 		raise Http404("Такого персонажа не существует!")
+
 	return render(
 		request,
 		'person/person_detail.html',
