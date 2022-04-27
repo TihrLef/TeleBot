@@ -5,23 +5,65 @@
 {% endblock %}
 {% block content %}
     <style type="text/css">
+     .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    position: sticky;
+	text-align: center;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 18px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0.5px solid #ddd;
+	border-right: 0.5px solid #ddd;
+	padding: 10px 15px;
+	font-size: 14px;
+	vertical-align: top;
+    color:#000;
+}
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 1px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 1px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+	/*
 	   TABLE {
-		border-collapse: collapse; /* Убираем двойные линии между ячейками */
-		border: 5px groove #ccc; /* Рамка вокруг таблицы */
+		border-collapse: collapse; 
+		border: 5px groove #ccc; 
 	   }
 	   TD, TH {
 		height: 60px;
-		padding: 7px; /* Поля вокруг содержимого ячеек */
-		border: 5px groove #ccc; /* Граница между ячейками */
+		padding: 7px; 
+		border: 5px groove #ccc;
 		border-left:0;
 		border-right:0;
 	   }
 	   TH {
-		background: #4b0082; /* Цвет фона */
-		color: #fffff0; /* Цвет текста */
+		background: #4b0082; 
+		color: #fffff0;
 		height: 55px;
 		
-	   }
+	   }*/
+       
 		th.sorted[data-order="-1"]::after {
 			content: "▼"
 		}
@@ -46,7 +88,7 @@
 		}
 		a.mya:hover
 		{	font-family:Arial;
-			font-size:21.5px;
+			/*font-size:21.5px;*/
 			color:#0f93ff;
 		}
 	</style>
@@ -82,19 +124,24 @@
 
     <h2 align = center>{% if user.is_staff or user == project.responsible_user %}Все{% else %}Ваши{% endif %} отчёты по проекту</h2>
 	{% if reports %}
-	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+	<table align = center width = 85% cellspacing="0" border="2" id="myTable" class="table">
+    <thead>
 		<tr>
 			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
 			<th width = 25% onclick="sortTable(1)" align=left>Автор</th>
 			<th width = 70% onclick="sortTable(2)" align=center>🌸 🌸 🌸 Отчёт 🌸 🌸 🌸</th>
 		</tr>
+        </thead>
+        <tbody>
     {% for report in reports %}
 		<tr> 
 			<td align=center>{{report.report_date|date:'d-m-Y'}}</td>
 			<td><a class = "mya" href="{{ report.user.get_absolute_url }}">{{report.user}}</a>
 			<td>{{report.message}}</ul>
 		<tr>
+        
 	{% endfor %}
+    </tbody>
 	</table>
 	{% else %} 
 	<br><br><br>

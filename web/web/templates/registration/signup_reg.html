@@ -8,10 +8,9 @@
 body {
 
 	font-family: Arial, Helvetica, sans-serif;
--moz-background-size: 100%; /* Firefox 3.6+ */
-    -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
-    -o-background-size: 100%; /* Opera 9.6+ */
-    background-size: 100%; /* Современные браузеры */
+background: -webkit-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: -moz-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
 }
 form {
 	padding: 20px;
@@ -100,7 +99,7 @@ span.reg{
 }
 </style>
 </head>
-<body background = "{% static 'img/night.jpg'%}">
+<body >
 
 
 <form method="post">
