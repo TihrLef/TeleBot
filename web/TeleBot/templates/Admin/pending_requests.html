@@ -1,0 +1,111 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+<form action="" method=POST>
+	{% csrf_token %}
+
+
+
+  <style type="text/css">
+   TABLE {
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+    border: 5px groove #ccc; /* Рамка вокруг таблицы */
+   }
+   TH {
+    background: #4b0082; /* Цвет фона */
+    color: #fffff0; /* Цвет текста */
+	
+   }
+   TD, TH {
+    height: 30px;
+    padding: 0px; /* Поля вокруг содержимого ячеек */
+    border: 5px groove #ccc; /* Граница между ячейками */
+	border-left:0;
+	border-right:0;
+   }
+	th.sorted[data-order="-1"]::after {
+		content: "▼"
+	}
+
+	th.sorted[data-order="1"]::after {
+		content: "▲"
+	}
+	a.mya
+	{	font-family:Arial;
+		font-weight: bold;
+		text-decoration: none;
+		color:#6495ed;
+		font-size:21px;
+	}
+	a.mya:hover
+	{	font-family:Arial;
+		font-size:22px;
+		color:#0f93ff;
+		
+	}
+	input.button {
+border:0;
+background: #21145e;
+color: #dfdeee;
+border-radius: 50px;
+width: 200px;
+height: 49px;
+font-size: 16px;
+transition: 0.3s;
+cursor: pointer;
+opacity: 0.85;
+}
+
+input.button:hover {
+opacity: 0.7;
+}
+	</style>
+	<br>
+<h1 align = center>Список всех настоящих запросов</h1>
+ {%if user_list%}
+<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+  <thead>
+    <tr>
+      <th scope="col" align='left'>UserName</th>
+      <th scope="col" align='left'>Имя</th>
+      <th scope="col" align='left'>Фамилия</th>
+      <th scope="col" align='left'>Телеграм ID</th>
+      <th scope="col" align='left'><pre>	   </th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for user in user_list %}
+  	<tr>
+  		<td>{{user.username }}</td>
+  		<td>{{user.first_name }}</td>
+  		<td>{{user.last_name }}</td>
+  		<td>{{user.telegram_id }}</td>
+  		<td>
+  			{% if user.is_active %}
+  			<div class="form-check">
+  				<input class="form-check-input" type="checkbox" checked="checked" value={{user.telegram_id}} name="boxes">
+  			</div>
+  			{% else %}
+  			<div class="form-check">
+  					<h3 align = center><input class="form-check-input" type="checkbox" value={{user.telegram_id}} name="boxes"> </h2>
+  			</div>
+  			{% endif %}
+
+  		</td>
+  	</tr>
+	{% endfor %}
+ </tbody>
+	</table>
+	<h3 align = center> <input class="button" type="submit" type="submit"> </h2><br><br>
+	{%else%}
+	
+	Пока нет новых запросов. Всего доброго!
+	{%endif%}
+
+
+{% endblock %}
+
+
+

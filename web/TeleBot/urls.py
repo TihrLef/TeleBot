@@ -25,6 +25,7 @@ urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
 urlpatterns += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
 urlpatterns += [re_path(r'^projects/create$',  views.project_add, name = "project-create")]
 urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', views.project_change, name = "project-change")]
+urlpatterns += [re_path(r'^requests/$', staff_member_required(views.admin_approval), name='unver_users')]
 
 #urlpatterns += [re_path(r'^project/(?P<pk>\d+)/changed/$', views.project_changed, name = "project-changed")]
 
