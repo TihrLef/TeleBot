@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <style>
+
 input, select, input.project{
     width:  200px;
     padding: 5px 10px 5px 10px;
@@ -24,6 +25,9 @@ input.button {
 	transition: 0.3s;
 	cursor: pointer;
 	opacity: 0.85;
+	left:40%;
+	top: 70%;
+    position:fixed;
 }
 
 input.button:hover {
@@ -45,20 +49,31 @@ input.button:hover {
 					<span class="errorlist">{{form.name.errors}}</span>
 					<input type="text" name="name" maxlength="200" required="" id="id_name" class = "project" value={%if form.name.value %} {{form.name.value}} {% endif %}>
 				</td>
-				<td class="empty" width = 10%></td>
-				<td class="empty" width = 35%> 
-					<table class="empty" align=center>
-						<tr class="empty" height = 50>
-							<td><b>Ответственный: </b></td><td>{{form.responsible_user}} {{form.responsible_user.errors}}</select></td>
+				<td class="empty" width ="10%"></td>
+				<td class="empty" width ="35%"> 
+			
+					<table class="empty" align="right" >
+						<tr class="empty" height="45px">
+							<td><b>Ответственный: </b></td><td>{{form.responsible_user}} </select></td>
 						</tr>
-						<tr class="empty" height = 50>
-							<td><b>Дата начала:</b></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
+                        <tr class="empty" height="20px"><td></td>
+                        <td>{{form.responsible_user.errors}}</td>
+                        </tr>
+						<tr class="empty" height ="45px">
+							<td><b>Дата начала:</b></td><td>{{form.start_date}}</td>
 						</tr>
-						<tr class="empty" height = 50>
-							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
+                        <tr class="empty" height="20px"><td></td>
+                        <td>{{form.start_date.errors}}</td>
+                        </tr>
+						<tr class="empty" height = "45px">
+							<td><b>Дата конца:</b></td><td>{{form.end_date}}</td>
+                            <td></td>
 						</tr>
+                        <tr class="empty" height="20px"><td></td>
+                        <td>{{form.end_date.errors}}</td>
+                        </tr>
 					</table>
-					<p align=center><strong>Список участников:</strong><br><br> 
+					<p align="right"><b>Список участников:</b><br><br> 
 					{{form.users}}{{form.users.errors}}
 				</td>
 			</tr>
