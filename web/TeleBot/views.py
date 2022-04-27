@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 from Projects.models import Project
 from Users.models import User
@@ -10,9 +10,30 @@ from fpdf import FPDF
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import tempfile
+from tempfile import TemporaryDirectory as td
+
+from threading import Thread
+import time
 from django.contrib.admin.views.decorators import staff_member_required
 
 import web.urls
+
+class TempDir:
+	def __init__(self):
+		self.name = None
+	def MakeDir(self, path = None, prefix = '', lifetime = 0):
+		th = Thread(target = self.creation, args=(path, prefix, lifetime))
+		th.start()
+		while self.name is None:
+			time.sleep(0.01)
+
+	def creation(self, path = None, prefix = '', lifetime = 0):
+		if path:
+			tempfile.tempdir = path
+		temp = td(prefix = prefix)
+		self.name = str(temp.name)
+		time.sleep(lifetime)
 
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
@@ -28,9 +49,7 @@ def index(request):
 def report(request):
 	users = User.objects.all()
 	projects = Project.objects.all()
-	reports = list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
-					str(request.user) == str(rep.project.responsible_user)), 
-			 Report.objects.order_by("project")))
+	reports = Report.objects.all()
 	error_message = ''
 	
 	if request.method == 'POST':
@@ -41,7 +60,9 @@ def report(request):
 			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
 									(not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
 									(not data['left_date'] or data['left_date'] <= rep.report_date) and\
-									(not data['right_date'] or rep.report_date<= data['right_date'])
+									(not data['right_date'] or rep.report_date<= data['right_date']) and\
+									(str(request.user) == str(rep.user) or request.user.is_staff or\
+									str(request.user) == str(rep.project.responsible_user))
 			reports = list(filter(FaceControl, reports))
 		else:
 			error_message = 'incorrect input data'
@@ -68,8 +89,7 @@ def report(request):
 			pdf.set_font("Sans", style = "", size = 12)
 			pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 			pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(r"TeleBot/static/TempPdf/simple_demo" + str(request.user) + ".pdf", "F")
-	context['pdfname'] = r"TempPdf/simple_demo" + str(request.user) + ".pdf"
+		pdf.output(r"TeleBot/static/TempPdf/simple_demo.pdf", "F")
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -86,12 +106,6 @@ class UsersListView(generic.ListView):
 
 class UserDetailView(generic.DetailView):
 	model = User
-	def check(request):
-		if request.method == 'GET':
-			a = request.user
-			a.is_active = True
-			a.save()
-		return redirect('')
 
 @user_passes_test(User.is_verified)	
 def user_detail(request,pk):
@@ -105,3 +119,22 @@ def user_detail(request,pk):
 		'user/user_detail.html',
 		context={'user':tele_id,}
 	)
+
+@staff_member_required
+def user_list(request):
+	user_list = User.objects.all
+	if request.method == "POST":
+		id_list = request.POST.getlist('boxes')
+		if request.POST['action'] == "Удалить":
+			for user_id in id_list:
+				try:
+					User.objects.filter(pk=int(user_id)).delete()
+				except User.DoesNotExist:
+					pass
+		else:
+			for user_id in id_list:
+				try:
+					User.objects.filter(pk=int(user_id)).update(is_active=True)
+				except User.DoesNotExist:
+					pass
+	return render(request, 'Users/user_list.html', {"user_list" : user_list})

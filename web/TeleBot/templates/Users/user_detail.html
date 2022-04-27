@@ -1,31 +1,149 @@
+
 {% extends "base_generic.html" %}
 {% block content %}
 
+<style>
+ .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    position: sticky;
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 18px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0.5px solid #ddd;
+	border-right: 0.5px solid #ddd;
+	padding: 10px 15px;
+	font-size: 14px;
+	vertical-align: top;
+    color:#000;
+}
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
 
-	{%if request.user == user%}
-	This is your personal page.<br>
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 1px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 1px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
+	margin: 0;
+  	top: 100px;
+  	left: 50%;
+    color:black;
+  	position: absolute;
+  	text-align: left;
+  	transform: translateX(-50%);
+  	background-color: #f0f2f5;
+  	border-radius: 8px;
+  	border-top: 8px solid #21145e;
+  	border-bottom: 8px solid #21145e;
+  	width: 600px;
+  overflow: auto; overflow-x: hidden; 
+  	height: 500px;
+	scrolling: auto;
+  text-align: center;
+  font-family: Arial;
+  color: #21145e;
+  
+}
+
+.title {
+  color: #21145e;
+  font-size: 32px;
+}
+.reg{
+font-size: 20px;
+color: #2a1ca6;
+}
+.reg:hover{
+color: #3222c7;
+}
+
+button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background:#21145e;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+  border-radius: 40px;
+}
+
+
+a {
+  text-decoration: none;
+  font-size: 22px;
+  color: black;
+}
+
+button:hover, a:hover {
+  opacity: 0.7;
+}
+</style>
+
+<div class="card">
+{%if request.user == user%}
+<h2 style="text-align:center" class="title">Your personal page</h2>
+{%endif%}
+  <p font-size="20px" align="left"><b>Имя: </b>{{user.first_name }}<br></p>
+  <p font-size="20px" align="left"><b>Фамилия: </b>{{user.last_name }}<br></p>
+  <p font-size="20px" align="left"><b>Username: </b>{{user.username }}<br></p>
+  <p font-size="20px" align="left"><b>Роль: </b>{{user.get_role}} <br></p>
+ 
+  
+{%if request.user == user%}
+	<span><a href="{%url 'password_change'%}" class="reg" align="center">Изменить пароль<br></a></span>	
+	<span><a href="{%url 'edit'%}" class="reg" align="center">Редактировать профиль<br></a></span>
 	{%endif%}
-	Username: {{user.username }}<br>
-	Роль: {{user.get_role}} <br>
-	Имя: {{user.first_name }}<br>
-	Фамилия: {{user.last_name }}<br>
+     <p font-size="20px" align="center" ><b>_________________________________________________________________________________________</b><br></p>
 	
-	{%if request.user == user%}
-	<span class="reg"><a href="{%url 'password_change'%}">Изменить пароль<br></a></span>	
-	<span class="reg"><a href="{%url 'edit'%}">Редактировать профиль<br></a></span>
-	{%endif%}
-	
-	Привязанные проекты:<br>
-	{% for project in user.project_set.all|dictsort:"start_date" %}
-		<td><a class="mya" href="{{ project.get_absolute_url }}">{{project.name}}({{project.status}})<br></a></td>
-		{%if request.user == user%}
-			{%for report in project.report_set.all|dictsort:"report_date"%}
-				{%if report.user == user %}
-					&emsp;<td><a class="mya" href="{{ report.get_absolute_url }}">{{report.report_date}}<br></a></td>
-				{%endif%}
-			{%endfor%}
-		{%endif%}
-		<br>
+	<p font-size="20px" align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
+    <table class="table">
+    <thead>
+    <tr>
+			<th width = 25% onclick="sortTable(0)"  align=left>Название проекта</th>
+			<th width = 20% onclick="sortTable(1)"  align=left>Статус</thЮ
+	</tr> 
+    
+    </thead>
+    <tbody>
+    {% for project in user.project_set.all|dictsort:"start_date" %}
+    <tr>
+		<td><a href="{{ project.get_absolute_url }}" class="reg" align=center>{{project.name}}</a></td>
+        <td align=center>{{project.status}}</td>
+    </tr>
+        
 	{% endfor %}
-
+ </tbody>
+    </table>
+</div>
+	
 {% endblock %}
+
+
+

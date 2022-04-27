@@ -5,28 +5,85 @@
 {% endblock %}
 {% block content %}
   <style type="text/css">
-   TABLE {
-    border-collapse: collapse; /* Убираем двойные линии между ячейками */
-    border: 5px groove #ccc; /* Рамка вокруг таблицы */
+  .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    position: sticky;
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 18px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0.5px solid #ddd;
+	border-right: 0.5px solid #ddd;
+	padding: 10px 15px;
+	font-size: 14px;
+	vertical-align: top;
+    color:#000;
+}
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
+
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 1px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 1px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+  /* TABLE {
+    border-collapse: collapse; 
+    border: 5px groove #ccc; 
    }
    TH {
-    background: #4b0082; /* Цвет фона */
-    color: #fffff0; /* Цвет текста */
+    background: #4b0082; 
+    color: #fffff0; 
 	
    }
    TD, TH {
     height: 50px;
-    padding: 8px; /* Поля вокруг содержимого ячеек */
-    border: 5px groove #ccc; /* Граница между ячейками */
+    padding: 8px; 
+    border: 5px groove #ccc;
 	border-left:0;
 	border-right:0;
-   }
+   }*/
 	th.sorted[data-order="-1"]::after {
 		content: "▼"
 	}
 
 	th.sorted[data-order="1"]::after {
 		content: "▲"
+	}
+	input.button {
+		border:0;
+		background: #21145e;
+		color: #dfdeee;
+		border-radius: 50px;
+		width: 200px;
+		height: 49px;
+		font-size: 16px;
+		transition: 0.3s;
+		cursor: pointer;
+		opacity: 0.85;
+	}
+
+	input.button:hover {
+		opacity: 0.7;
 	}
 	a.mya
 	{	font-family:Arial;
@@ -37,39 +94,61 @@
 	}
 	a.mya:hover
 	{	font-family:Arial;
-		font-size:22px;
+		/*font-size:22px;*/
 		color:#0f93ff;
 	}
 	</style>
 	<br>
-	<h1 align = center>Список человеков</h1>
-	<br>
+	<h1 align = center>Список пользователей</h1>
     {% if user_list %}
+<<<<<<< HEAD
+	<form method="post">
+	{% csrf_token %}
+	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить"/><input class="button" type="submit" name="action" value= "Удалить"/></p>
 	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+=======
+	<table align = center width = 85%  id="myTable" class="table">
+    <thead>
+>>>>>>> main
 		<tr>
 			<th width = 25% onclick="sortTable(0)"  align=left>Nickname</th>
-			<th width = 20% onclick="sortTable(1)"  align=left>Имя</th>
+			<th width = 15% onclick="sortTable(1)"  align=left>Имя</th>
 			<th width = 20% onclick="sortTable(2)">Фамилия</th>
-			<th width = 15% onclick="sortTable(3)">Роль<br></th>
-			<th width = 10% onclick="sortTable(4)">Число<br>проектов</th>
-			<th width = 10% onclick="sortTable(5)">Число<br>отчётов</th>
+			<th width = 15% onclick="sortTable(3)">Роль</th>
+			<th width = 2% onclick="sortTable(4)"></th>
+			<th width = 10% onclick="sortTable(5)">Число<br>проектов</th>
+			<th width = 10% onclick="sortTable(6)">Число<br>отчётов</th>
 		</tr> 
+       </thead>
+       <tbody>
       {% for us in user_list %}
+      
       <tr>
         <td><a class="mya" href="{{ us.get_absolute_url }}">{{ us.username }}</a></td>
 		<td>				{{us.first_name}}</a></td>
 		<td align=center>	{{us.last_name}}</td>
 		<td align=center>	{{us.get_role}}</td>
+		<td align=center>  
+			{% if not us.is_active %}
+  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes">
+  			{% endif %}
+		</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
 		<td align=center>	{{us.report_set.all.count}}</td>
       </tr>
       {% endfor %}
+      </tbody>
 	</table>
 	<br><br>
+<<<<<<< HEAD
 	<h2 align = center> Всё! Больше человеков нет! </h2>
+	</form>
+=======
+	<h3 align = center top="10px"> Всё! Больше человеков нет! </h3>
 	
+>>>>>>> main
     {% else %}
-      <p>Новых пользователей нет</p>
+      <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
  
 {% endblock %}

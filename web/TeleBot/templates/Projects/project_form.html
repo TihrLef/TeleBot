@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <style>
+
 input, select, input.project{
     width:  200px;
     padding: 5px 10px 5px 10px;
@@ -24,6 +25,9 @@ input.button {
 	transition: 0.3s;
 	cursor: pointer;
 	opacity: 0.85;
+	left:40%;
+	top: 70%;
+    position:fixed;
 }
 
 input.button:hover {
@@ -62,8 +66,11 @@ input.button:hover {
 						<tr valign="top" class="empty" height = 50>
 							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
 						</tr>
+                        <tr class="empty" height="20px"><td></td>
+                        <td>{{form.end_date.errors}}</td>
+                        </tr>
 					</table>
-					<p align=center><strong>Список участников:</strong><br><br> 
+					<p align="right"><b>Список участников:</b><br><br> 
 					{{form.users}}{{form.users.errors}}
 				</td>
 			</tr>
