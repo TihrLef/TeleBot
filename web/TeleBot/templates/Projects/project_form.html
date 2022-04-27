@@ -46,15 +46,20 @@ input.button:hover {
 					<input type="text" name="name" maxlength="200" required="" id="id_name" class = "project" value={%if form.name.value %} {{form.name.value}} {% endif %}>
 				</td>
 				<td class="empty" width = 10%></td>
-				<td class="empty" width = 35%> 
+				<td class="empty" width = 35%> <br>
 					<table class="empty" align=center>
-						<tr class="empty" height = 50>
-							<td><b>Ответственный: </b></td><td>{{form.responsible_user}} {{form.responsible_user.errors}}</select></td>
+						<tr valign="top" class="empty" height = 50>
+							<td><b>Ответственный: </b></td><td> 
+							{% if user.is_staff %}
+								{{form.responsible_user}} {{form.responsible_user.errors}}
+							{% else %}
+								<input type=hidden name="responsible_user" value={{user.pk}} id="id_responsible_user"/>{{user}}
+							{% endif %}</td>
 						</tr>
-						<tr class="empty" height = 50>
+						<tr valign="top" class="empty" height = 50>
 							<td><b>Дата начала:</b></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
 						</tr>
-						<tr class="empty" height = 50>
+						<tr valign="top" class="empty" height = 50>
 							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
 						</tr>
 					</table>
