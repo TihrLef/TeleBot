@@ -8,10 +8,9 @@
 body {
 
 	font-family: Arial, Helvetica, sans-serif;
--moz-background-size: 100%; /* Firefox 3.6+ */
-    -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
-    -o-background-size: 100%; /* Opera 9.6+ */
-    background-size: 100%; /* Современные браузеры */
+background: -webkit-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: -moz-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
 }
 form {
 	padding: 20px;
@@ -27,7 +26,9 @@ form {
   	border-top: 8px solid #7f5feb;
   	border-bottom: 8px solid #7f5feb;
   	width: 400px;
-  	height: 650px;
+	overflow: auto; overflow-x: hidden; 
+  	height: 500px;
+	scrolling: auto;
   	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
 	
 }
@@ -40,9 +41,10 @@ button {
   width: 200px;
   height: 49px;
   font-size: 16px;
-  position: absolute;
+  position: relative;
   top: 90%;
-  left: 50%;
+  left: 180px;
+  
   transition: 0.3s;
   cursor: pointer;
 }
@@ -52,17 +54,19 @@ button:hover {
 }
 
 span.reg{
-	position: absolute;
-    top: 92%;
-    left: 16.5%
+	position:relative;
+    
+    left: 10%
 }
    .colortext {
      color: red; /* Красный цвет выделения */
    }
-@media screen and (max-width: 300px) {
+@media screen {
     span.reg{
     	display:block;
-        float:none;
+        float:left;
+        top:-35px;
+        
     }
 }
 
@@ -176,7 +180,7 @@ input:not([type="submit"]):active + .input-requirements {
 
 </style>
 </head>
-<body background = "{% static 'img/night.jpg'%}">
+<body >
 
 
 <form method="post" >
