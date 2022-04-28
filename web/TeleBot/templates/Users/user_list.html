@@ -101,15 +101,11 @@
 	<br>
 	<h1 align = center>Список пользователей</h1>
     {% if user_list %}
-<<<<<<< HEAD
 	<form method="post">
 	{% csrf_token %}
 	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить"/><input class="button" type="submit" name="action" value= "Удалить"/></p>
-	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
-=======
 	<table align = center width = 85%  id="myTable" class="table">
     <thead>
->>>>>>> main
 		<tr>
 			<th width = 25% onclick="sortTable(0)"  align=left>Nickname</th>
 			<th width = 15% onclick="sortTable(1)"  align=left>Имя</th>
@@ -119,8 +115,8 @@
 			<th width = 10% onclick="sortTable(5)">Число<br>проектов</th>
 			<th width = 10% onclick="sortTable(6)">Число<br>отчётов</th>
 		</tr> 
-       </thead>
-       <tbody>
+    </thead>
+    <tbody>
       {% for us in user_list %}
       
       <tr>
@@ -140,13 +136,10 @@
       </tbody>
 	</table>
 	<br><br>
-<<<<<<< HEAD
-	<h2 align = center> Всё! Больше человеков нет! </h2>
+	<h2 align = center> Всё! Больше пользователей нет! </h2>
 	</form>
-=======
 	<h3 align = center top="10px"> Всё! Больше человеков нет! </h3>
 	
->>>>>>> main
     {% else %}
       <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 

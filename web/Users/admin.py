@@ -14,7 +14,7 @@ class UserAdmin(admin.ModelAdmin):
     fieldsets = (
        (None, {'fields': ('username', 'password','telegram_id')}),
        ('Personal info', {'fields': ('first_name', 'last_name')}),
-		       ('Permissions', {'fields': ('is_active', 'is_staff')}),)
+		       ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),)
     add_fieldsets = (
         (None, {"fields": ( 'username','first_name','last_name','telegram_id',
 						    'password1', 'password2'),}),)
