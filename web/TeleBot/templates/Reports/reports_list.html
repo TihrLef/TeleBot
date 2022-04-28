@@ -3,10 +3,32 @@
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    {{form.user}}
-    {{form.project}}<br />
+    {% if user == 'admin' or avaialable_users%}
+    <tr>
+        <th><label for="id_user">User:</label></th>
+        <td>
+            <select name="user" id="id_user" multiple>
+                {% for auser in available_users%}
+                <option value="{{auser.telegram_id}}" selected>{{auser.username}}</option>
+                {% endfor%}
+            </select>
+        </td>
+    </tr>
+    {%endif%}
+    {% if projects%}
+    <tr>
+        <th><label for="id_project">Project:</label></th>
+        <td>
+            <select name="project" id="id_project" multiple>
+                {% for project in projects%}
+                <option value="{{project.id}}">{{project.name}}</option>
+                {%endfor%}
+            </select>
+        </td>
+    </tr><br />
     {{form.left_date}}<br />
     {{form.right_date}}<br />
+    {% endif%}
     <button type="submit">Filter</button>
 </form>
 <span>{{error_message}}</span>
