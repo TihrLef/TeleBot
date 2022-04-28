@@ -1,7 +1,8 @@
 from django.urls import path
 from django.urls import re_path
-from . import views
 import Projects.views
+from . import views
+
 from Projects.models import Project
 from Users.models import User
 from Reports.models import Report
@@ -12,8 +13,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 #Не трогайте эту строчку! Добавляйте новые ниже!
 urlpatterns = []
 
-urlpatterns += [re_path(r'^projects/create$',  views.project_add, name = "project-create")]
-urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', views.project_change, name = "project-change")]
+urlpatterns += [re_path(r'^projects/create$',  Projects.views.project_add, name = "project-create")]
+urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', Projects.views.project_change, name = "project-change")]
 urlpatterns += [re_path(r'^$', views.index, name='index'),]
 urlpatterns += [re_path(r'^users/$', views.user_list, name='users'),]
 urlpatterns += [re_path(r'^projects/$', Projects.views.project_list, name='projects'),]
