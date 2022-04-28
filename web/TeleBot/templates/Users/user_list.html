@@ -69,6 +69,22 @@
 	th.sorted[data-order="1"]::after {
 		content: "▲"
 	}
+	input.button {
+		border:0;
+		background: #21145e;
+		color: #dfdeee;
+		border-radius: 50px;
+		width: 200px;
+		height: 49px;
+		font-size: 16px;
+		transition: 0.3s;
+		cursor: pointer;
+		opacity: 0.85;
+	}
+
+	input.button:hover {
+		opacity: 0.7;
+	}
 	a.mya
 	{	font-family:Arial;
 		font-weight: bold;
@@ -83,18 +99,25 @@
 	}
 	</style>
 	<br>
-	<h1 align = center>Список человеков</h1>
-	<br>
+	<h1 align = center>Список пользователей</h1>
     {% if user_list %}
+<<<<<<< HEAD
+	<form method="post">
+	{% csrf_token %}
+	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить"/><input class="button" type="submit" name="action" value= "Удалить"/></p>
+	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+=======
 	<table align = center width = 85%  id="myTable" class="table">
     <thead>
+>>>>>>> main
 		<tr>
 			<th width = 25% onclick="sortTable(0)"  align=left>Nickname</th>
-			<th width = 20% onclick="sortTable(1)"  align=left>Имя</th>
+			<th width = 15% onclick="sortTable(1)"  align=left>Имя</th>
 			<th width = 20% onclick="sortTable(2)">Фамилия</th>
-			<th width = 15% onclick="sortTable(3)">Роль<br></th>
-			<th width = 10% onclick="sortTable(4)">Число<br>проектов</th>
-			<th width = 10% onclick="sortTable(5)">Число<br>отчётов</th>
+			<th width = 15% onclick="sortTable(3)">Роль</th>
+			<th width = 2% onclick="sortTable(4)"></th>
+			<th width = 10% onclick="sortTable(5)">Число<br>проектов</th>
+			<th width = 10% onclick="sortTable(6)">Число<br>отчётов</th>
 		</tr> 
        </thead>
        <tbody>
@@ -105,6 +128,11 @@
 		<td>				{{us.first_name}}</a></td>
 		<td align=center>	{{us.last_name}}</td>
 		<td align=center>	{{us.get_role}}</td>
+		<td align=center>  
+			{% if not us.is_active %}
+  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes">
+  			{% endif %}
+		</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
 		<td align=center>	{{us.report_set.all.count}}</td>
       </tr>
@@ -112,10 +140,15 @@
       </tbody>
 	</table>
 	<br><br>
+<<<<<<< HEAD
+	<h2 align = center> Всё! Больше человеков нет! </h2>
+	</form>
+=======
 	<h3 align = center top="10px"> Всё! Больше человеков нет! </h3>
 	
+>>>>>>> main
     {% else %}
-      <p>Новых пользователей нет</p>
+      <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
  
 {% endblock %}
