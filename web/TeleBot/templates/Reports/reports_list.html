@@ -3,7 +3,7 @@
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    {% if user == 'admin' or avaialable_users%}
+    {% if available_users%}
     <tr>
         <th><label for="id_user">User:</label></th>
         <td>
@@ -26,16 +26,21 @@
             </select>
         </td>
     </tr><br />
+    {% endif%}
     {{form.left_date}}<br />
     {{form.right_date}}<br />
-    {% endif%}
     <button type="submit">Filter</button>
 </form>
+{% if error_message%}
 <span>{{error_message}}</span>
+{% else%}
 <div style="margin-left:20px;margin-top:20px">
     <div style="margin-left:20px;margin-top:20px">
+        {% if reports%}
 		<a href="{% static pdfname %}">Download pdf</a>
+        {% endif%}
         <div class="container-fluid">
+            {% if reports%}
             <ul>
                 {% for report in reports %}
                 <li>
@@ -46,7 +51,11 @@
                 </li>
                 {% endfor %}
             </ul>
+            {% else%}
+            You don't have reports
+            {% endif%}
         </div>
     </div>
 </div>
+{% endif%}
 {% endblock %}
