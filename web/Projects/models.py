@@ -21,11 +21,9 @@ class Project(models.Model):
 		return reverse('project-change', args=[str(self.id)])
 
 	def status(self):
-		if date.today()< self.start_date:
+		if not self.start_date or date.today()< self.start_date:
 			return 'Не начался'
 		if self.end_date is None or self.start_date <= date.today() < self.end_date:
 			return 'В процессе'
 		if date.today() >= self.end_date:
 			return 'Завершился'
-        
- 
