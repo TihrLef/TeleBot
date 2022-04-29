@@ -13,22 +13,22 @@
 }
 .table thead th {
 	font-weight: bold;
-    position: sticky;
+    
 	text-align: left;
 	border: none;
     color: #e4f2f2;
 	padding: 10px 15px;
 	background: #21145e;
-	font-size: 18px;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
+	font-size: 22px;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
 }
 .table tbody td {
 	text-align: left;
-	border-left: 0.5px solid #ddd;
-	border-right: 0.5px solid #ddd;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
 	padding: 10px 15px;
-	font-size: 14px;
+	font-size: 21px;
 	vertical-align: top;
     color:#000;
 }
@@ -38,10 +38,10 @@
    }
 
 .table thead tr th:first-child, .table tbody tr td:first-child {
-	border-left: 1px solid #21145e;
+	border-left: 0px solid #21145e;
 }
 .table thead tr th:last-child, .table tbody tr td:last-child {
-	border-right: 1px solid #21145e;
+	border-right: 0px solid #21145e;
 }
 .table tbody tr:nth-child(even){
 	background: #f2f5fc;
@@ -69,20 +69,26 @@
 	th.sorted[data-order="1"]::after {
 		content: "▲"
 	}
-	input.button {
+    form{
+    display : inline-block;
+    
+    }
+	.button {
 		border:0;
 		background: #21145e;
 		color: #dfdeee;
 		border-radius: 50px;
 		width: 200px;
 		height: 49px;
-		font-size: 16px;
+		font-size: 20px;
 		transition: 0.3s;
 		cursor: pointer;
+        position:auto;
 		opacity: 0.85;
 	}
+    
 
-	input.button:hover {
+	.button:hover {
 		opacity: 0.7;
 	}
 	a.mya
@@ -103,7 +109,13 @@
     {% if user_list %}
 	<form method="post">
 	{% csrf_token %}
-	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить"/><input class="button" type="submit" name="action" value= "Удалить"/></p>
+    <form>
+    <p align = center> <input class="button" type="submit" name="action" value= "Удалить" id = 'cat2' style = 'display: none;'></p>
+    </form>
+    <form>
+	<p align = center><input class="button" type="submit" name="action" id = 'cat1' style = 'display: none;' value= "Подтвердить"> </p>
+    </form>
+    
 	<table align = center width = 85%  id="myTable" class="table">
     <thead>
 		<tr>
@@ -126,7 +138,7 @@
 		<td align=center>	{{us.get_role}}</td>
 		<td align=center>  
 			{% if not us.is_active %}
-  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes">
+  				<input class="form-check-input" type="checkbox" id = 'cb1' value={{us.telegram_id}} name="boxes" onchange = 'showOrHide("cb1", "cat1", "cat2");'/>
   			{% endif %}
 		</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
@@ -138,11 +150,23 @@
 	<br><br>
 	<h2 align = center> Всё! Больше пользователей нет! </h2>
 	</form>
-	<h3 align = center top="10px"> Всё! Больше человеков нет! </h3>
+	
 	
     {% else %}
       <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
+    <script type="text/javascript">
+  function showOrHide(cb, cat_1, cat_2) {
+    cb = document.getElementById(cb);
+    cat_1 = document.getElementById(cat_1);
+    cat_2 = document.getElementById(cat_2);
+    if (cb.checked) {
+    cat_1.style.display = "inline-block"; cat_2.style.display = "inline-block";
+    }
+    else {
+    cat_1.style.display = "none"; cat_2.style.display = "none";
+    }
+  }
+</script>
  
 {% endblock %}
-

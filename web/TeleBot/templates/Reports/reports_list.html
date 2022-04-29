@@ -1,11 +1,18 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
+<style>
+form{
+text-align:right;
+padding-top:100px;
+
+}
+</style>
 <form method="post">
     {% csrf_token %}
     {% if user == 'admin' or avaialable_users%}
     <tr>
-        <th><label for="id_user">User:</label></th>
+        <th><label for="id_user">Пользователь:</label></th>
         <td>
             <select name="user" id="id_user" multiple>
                 {% for auser in available_users%}
@@ -17,7 +24,7 @@
     {%endif%}
     {% if projects%}
     <tr>
-        <th><label for="id_project">Project:</label></th>
+        <th><label for="id_project">Проект:</label></th>
         <td>
             <select name="project" id="id_project" multiple>
                 {% for project in projects%}
