@@ -5,22 +5,63 @@
 {% endblock %}
 {% block content %}
   <style type="text/css">
+    .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    position: sticky;
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 18px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0.5px solid #ddd;
+	border-right: 0.5px solid #ddd;
+	padding: 10px 15px;
+	font-size: 14px;
+	vertical-align: top;
+    color:#000;
+}
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 1px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 1px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+/*
    TABLE {
-    border-collapse: collapse; /* Убираем двойные линии между ячейками */
-    border: 5px groove #ccc; /* Рамка вокруг таблицы */
+    border-collapse: collapse; 
+    border: 5px groove #ccc; 
    }
    TH {
-    background: #4b0082; /* Цвет фона */
-    color: #fffff0; /* Цвет текста */
+    background: #4b0082; 
+    color: #fffff0; 
 	
    }
    TD, TH {
     height: 55px;
-    padding: 6px; /* Поля вокруг содержимого ячеек */
-    border: 5px groove #ccc; /* Граница между ячейками */
+    padding: 6px; 
+    border: 5px groove #ccc; 
 	border-left:0;
 	border-right:0;
-   }
+   }*/
 	th.sorted[data-order="-1"]::after {
 		content: "▼"
 	}
@@ -37,7 +78,7 @@
 	}
 	a.mya:hover
 	{	font-family:Arial;
-		font-size:22px;
+		/*font-size:22px;*/
 		color:#0f93ff;
 		
 	}
@@ -48,7 +89,8 @@
 		<h4 align = center><big> <big>  </big></big>  <a class="mya" href = "{% url 'project-create'%}"> (добавить) </a> </h5>
 	{% endif %}
     {% if project_list and user.is_staff or user.project_set.all.count %}
-	<table align = center width = 85% cellspacing="0" border="2" id="myTable">
+	<table align = center width = 85% cellspacing="0" id="myTable" class="table">
+    <thead>
 		<tr>
 			<th width = 30% onclick="sortTable(0)" align=left>Название проекта        </th>
 			<th width = 19% onclick="sortTable(1)" align=left>Ответственный</th>
@@ -58,6 +100,8 @@
 			<th width = 9% onclick="sortTable(5)">Число<br>людей</th>
 			<th width = 9% onclick="sortTable(6)">Отчётов</th>
 		</tr> 
+    </thead>
+        <tbody>
       {% for project in project_list %}
 	  {% if user.is_staff or user in project.users.all %}
       <tr>
@@ -71,6 +115,7 @@
       </tr>
 	  {% endif %} 
       {% endfor %}
+      </tbody>
 	</table>
 	<br><br>
 	<h3 align = center> Всё! Больше проектов нет! </h2>
