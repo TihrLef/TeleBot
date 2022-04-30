@@ -42,6 +42,8 @@ margin-top: 100px;
     transition: all .2s ease-out;
   
 }
+.input1:placeholder{
+}
 
 </style>
 <h2 align="center" font-family="Arial" class="title">Редактирование профиля</h2>
@@ -61,15 +63,15 @@ margin-top: 100px;
                    
                     <div class="form-group" >
                         <label for="id_username">Username:</label>
-                            <input class="input1" id="id_username" name="username" placeholder={{user_form.username}}
+                            <input class="input1" id="id_username" name="username" placeholder="Введите логин" placeholder={{user_form.username}}
                     </div>
                     <div class="form-group">
                         <label>Имя:</label>
-						    <input class="input1" placeholder={{user_form.first_name}}
+						    <input class="input1" placeholder="Введите имя" placeholder={{user_form.first_name}} 
 					</div>
                     <div class="form-group">
                         <label >Фамилия:</label>
-						    <input class="input1" placeholder={{user_form.last_name}}
+						    <input class="input1" placeholder="Введите фамилию" placeholder={{user_form.last_name}}
 					</div>
 
             

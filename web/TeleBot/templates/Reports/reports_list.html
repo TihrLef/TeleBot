@@ -1,5 +1,6 @@
 {% extends "base_generic.html" %}
 {% load static %}
+<script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
 {% block content %}
 <style>
 .table {
@@ -43,6 +44,13 @@
 .table tbody tr:nth-child(even){
 	background: #f2f5fc;
 }
+th.sorted[data-order="-1"]::after {
+		content: "▼"
+	}
+
+	th.sorted[data-order="1"]::after {
+		content: "▲"
+	}
  .table_a {
     border: 0; /* Граница вокруг таблицы */
    	width:100%;
@@ -84,8 +92,8 @@ select::-ms-expand {
   grid-template-areas: "select";
   align-items: center;
   position: relative;
-  min-width: 15ch;
-  max-width: 30ch;
+  min-width: 18ch;
+  max-width: 32ch;
   border: 1px solid #000;
   border-radius: 0.25em;
   padding: 0.25em 0.5em;
@@ -120,7 +128,9 @@ select:focus + .focus {
 
 select[multiple] {
   padding-right: 0;
-  height: 6rem;
+  height: 12rem;
+  font-size: 16px;
+  
 }
 select[multiple] option {
   white-space: normal;
@@ -170,23 +180,15 @@ label {
     <tr>
     <th><label>Дата начала: </label></th>
     	<td>{{form.left_date}}<br /></td>
-        <th><label for="id_user">Пользователь:</label></th>
-        <td>
-        <div class="select select--multiple">
-            <select name="user" id="id_user" multiple>
-                {% for auser in available_users%}
-                <option value="{{auser.telegram_id}}">{{auser.username}}</option>
-                {% endfor%}
-            </select>
-         </div>
-        </td>
+        <th><label>Дата конца: </label></th>
+        <td>{{form.right_date}}<br /></td>
+        
     </tr>
     
     {%endif%}
     {% if projects%}
     <tr>
-    <th><label>Дата конца: </label></th>
-    <td>{{form.right_date}}<br /></td>
+   
         <th><label for="id_project">Проект:</label></th>
         <td>
         <div class="select select--multiple">
@@ -196,6 +198,16 @@ label {
                 {%endfor%}
             </select>
           </div>
+        </td>
+        <th><label for="id_user">Пользователь:</label></th>
+        <td>
+        <div class="select select--multiple">
+            <select name="user" id="id_user" multiple>
+                {% for auser in available_users%}
+                <option value="{{auser.telegram_id}}">{{auser.username}}</option>
+                {% endfor%}
+            </select>
+         </div>
         </td>
     </tr><br />
     {% endif%}

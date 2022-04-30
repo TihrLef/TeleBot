@@ -85,6 +85,7 @@ span.reg{
 	position: relative;
     top: 92%;
     left: 12.5%
+    
 }
    .colortext {
      color: red; /* Красный цвет выделения */
@@ -95,6 +96,7 @@ span.reg{
        float: none;
     }
     span.reg{
+        
     	display:block;
         float:none;
     }
@@ -109,21 +111,19 @@ span.reg{
  {% csrf_token %}
   <div class="container">
     <label for="header"><h2>Вход </h2></label>
-	
-	{% if form.non_field_errors %}
-        {% for error in form.non_field_errors %}
-            {% if error == "Эта учетная запись отключена." %}
-				Этот аккаунт ещё не подтверждён. Пожалуйста, дождитесь подтверждения
-			{% else %}
-				{{ error }}
-			{% endif %}
-        {% endfor %}
-	{% endif %}
-
-    <p><label for="id_username"><b>Логин</b></label>
+    {% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+{% if error == "Эта учетная запись отключена." %}
+<span class="colortext">Этот аккаунт ещё не подтверждён. Пожалуйста, дождитесь подтверждения</span>
+{% else %}
+{{ error }}
+{% endif %}
+{% endfor %}
+{% endif %}
+    <p><label for="id_username" ><b>Логин</b></label>
     <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
 
-    <p><label for="id_password"><b>Пароль</b></label>
+    <p><label for="id_password" ><b>Пароль</b></label>
     <input type="password" name="password" autocomplete ="current-password" required id = "id_password" placeholder="Введите пароль"></p>
        
     <button type="submit" id = "button1">Войти</button>
@@ -135,6 +135,7 @@ span.reg{
     
   </div>
   <div class="container" style="background-color:#f1f1f1">
+    <br>
     <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
   </div>
 </form>
