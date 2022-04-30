@@ -26,7 +26,13 @@ SECRET_KEY = 'django-insecure-)5d4z(l4=n@+z1!4jhsr9eq947i=r!^+%y(3+7+^5b8%@1%@l7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+#Настройки бота
+TOKEN = '5376241946:AAFp4NequCp5M3jeUFsfULhcuDIe40UuCqM'
+REF_TO_BOT = "https://t.me/ProjectManagerrBot"
+#Настройки сервера
 ALLOWED_HOSTS = ["nevalera.ru", "127.0.0.1"]
+REF_TO_SERVER = "https://nevalera.ru:8000"
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
 # Application definition
@@ -109,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -131,9 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "Users.User"
 
-LOGIN_REDIRECT_URL = "/TeleBot"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "/TeleBot/projects"
+LOGOUT_REDIRECT_URL = "/accounts/login"
 
-#Настройки бота
-TOKEN = '5376241946:AAFp4NequCp5M3jeUFsfULhcuDIe40UuCqM'
 

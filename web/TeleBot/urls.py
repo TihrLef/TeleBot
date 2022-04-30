@@ -1,5 +1,6 @@
 from django.urls import path
 from django.urls import re_path
+import django
 import Projects.views
 from . import views
 
@@ -9,10 +10,14 @@ from Reports.models import Report
 from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.static import serve
+from web import settings
+
 
 #Не трогайте эту строчку! Добавляйте новые ниже!
 urlpatterns = []
-
+#urlpatterns +=[re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),]
+urlpatterns += [re_path(r'^static/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.STATIC_ROOT, 'show_indexes': settings.DEBUG})]
 urlpatterns += [re_path(r'^projects/create$',  Projects.views.project_add, name = "project-create")]
 urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', Projects.views.project_change, name = "project-change")]
 urlpatterns += [re_path(r'^$', views.index, name='index'),]

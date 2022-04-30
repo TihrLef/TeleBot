@@ -54,11 +54,12 @@ input.button:hover {
 					<table class="empty" align=center>
 						<tr valign="top" class="empty" height = 50>
 							<td><b>Ответственный: </b></td><td> 
-							{% if user.is_staff %}
-								{{form.responsible_user}} {{form.responsible_user.errors}}
-							{% else %}
-								<input type=hidden name="responsible_user" value={{user.pk}} id="id_responsible_user"/>{{user}}
-							{% endif %}</td>
+								{% if user.is_staff %}
+									{{form.responsible_user}} {{form.responsible_user.errors}}
+								{% else %}
+									<input type=hidden name="responsible_user" value={{user.pk}} id="id_responsible_user"/>{{user}}
+								{% endif %}
+							</td>
 						</tr>
 						<tr valign="top" class="empty" height = 50>
 							<td><b>Дата начала:</b></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
@@ -66,9 +67,6 @@ input.button:hover {
 						<tr valign="top" class="empty" height = 50>
 							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
 						</tr>
-                        <tr class="empty" height="20px"><td></td>
-                        <td>{{form.end_date.errors}}</td>
-                        </tr>
 					</table>
 					<p align="right"><b>Список участников:</b><br><br> 
 					{{form.users}}{{form.users.errors}}

@@ -15,6 +15,7 @@ from _ast import Try
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from web.settings import REF_TO_BOT
 
 
 class SignUpView(CreateView):
@@ -38,7 +39,7 @@ def VerifiedTokenFunction(request):
 			error_message = "Введённое вами <i>нечто</i> токеном не является!"
 		except User.DoesNotExist:
 			error_message = "Пользователя с таким токеном не существует"
-	return render(request, 'registration/signup_reg.html', context = {"form": VerifiedToken(), "ermsg": error_message})    
+	return render(request, 'registration/signup_reg.html', context = {"form": VerifiedToken(), "ermsg": error_message, "REF_TO_BOT": REF_TO_BOT})    
    
 def user_change(request, pk):
     try:

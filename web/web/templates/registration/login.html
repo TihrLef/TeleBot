@@ -107,9 +107,7 @@ span.reg{
  {% csrf_token %}
   <div class="container">
     <label for="header"><h2>Вход </h2></label>
-    {% if form.errors %}
-  <label for="id_error"><span class="colortext">Неверные Логин или Пароль. Попробуйте снова.</span></label>
-{% endif %}
+  <label for="id_error"><span class="colortext">{{ form.errors }}</span></label>
     <p><label for="id_username"><b>Логин</b></label>
     <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
 
