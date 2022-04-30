@@ -180,7 +180,7 @@ def menu(update, context):
     query = update.callback_query
     query.answer()
 
-    if query.data != 'back_to_menu':
+    if query.data != 'back_to_menu' and query.data != 'ok':
 
         week = context.chat_data["week"] = Week.fromstring(query.data)
     else:
@@ -230,9 +230,11 @@ def add_request(update, context):
 
     week = context.chat_data["week"]
 
+    inline_button = [[InlineKeyboardButton("Отменить", callback_data="back_to_menu")]]
+    inline_markup = InlineKeyboardMarkup(inline_button)
     query.edit_message_text('Выбран проект: "' + project.name + '"'
                                                                 "\nНеделя: " + week_to_str(week) +
-                            "\nВведите текст отчёта")
+                            "\nВведите текст отчёта", reply_markup=inline_markup
 
     return ADDING_REP
 
@@ -251,14 +253,14 @@ def add_report(update, context):
         message=message
     )
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
 
     # TODO Проверка, что report успешно сохранился
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
                               f'Текст: {report.message}\n', reply_markup=inline_markup)
 
-    return ACTION_CHOICE
+    return TO_MENU
 
 
 def edit_request(update, context):
@@ -298,7 +300,7 @@ def editReport(update, context):
     report.message = message
     report.save()
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
 
     update.message.reply_text(f'Успешно изменён отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
@@ -346,7 +348,7 @@ def deleteReport(update, context):
     )
     report.delete()
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="back_to_menu")]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
 
     query.edit_message_text('Проект: "' + project.name + '"'
                             "\nНеделя: " + week_to_str(week) +
@@ -418,7 +420,8 @@ class Command(BaseCommand):
                     CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
-                    MessageHandler(Filters.text, add_report)
+                    MessageHandler(Filters.text, add_report),
+                    CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 EDITING_REP: [
                     MessageHandler(Filters.text, editReport),
@@ -429,7 +432,7 @@ class Command(BaseCommand):
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 TO_MENU: [
-                    CallbackQueryHandler(menu, pattern="^back_to_menu$")
+                    CallbackQueryHandler(menu, pattern="^ok")
                 ]
             },
             fallbacks=[CommandHandler("help", help)]
