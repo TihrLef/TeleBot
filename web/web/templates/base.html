@@ -25,7 +25,7 @@ body {
     -moz-transition: left 0.3s;
     transition: left 0.3s;
     background: #21145e;
-    z-index: 2000;
+    z-index: 2001;
 }
 /**
  * Кнопка переключения панели
@@ -331,6 +331,7 @@ nav {
   border-top: 2px solid #ECF1F2;
   text-align: right;
   position: fixed;
+  z-index:1999;
   top: 2px;
   width:100%;
   border-radius: 0px 0px 20px 0; 
@@ -372,7 +373,7 @@ nav ul {
   position: absolute;
   left: -1px;
   z-index: 5;
-  width: 240px;
+  width: 180px;
   border-bottom: 1px solid #ECF1F2;
   visibility: hidden;
   opacity: 0;  
@@ -394,7 +395,7 @@ nav ul {
 .submenu .submenu {
   position: absolute;
   top: 0;
-  left: calc(100% - 1px);
+  right: calc(100% - 1px);
   left: -webkit-calc(100% - 1px);
 }
 nav li:hover > .submenu {
@@ -433,9 +434,9 @@ nav li:hover > .submenu {
     padding: 16px;
     margin-left: 50px;
     font-size: 20px;
-    padding: 0px 10px;
+    padding: 5% 2% 5% 2%;
     margin-top: 50px;
-    height: 1000px;
+    /*height: 1000px;*/
 }
 
 @media screen and (max-height: 450px) {
@@ -451,44 +452,35 @@ nav li:hover > .submenu {
 
 <input type="checkbox" id="nav-toggle" hidden>
     
-<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="close1()">×</a>
-  <a href="{% url 'users'%}">Пользователи</a>
-  <a href="{% url 'projects'%}">Мои проекты</a>
-  <a href="{% url 'reports'%}">Мои отчеты</a>
-</div>
+
 <nav>
   <ul class="topmenu">
-  	<li><a href="">Контакты</a></li>
-    <li><a href="">Помощь</a></li>
-    <li><a href="" class="active">Профиль</a>
+  	
+    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">{{request.user.username}}</a>
       <ul class="submenu">
-        <li><a href="">Настройки</a>
-        <li><a href="{% url 'logout' %}">Выход</a></li>
-        
+        <li><a href="{{request.user.get_absolute_url}}">Профиль</a></li> 
+		{%if request.user.is_staff%}<li><a href="{% url 'adminka' %}">Админ-панель</a></li> {%endif%}
+        <li><a href="{% url 'logout' %}">Выход</a></li>        
       </ul>
     </li>
   
-    
-    
   </ul>
 </nav>
 
 
 <div class="navbar1">
-             
-  <a href="#wrong">Сообщить об ошибке</a>
+  <a href="#wrong"></a>
   
 </div>
 
 <div id="main">
   {% block content %} {% endblock %}
 </div>
-{%if user.is_staff%}
+{%if request.user.is_staff%}
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Администратор</a> 
+            <a href="{{request.user.get_absolute_url}}">Администратор</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Проекты</a>
@@ -501,15 +493,14 @@ nav li:hover > .submenu {
 	<nav class="nav">
         <label for="nav-toggle" class="nav-toggle" onclick></label>
         <h2 class="logo"> 
-            <a href="Profile">Пользователь</a> 
+            <a href="{{request.user.get_absolute_url}}">Пользователь</a> 
         </h2>
         <ul>
   			<li> <a href="{% url 'projects'%}">Мои проекты</a>
   			<li> <a href="{% url 'reports'%}">Мои отчеты</a>
-            <li> <a href="{% url 'users'%}">Пользователи</a>
         </ul>
     </nav>
-}
+
     
 {%endif%}
 

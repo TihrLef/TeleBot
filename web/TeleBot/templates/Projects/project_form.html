@@ -25,7 +25,7 @@ input.button {
 	transition: 0.3s;
 	cursor: pointer;
 	opacity: 0.85;
-	left:40%;
+    left:40%;
 	top: 70%;
     position:fixed;
 }
@@ -61,14 +61,21 @@ input.button:hover {
 								{% endif %}
 							</td>
 						</tr>
-						<tr valign="top" class="empty" height = 50>
-							<td><b>Дата начала:</b></td><td>{{form.start_date}}{{form.start_date.errors}}</td>
+                        <tr class="empty" height="30px"><td></td>
+                        <td>{{form.responsible_user.errors}}</td>
+                        </tr>
+						<tr class="empty" height ="45px">
+							<td><b>Дата начала:</b></td><td>{{form.start_date}}</td>
 						</tr>
-						<tr valign="top" class="empty" height = 50>
-							<td><b>Дата конца:</b></td><td>{{form.end_date}}{{form.end_date.errors}}</td>
+                        <tr class="empty" height="30px"><td></td>
+                        <td>{{form.start_date.errors}}</td>
+                        </tr>
+						<tr class="empty" height = "45px">
+							<td><b>Дата конца:</b></td><td>{{form.end_date}}</td>
+                            <td>{{form.end_date.errors}}</td>
 						</tr>
 					</table>
-					<p align="right"><b>Список участников:</b><br><br> 
+					<p align=center><strong>Список участников:</strong><br><br> 
 					{{form.users}}{{form.users.errors}}
 				</td>
 			</tr>

@@ -1,14 +1,14 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from .forms import MyUserCreationForm
+from .forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import MyUpdateUserForm
+from .forms import UpdateUserForm
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
-from .forms import MyUserCreationForm
-from .forms import MyUserCreationFormreg
+from .forms import UserCreationForm
+from .forms import UserCreationFormreg
 from .forms import VerifiedToken
 from .models import User
 from _ast import Try
@@ -19,7 +19,7 @@ from web.settings import REF_TO_BOT
 
 
 class SignUpView(CreateView):
-    form_class = MyUserCreationFormreg
+    form_class = UserCreationFormreg
     success_url = reverse_lazy("login")
     #template_name = "registration/signup.html"
     template_name = "registration/signup.html"
@@ -47,7 +47,7 @@ def user_change(request, pk):
     except User.DoesNotExist:
         error_message = "user deleted"
     if (request.method =='POST'):
-        form = MyUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         # Проверка валидности данных формы:
         if form.is_valid():
             user.username = form.cleaned_data['username']
@@ -58,7 +58,7 @@ def user_change(request, pk):
             return HttpResponseRedirect(reverse('login'))
     # Если это GET (или какой-либо ещё), создать форму по умолчанию.
     else:
-        form = MyUserCreationForm(instance=user)
+        form = UserCreationForm(instance=user)
     return render(request, 'registration/signup.html', {'form': form})  
   
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 
-class MyUserCreationForm(UserCreationForm):
+class UserCreationForm(UserCreationForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput)
     
@@ -22,11 +22,11 @@ class VerifiedToken(forms.Form):
     #telegram_id = forms.IntegerField()
 
 
-class MyUpdateUserForm(UserChangeForm):
+class UpdateUserForm(UserChangeForm):
     class Meta:
         model = User
-        fields = tuple(["username"])
-class MyUserCreationFormreg(UserCreationForm):
+        fields = tuple(["username", "first_name", "last_name"])
+class UserCreationFormreg(UserCreationForm):
     class Meta:
         model = User
         fields = ("telegram_id",)

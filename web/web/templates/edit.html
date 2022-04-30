@@ -1,39 +1,175 @@
 {% extends "base.html" %}
 {% block title %}Profile Page{% endblock title %}
 {% block content %}
-    {% if user_form.errors %}
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <div id="form_errors">
-                {% for key, value in user_form.errors.items %}
-                    <strong>{{ value }}</strong>
-                {% endfor %}
-            </div>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
-    <div class="form-content">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-row">
-                <div class="col-md-5">
-                    <div class="form-group">
-                        <label class="small mb-1">Username:</label>
-                            {{ user_form.username }}
+<style>
+.button {
+	border:0;
+	background: #21145e;
+	color: #dfdeee;
+	border-radius: 50px;
+	width: 200px;
+	height: 49px;
+	font-size: 16px;
+	transition: 0.3s;
+	cursor: pointer;
+	opacity: 0.85;
+    padding-top:auto;
+  margin: 0 auto;
+    position:relative;
+}
+title{
+margin-top: 100px;
+}
+.button:hover {
+	opacity: 0.7;
+}
+.input1{
+  display: inline-block;
+  margin: 20px auto;
+  background: white;
+  margin-top: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 14px 10px;
+  width: 320px;
+ 
+  color: black;
+  
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -ms-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
+  
+}
+
+</style>
+<h2 align="center" font-family="Arial" class="title">Редактирование профиля</h2>
+{% if user_form.errors %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <div id="form_errors">
+            {% for key, value in user_form.errors.items %}
+                <strong>{{ value }}</strong>
+            {% endfor %}
+        </div>     
+	</div>
+{% endif %}
+
+<div class="form-content">
+    <form method="post" >
+    {% csrf_token %}
+                   
+                    <div class="form-group" >
+                        <label for="id_username">Username:</label>
+                            <input class="input1" id="id_username" name="username" placeholder={{user_form.username}}
                     </div>
                     <div class="form-group">
-                        <label class="small mb-1">Имя:</label>
-						    {{ user_form.first_name }}
+                        <label>Имя:</label>
+						    <input class="input1" placeholder={{user_form.first_name}}
 					</div>
                     <div class="form-group">
-                        <label class="small mb-1">Фамилия:</label>
-						    {{ user_form.last_name }}
+                        <label >Фамилия:</label>
+						    <input class="input1" placeholder={{user_form.last_name}}
 					</div>
 
-            </div>
+            
             <br><br>
-            <button type="submit" class="btn btn-dark btn-lg">Сохранить изменения</button>
+
+            <p align="center"><button type="submit" class="button">Сохранить изменения</button></p>
         </form>
     </div>
+    <script>
+function CustomValidation() {
+	this.invalidities = [];
+	this.validityChecks = [];
+}
+
+CustomValidation.prototype = {
+	addInvalidity: function(message) {
+		this.invalidities.push(message);
+	},
+	getInvalidities: function() {
+		return this.invalidities.join('. \n');
+	},
+	checkValidity: function(input) {
+		for ( var i = 0; i < this.validityChecks.length; i++ ) {
+
+			var isInvalid = this.validityChecks[i].isInvalid(input);
+			if (isInvalid) {
+				this.addInvalidity(this.validityChecks[i].invalidityMessage);
+			} 
+
+			var requirementElement = this.validityChecks[i].element;
+			if (requirementElement) {
+				if (isInvalid) {
+					requirementElement.classList.add('invalid');
+					requirementElement.classList.remove('valid');
+				} else {
+					requirementElement.classList.remove('invalid');
+					requirementElement.classList.add('valid');
+				}
+
+			} // end if requirementElement
+		} // end for
+	}
+};
+
+
+var usernameValidityChecks = [
+	{
+		isInvalid: function(input) {
+			return input.value.length < 3;
+		},
+		invalidityMessage: 'Длина логина должна быть не меньше 3',
+		element: document.querySelector('label[for="id_username"] .input-requirements li:nth-child(1)')
+	},
+	{
+		isInvalid: function(input) {
+			var illegalCharacters = input.value.match(/[^a-zA-Z0-9]/g);
+			return illegalCharacters ? true : false;
+		},
+		invalidityMessage: 'Должен содержать только цифры и латинские буквы',
+		element: document.querySelector('label[for="id_username"] .input-requirements li:nth-child(2)')
+	}
+];
+
+
+
+function checkInput(input) {
+
+	input.CustomValidation.invalidities = [];
+	input.CustomValidation.checkValidity(input);
+
+	if ( input.CustomValidation.invalidities.length == 0 && input.value != '' ) {
+		input.setCustomValidity('');
+	} else {
+		var message = input.CustomValidation.getInvalidities();
+		input.setCustomValidity(message);
+	}
+}
+
+
+var usernameInput = document.getElementById('id_username');
+
+usernameInput.CustomValidation = new CustomValidation();
+usernameInput.CustomValidation.validityChecks = usernameValidityChecks;
+
+
+var inputs = document.querySelectorAll('input:not([type="submit"])');
+var submit = document.querySelector('input[type="submit"');
+
+for (var i = 0; i < inputs.length; i++) {
+	inputs[i].addEventListener('keyup', function() {
+		checkInput(this);
+	});
+}
+
+submit.addEventListener('click', function() {
+	for (var i = 0; i < inputs.length; i++) {
+		checkInput(inputs[i]);
+	}
+});
+
+
+</script>
 {% endblock content %}
