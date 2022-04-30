@@ -18,7 +18,6 @@ from web import settings
 urlpatterns = []
 #urlpatterns +=[re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),]
 urlpatterns += [re_path(r'^static/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.STATIC_ROOT, 'show_indexes': settings.DEBUG})]
-urlpatterns += [re_path(r'^projects/create$',  Projects.views.project_add, name = "project-create")]
 urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', Projects.views.project_change, name = "project-change")]
 urlpatterns += [re_path(r'^$', views.index, name='index'),]
 urlpatterns += [re_path(r'^users/$', views.user_list, name='users'),]

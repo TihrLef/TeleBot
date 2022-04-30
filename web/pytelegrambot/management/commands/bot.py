@@ -234,7 +234,7 @@ def add_request(update, context):
     inline_markup = InlineKeyboardMarkup(inline_button)
     query.edit_message_text('Выбран проект: "' + project.name + '"'
                                                                 "\nНеделя: " + week_to_str(week) +
-                            "\nВведите текст отчёта", reply_markup=inline_markup
+                            "\nВведите текст отчёта", reply_markup=inline_markup)
 
     return ADDING_REP
 
@@ -253,7 +253,7 @@ def add_report(update, context):
         message=message
     )
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok")]])
 
     # TODO Проверка, что report успешно сохранился
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
@@ -300,7 +300,7 @@ def editReport(update, context):
     report.message = message
     report.save()
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok")]])
 
     update.message.reply_text(f'Успешно изменён отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
@@ -348,7 +348,7 @@ def deleteReport(update, context):
     )
     report.delete()
 
-    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok)]])
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok")]])
 
     query.edit_message_text('Проект: "' + project.name + '"'
                             "\nНеделя: " + week_to_str(week) +

@@ -7,6 +7,7 @@ from Users.models import User
 from Reports.models import Report
 from .forms import FilterForm
 from fpdf import FPDF
+from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -25,6 +26,8 @@ class OwnerOnlyMixin(AccessMixin):
         if request.user.telegram_id != user_page.telegram_id and not request.user.is_staff :
             return self.handle_no_permission()
         return super().dispatch(request, pk, *args, **kwargs)
+	
+
 
 import web.urls
 

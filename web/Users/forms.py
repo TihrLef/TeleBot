@@ -26,6 +26,7 @@ class UpdateUserForm(UserChangeForm):
     class Meta:
         model = User
         fields = tuple(["username", "first_name", "last_name"])
+
 class UserCreationFormreg(UserCreationForm):
     class Meta:
         model = User

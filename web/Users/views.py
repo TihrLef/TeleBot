@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from web.settings import REF_TO_BOT
+from django.http import Http404
 
 
 class SignUpView(CreateView):
