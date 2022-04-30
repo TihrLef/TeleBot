@@ -12,10 +12,19 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 import tempfile
 from tempfile import TemporaryDirectory as td
-
+from django.contrib.auth.mixins import AccessMixin
 from threading import Thread
 import time
 from django.contrib.admin.views.decorators import staff_member_required
+
+class OwnerOnlyMixin(AccessMixin):
+    def handle_no_permission(self):
+        return super().handle_no_permission()
+    def dispatch(self, request, pk, *args, **kwargs):
+        user_page = self.get_object()
+        if request.user.telegram_id != user_page.telegram_id and not request.user.is_staff :
+            return self.handle_no_permission()
+        return super().dispatch(request, pk, *args, **kwargs)
 
 import web.urls
 
@@ -126,7 +135,7 @@ def report(request):
 class UsersListView(generic.ListView):
 	model = User
 
-class UserDetailView(generic.DetailView):
+class UserDetailView(OwnerOnlyMixin, generic.DetailView):
 	model = User
 
 @user_passes_test(User.is_verified)	
