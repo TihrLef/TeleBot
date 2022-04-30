@@ -107,7 +107,17 @@ span.reg{
  {% csrf_token %}
   <div class="container">
     <label for="header"><h2>Вход </h2></label>
-  <label for="id_error"><span class="colortext">{{ form.errors }}</span></label>
+	
+	{% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            {% if error == "Эта учетная запись отключена." %}
+				Этот аккаунт ещё не подтверждён. Пожалуйста, дождитесь подтверждения
+			{% else %}
+				{{ error }}
+			{% endif %}
+        {% endfor %}
+	{% endif %}
+
     <p><label for="id_username"><b>Логин</b></label>
     <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
 
