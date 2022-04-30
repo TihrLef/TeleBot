@@ -9,6 +9,8 @@ from Users.views import VerifiedTokenFunction
 from Users.views import SignUpView, ChangePasswordView, profile_edit
 from Users.views import user_change
 from django.urls import re_path
+from django.views.static import serve
+from . import settings
 
 
 urlpatterns = []

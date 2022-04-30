@@ -3,11 +3,22 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import reverse
-
+from django.contrib.auth.mixins import AccessMixin
 from TeleBot import urls
 from Projects.models import Project
 from Users.models import User
 from .forms import ProjectModelForm
+from django.views import generic
+
+class ProjectAccessMixin(AccessMixin):
+    def handle_no_permission(self):
+        return super().handle_no_permission()
+    def dispatch(self, request, pk, *args, **kwargs):
+        project_page = self.get_object()
+        if (project_page not in request.user.project_set.all()) and not request.user.is_staff :
+            return self.handle_no_permission()
+        return super().dispatch(request, pk, *args, **kwargs)
+
 
 
 @user_passes_test(User.is_verified)
@@ -18,21 +29,23 @@ def project_list(request):
 		'Projects/project_list.html',
 		context = {'project_list': project_list})
 		
-@user_passes_test(User.is_verified)	
-def project_detail(request,pk):
-	try:
-		project=Project.objects.get(pk=pk)
-	except Project.DoesNotExist:
-		raise Http404("Такого проекта не существует!")
-	if request.user.is_staff or request.user == project.responsible_user:
-		reports = project.report_set.all()
-	else:
-		reports = project.report_set.all().filter(user=request.user)
-	return render(
-		request,
-		'Projects/project_detail.html',
-		context={'project':project, 'reports':reports}
-	)
+class ProjectDetailView(ProjectAccessMixin, generic.DetailView):
+	model = Project
+	@user_passes_test(User.is_verified)	
+	def project_detail(request,pk):
+		try:
+			project=Project.objects.get(pk=pk)
+		except Project.DoesNotExist:
+			raise Http404("Такого проекта не существует!")
+		if request.user.is_staff or request.user == project.responsible_user:
+			reports = project.report_set.all()
+		else:
+			reports = project.report_set.all().filter(user=request.user)
+		return render(
+			request,
+			'Projects/project_detail.html',
+			context={'project':project, 'reports':reports}
+		)
 	
 @staff_member_required
 def project_add(request):

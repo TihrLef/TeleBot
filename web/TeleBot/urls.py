@@ -18,7 +18,7 @@ urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', Projects.views.project
 urlpatterns += [re_path(r'^$', views.index, name='index'),]
 urlpatterns += [re_path(r'^users/$', views.user_list, name='users'),]
 urlpatterns += [re_path(r'^projects/$', Projects.views.project_list, name='projects'),]
-urlpatterns += [re_path(r'^project/(?P<pk>\d+)$', Projects.views.project_detail, name='project-detail'),]
+urlpatterns += [re_path(r'^project/(?P<pk>\d+)$', Projects.views.ProjectDetailView.as_view(), name='project-detail'),]
 urlpatterns += [re_path("success",  user_passes_test(User.is_verified)(TemplateView.as_view(template_name="success.html")), name="success"),]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)$',  user_passes_test(User.is_verified)(views.UserDetailView.as_view()), name='user-detail') ]
 urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]

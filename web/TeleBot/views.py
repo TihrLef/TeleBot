@@ -25,6 +25,8 @@ class OwnerOnlyMixin(AccessMixin):
         if request.user.telegram_id != user_page.telegram_id and not request.user.is_staff :
             return self.handle_no_permission()
         return super().dispatch(request, pk, *args, **kwargs)
+	
+
 
 import web.urls
 

@@ -1,4 +1,4 @@
-from datetime import date
+ from datetime import date
 
 from Projects.models import Project
 from Reports.models import Report
