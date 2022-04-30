@@ -1,3 +1,4 @@
+
 {% extends "base_generic.html" %}
 {% block head %}
 {% load static %}
@@ -5,7 +6,7 @@
 {% endblock %}
 {% block content %}
   <style type="text/css">
-  .table {
+ .table {
 	width: 100%;
 	border: none;
 	border-collapse: collapse; 
@@ -69,26 +70,20 @@
 	th.sorted[data-order="1"]::after {
 		content: "▲"
 	}
-    form{
-    display : inline-block;
-    
-    }
-	.button {
+	input.button {
 		border:0;
 		background: #21145e;
 		color: #dfdeee;
 		border-radius: 50px;
 		width: 200px;
 		height: 49px;
-		font-size: 20px;
+		font-size: 16px;
 		transition: 0.3s;
 		cursor: pointer;
-        position:auto;
 		opacity: 0.85;
 	}
-    
 
-	.button:hover {
+	input.button:hover {
 		opacity: 0.7;
 	}
 	a.mya
@@ -109,13 +104,7 @@
     {% if user_list %}
 	<form method="post">
 	{% csrf_token %}
-    <form>
-    <p align = center> <input class="button" type="submit" name="action" value= "Удалить" id = 'cat2' style = 'display: none;'></p>
-    </form>
-    <form>
-	<p align = center><input class="button" type="submit" name="action" id = 'cat1' style = 'display: none;' value= "Подтвердить"> </p>
-    </form>
-    
+	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить" id = 'cat1' style = 'display: none;'/><input class="button" type="submit" name="action" value= "Удалить" id = 'cat2' style = 'display: none;'/></p>
 	<table align = center width = 85%  id="myTable" class="table">
     <thead>
 		<tr>
@@ -138,7 +127,7 @@
 		<td align=center>	{{us.get_role}}</td>
 		<td align=center>  
 			{% if not us.is_active %}
-  				<input class="form-check-input" type="checkbox" id = 'cb1' value={{us.telegram_id}} name="boxes" onchange = 'showOrHide("cb1", "cat1", "cat2");'/>
+  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb' onchange = 'showOrHide("sb", "cat1", "cat2");'/>
   			{% endif %}
 		</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
@@ -156,16 +145,12 @@
       <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
     <script type="text/javascript">
-  function showOrHide(cb, cat_1, cat_2) {
-    cb = document.getElementById(cb);
+  function showOrHide(bloggood, cat_1, cat_2) {
+    bloggood = document.getElementById(bloggood);
     cat_1 = document.getElementById(cat_1);
     cat_2 = document.getElementById(cat_2);
-    if (cb.checked) {
-    cat_1.style.display = "inline-block"; cat_2.style.display = "inline-block";
-    }
-    else {
-    cat_1.style.display = "none"; cat_2.style.display = "none";
-    }
+    if (bloggood.checked) {cat_1.style.display = "inline-block";cat_2.style.display = "inline-block";}
+    else {cat_1.style.display = "none"; cat_2.style.display = "none";}
   }
 </script>
  

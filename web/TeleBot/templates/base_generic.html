@@ -331,6 +331,7 @@ nav {
   border-top: 2px solid #ECF1F2;
   text-align: right;
   position: fixed;
+  z-index:1999;
   top: 2px;
   width:100%;
   border-radius: 0px 0px 20px 0; 
@@ -372,7 +373,7 @@ nav ul {
   position: absolute;
   left: -1px;
   z-index: 5;
-  width: 140px;
+  width: 180px;
   border-bottom: 1px solid #ECF1F2;
   visibility: hidden;
   opacity: 0;  
@@ -394,7 +395,7 @@ nav ul {
 .submenu .submenu {
   position: absolute;
   top: 0;
-  left: calc(100% - 1px);
+  right: calc(100% - 1px);
   left: -webkit-calc(100% - 1px);
 }
 nav li:hover > .submenu {

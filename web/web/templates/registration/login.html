@@ -27,6 +27,8 @@ form {
   	border-bottom: 8px solid #7f5feb;
   	width: 400px;
   	height: 450px;
+	overflow: auto; overflow-x: hidden; 
+	scrolling: auto;
   	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
 	
 }
@@ -57,9 +59,9 @@ button {
   width: 340px;
   height: 49px;
   font-size: 16px;
-  position: absolute;
+  position: relative;
   top: 80%;
-  left: 13%;
+  left: 8%;
   transition: 0.3s;
   cursor: pointer;
 }
@@ -80,9 +82,9 @@ span.psw {
    
 }
 span.reg{
-	position: absolute;
+	position: relative;
     top: 92%;
-    left: 16.5%
+    left: 12.5%
 }
    .colortext {
      color: red; /* Красный цвет выделения */
@@ -118,9 +120,7 @@ span.reg{
        
     <button type="submit" id = "button1">Войти</button>
     
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Запомнить меня
-    </label>
+    
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
