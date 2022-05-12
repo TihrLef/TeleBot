@@ -48,7 +48,7 @@ def user_change(request, pk):
     except User.DoesNotExist:
         error_message = "user deleted"
     if (request.method =='POST'):
-        form = UserCreationForm(request.POST)
+        form = UserCreationForm(request.POST, instance=user)
         # Проверка валидности данных формы:
         if form.is_valid():
             user.username = form.cleaned_data['username']

@@ -104,7 +104,7 @@
     {% if user_list %}
 	<form method="post">
 	{% csrf_token %}
-	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить" id = 'cat1' style = 'display: none;'/><input class="button" type="submit" name="action" value= "Удалить" id = 'cat2' style = 'display: none;'/></p>
+	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить" id = 'cat1'/><input class="button" type="submit" name="action" value= "Удалить" id = 'cat2'/></p>
 	<table align = center width = 85%  id="myTable" class="table">
     <thead>
 		<tr>
@@ -127,7 +127,7 @@
 		<td align=center>	{{us.get_role}}</td>
 		<td align=center>  
 			{% if not us.is_active %}
-  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb' onchange = 'showOrHide("sb", "cat1", "cat2");'/>
+  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb'/>
   			{% endif %}
 		</td>
 		<td align=center>	{{us.project_set.all.count}}</td>
@@ -137,20 +137,11 @@
       </tbody>
 	</table>
 	<br><br>
-	<h2 align = center> Всё! Больше пользователей нет! </h2>
 	</form>
 	
     {% else %}
       <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
-    <script type="text/javascript">
-  function showOrHide(bloggood, cat_1, cat_2) {
-    bloggood = document.getElementById(bloggood);
-    cat_1 = document.getElementById(cat_1);
-    cat_2 = document.getElementById(cat_2);
-    if (bloggood.checked) {cat_1.style.display = "inline-block";cat_2.style.display = "inline-block";}
-    else {cat_1.style.display = "none"; cat_2.style.display = "none";}
-  }
-</script>
+
  
 {% endblock %}
