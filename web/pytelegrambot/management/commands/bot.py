@@ -224,6 +224,7 @@ def menu(update, context):
 
 
 def add_request(update, context):
+    context.chat_data["cancel_msg"] = update.effective_message
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
@@ -240,6 +241,9 @@ def add_request(update, context):
 
 
 def add_report(update, context):
+    msg = context.chat_data["cancel_msg"]
+    context.bot.edit_message_text(text=msg.text, chat_id=msg.chat_id, message_id=msg.message_id)
+
     project = context.chat_data["project"]
     user = context.chat_data["user"]
     week = context.chat_data["week"]
@@ -264,6 +268,7 @@ def add_report(update, context):
 
 
 def edit_request(update, context):
+    context.chat_data["cancel_msg"] = update.effective_message
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
@@ -286,6 +291,9 @@ def edit_request(update, context):
 
 
 def editReport(update, context):
+    msg = context.chat_data["cancel_msg"]
+    context.bot.edit_message_text(text=msg.text, chat_id=msg.chat_id, message_id=msg.message_id)
+
     project = context.chat_data["project"]
     user = context.chat_data["user"]
     week = context.chat_data["week"]
