@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Новая вкладка</title>
+{% load static %}   
+<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+<title>Project manager</title>
 <style>
-{% load static %}
+
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic);
 *{box-sizing: border-box;}
 body {

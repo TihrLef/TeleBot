@@ -174,7 +174,7 @@ def user_list(request):
 					pass
 	return render(request, 'Users/user_list.html', {"user_list" : user_list})
 
-
+@user_passes_test(User.is_verified)
 def send_contact(request):
      name = request.POST.get("name")
      email = request.POST.get("email")
