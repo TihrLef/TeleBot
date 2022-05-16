@@ -48,7 +48,8 @@ INSTALLED_APPS = [
 	'Reports',
 	'TeleBot.apps.TelebotConfig',
 	'Users.apps.UsersConfig',
-    'pytelegrambot'
+    'pytelegrambot',
+	'anymail'
 ]
 
 MIDDLEWARE = [
@@ -139,5 +140,15 @@ AUTH_USER_MODEL = "Users.User"
 
 LOGIN_REDIRECT_URL = "/TeleBot/projects"
 LOGOUT_REDIRECT_URL = "/accounts/login"
+
+
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+
+ANYMAIL = {
+   "MAILGUN_API_KEY": "b37a5cb1202ca8026f0d247f6f6bb647-5e7fba0f-b4c988be",
+   "MAILGUN_API_URL": "https://api.mailgun.net/v3",
+   "MAILGUN_SENDER_DOMAIN": "sandbox9449f0cbc5174ca18f2e4f4fcac87cb2.mailgun.org",
+}
+ 
 
 

@@ -10,6 +10,7 @@ from fpdf import FPDF
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
+from django.core.mail import send_mail
 from django.urls import reverse
 import tempfile
 from tempfile import TemporaryDirectory as td
@@ -172,3 +173,22 @@ def user_list(request):
 				except User.DoesNotExist:
 					pass
 	return render(request, 'Users/user_list.html', {"user_list" : user_list})
+
+
+def send_contact(request):
+     name = request.POST.get("name")
+     email = request.POST.get("email")
+     subject = request.POST.get("subject")
+     message = request.POST.get("message")
+     send_mail("Новое сообщение", message, email, ["codenamedelta91@gmail.com"],
+    html_message="<html> Новое сообщение с сайта"
+      "Имя:" + name + '\n'
+      "Email почта:" + email + '\n'
+      "Тема:" + subject + '\n'
+       "Сообщение:" + message + "\n"
+   "</html>")
+     request.session['sendmessage'] = "Сообщение было отправлено"
+     return HttpResponseRedirect('contact-page')
+
+def contact_page(request):
+    return render(request, "contact.html")
