@@ -12,6 +12,7 @@ from telegram.utils.request import Request
 
 WEEK_SELECTION, ACTION_CHOICE, PROCESSING_ACTION, ADDING_REP, EDITING_REP, DELETING_REP, TO_MENU = range(7)
 USER_NOT_CONFIRMED, USER_CONFIRMED = range(2)
+RESET_CONFIRMATION, RESET_CONFIRMED = range(2)
 
 
 def help(update, _):
@@ -21,13 +22,29 @@ def help(update, _):
 
     return ConversationHandler.END
 
+def reset_token_confirmation(update, _):
+    query = update.callback_query
+
+    inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok"), InlineKeyboardButton("Отмена", callback_data="cancel")]])
+
+    query.edit_message_text("Если у вас украли токен и зарегистрировались по нему, вы можете восстановить доступ перевыпустив токен."
+                              "\n\n ВНИМАНИЕ!!! ПОСЛЕ ЭТОГО ДЕЙСТВИЯ ВСЯ ИНФОРМАЦИЯ О ВАШЕМ АККАУНТЕ БУДЕТ УДАЛЕНА, ВКЛЮЧАЯ ОТЧЕТЫ И ПРОЕКТЫ!"
+                              "\n Подтвердите действие:", reply_markup=inline_markup)
+    #TODO переход в новое состояние
+
+def reset_token(update, _):
+    # TODO удаление пользователя
+    return
+
+
+
+
 
 def start(update, _):
     telegram_user = update.message.from_user
 
     try:
         user = User.objects.get(telegram_id=telegram_user.id)  # Finding user
-
         if user.is_active:
             return user_confirmed(update, _)
 
@@ -396,6 +413,16 @@ class Command(BaseCommand):
         bot_dispatchder = bot_updater.dispatcher
 
         help_command = CommandHandler("help", help)
+        reset_command = CommandHandler("reset_token", reset_token)
+
+        reset_conversation = ConversationHandler(
+            entry_points=[CommandHandler("reset_token", reset_token)],
+            states={
+                RESET_CONFIRMATION: [MessageHandler(Filters.text, reset_token_confirmation, pass_user_data=True)],
+                RESET_CONFIRMED: [MessageHandler(Filters.text, reset_token, pass_user_data=True)]
+            },
+            fallbacks=[CommandHandler("help", help)]
+        )
 
         user_identification = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
@@ -448,6 +475,7 @@ class Command(BaseCommand):
 
         # Conversations
         bot_dispatchder.add_handler(help_command)
+        bot_dispatchder.add_handler(reset_command)
         bot_dispatchder.add_handler(user_identification)
         bot_dispatchder.add_handler(conversation_with_user)
 
