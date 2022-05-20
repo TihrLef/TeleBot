@@ -31,8 +31,8 @@ DEBUG = True
 TOKEN = '5376241946:AAFp4NequCp5M3jeUFsfULhcuDIe40UuCqM'
 REF_TO_BOT = "https://t.me/ProjectManagerrBot"
 #Настройки сервера
-ALLOWED_HOSTS = ["nevalera.ru", "127.0.0.1"]
-REF_TO_SERVER = "https://nevalera.ru:8000"
+ALLOWED_HOSTS = ["telebotreport.ru", "127.0.0.1"]
+REF_TO_SERVER = "https://telebotreport.ru:8000"
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
 # Application definition
@@ -145,9 +145,9 @@ LOGOUT_REDIRECT_URL = "/accounts/login"
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 
 ANYMAIL = {
-   "MAILGUN_API_KEY": "b37a5cb1202ca8026f0d247f6f6bb647-5e7fba0f-b4c988be",
+   "MAILGUN_API_KEY": "secret ;)",
    "MAILGUN_API_URL": "https://api.mailgun.net/v3",
-   "MAILGUN_SENDER_DOMAIN": "sandbox9449f0cbc5174ca18f2e4f4fcac87cb2.mailgun.org",
+   "MAILGUN_SENDER_DOMAIN": "also secret ;),
 }
  
 
