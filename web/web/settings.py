@@ -147,7 +147,7 @@ EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 ANYMAIL = {
    "MAILGUN_API_KEY": "secret ;)",
    "MAILGUN_API_URL": "https://api.mailgun.net/v3",
-   "MAILGUN_SENDER_DOMAIN": "also secret ;),
+   "MAILGUN_SENDER_DOMAIN": "also secret ;)",
 }
  
 

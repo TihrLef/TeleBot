@@ -19,6 +19,9 @@ from threading import Thread
 import time
 from django.contrib.admin.views.decorators import staff_member_required
 
+
+from django.db.models import Q
+
 class OwnerOnlyMixin(AccessMixin):
     def handle_no_permission(self):
         return super().handle_no_permission()
@@ -59,23 +62,24 @@ def index(request):
 	)
 
 def available_reports(request):
-	return list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
-									str(request.user) == str(rep.project.responsible_user)), 
-					   Report.objects.order_by("project")))
+	if(request.user.is_staff):
+		return Report.objects.all()
+	return Report.objects.filter(Q(user__exact = request.user.telegram_id) | 
+							  Q(project__responsible_user__telegram_id__exact = request.user.telegram_id)).order_by('project')
 
 def available_projects(request):
 	if request.user.is_staff:
-		return list(Project.objects.all())
-	return list(request.user.project_set.all())
+		return Project.objects.all()
+	return request.user.project_set.all()
 
 def available_users(request):
 	if request.user.is_staff:
-		return list(User.objects.all())
+		return User.objects.all()
 	users = []
 	for project in available_projects(request):
-			if(str(request.user) == str(project.responsible_user)):
+			if(request.user.telegram_id == project.responsible_user.telegram_id):
 				users += [user for user in project.users.all()]
-	return list(set(users))
+	return QuerySet(set(users))
 
 def make_pdf(request, reports, path):
 	temp = TempDir()
@@ -102,16 +106,19 @@ def report(request):
 	reports = available_reports(request)
 	error_message = ''
 	
+	form = FilterForm()
 	if request.method == 'POST':
-		data = FilterForm(request.POST)
-		if(data.is_valid()):
-			data = data.cleaned_data
-			print(data)
-			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
-									  (not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
-									  (not data['left_date'] or data['left_date'] <= rep.report_date) and\
-									  (not data['right_date'] or rep.report_date <= data['right_date'])
-			reports = list(filter(FaceControl, reports))
+		form = FilterForm(request.POST)
+		if(form.is_valid()):
+			data = form.cleaned_data
+			if(data['project']): 
+				reports = reports.filter(project__id__in = data['project'])
+			if(data['user']): 
+				reports = reports.filter(user__telegram_id__in = data['user'])
+			if(data['left_date']):
+				reports = reports.filter(report_date__rte = data['left_date'])
+			if(data['right_date']):
+				reports = reports.filter(report_date__lte = data['right_date'])
 		else:
 			error_message = 'incorrect input data'
 			reports = []
@@ -125,6 +132,7 @@ def report(request):
 		users.clear()
 	if len(projects) == 1:
 		projects.clear()
+	print(form)
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -132,7 +140,7 @@ def report(request):
 			 'projects': projects,
 			 'available_users': users,
 			 'error_message': error_message,
-			 'form': FilterForm(request.POST) if request.method == 'POST' else FilterForm(),
+			 'form': form,
 			 'pdfname': name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"})
 	
 
