@@ -116,7 +116,7 @@ def report(request):
 			if(data['user']): 
 				reports = reports.filter(user__telegram_id__in = data['user'])
 			if(data['left_date']):
-				reports = reports.filter(report_date__rte = data['left_date'])
+				reports = reports.exclude(report_date__lte = data['left_date'])
 			if(data['right_date']):
 				reports = reports.filter(report_date__lte = data['right_date'])
 		else:
