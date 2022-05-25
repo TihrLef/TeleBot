@@ -49,7 +49,7 @@ button:hover, a:hover {
 }
 </style>
 
-
+	{% csrf_token %}
 {%if request.user == user%}
 <h2 style="text-align:center" class="title">Страница пользователя</h2>
 {%endif%}
@@ -65,7 +65,11 @@ button:hover, a:hover {
         <a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Изменить пароль</a>
         <a href="{%url 'edit'%}" class="btn btn-primary">Редактировать профиль</a>
       </div>
-	{%endif%}
+{%endif%}
+{%if request.user.is_staff%}
+<a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Архивировать</a>
+<input class="button" type="submit" name="action" value= "Удалить" />
+{%endif%}
 	
 	<p  align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
     <table class="table">
