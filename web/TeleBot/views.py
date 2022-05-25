@@ -35,7 +35,7 @@ class OwnerOnlyMixin(AccessMixin):
 
 
 import web.urls
-
+"""
 class TempDir:
 	def __init__(self):
 		self.name = None
@@ -51,7 +51,7 @@ class TempDir:
 		temp = td(prefix = prefix)
 		self.name = str(temp.name)
 		time.sleep(lifetime)
-
+"""
 # Ответ на вызов основного сайта
 # Адрес: /TeleBot
 @user_passes_test(User.is_verified)
@@ -83,7 +83,7 @@ def available_users(request):
 	return QuerySet(set(users))
 
 def make_pdf(request, reports, path):
-	name = r"~/TeleBot/web/TeleBot/static/pdf_folder"
+	os.makedirs(path, exist_ok = True)
 	pdf = FPDF()
 	pdf.add_page()
 	pdf.add_font("Sans", style = "", fname = os.path.join(settings.BASE_DIR, "TeleBot/static/Fonts/OpenSans/OpenSans-Regular.ttf"), uni=True)
@@ -97,8 +97,7 @@ def make_pdf(request, reports, path):
 		pdf.set_font("Sans", style = "", size = 12)
 		pdf.multi_cell(w = 200, h = 8, txt = report.message, align = "L", ln = 1)
 		pdf.multi_cell(w = 200, h = 10, txt = '\n', align = "L", ln = 1)
-		pdf.output(name +  r"/simple_demo" + str(request.user) + ".pdf", path)
-	return name
+	pdf.output(path + r"/" + str(request.user) + ".pdf", "F")
 
 @user_passes_test(User.is_verified)
 def report(request):
@@ -122,8 +121,8 @@ def report(request):
 			error_message = 'incorrect input data'
 			reports = []
 
-	path = r"~/TeleBot/web/TeleBot/static/pdf_folder"
-	name = make_pdf(request, reports, path)
+	path = r"TeleBot/static/pdf_folder"
+	make_pdf(request, reports, path)
 
 	projects = available_projects(request)
 	users = available_users(request)
@@ -140,7 +139,7 @@ def report(request):
 			 'available_users': users,
 			 'error_message': error_message,
 			 'form': form,
-			 'pdfname': name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"})
+			 'pdfname': r"pdf_folder/" + str(request.user) + ".pdf"})
 
 
 class UsersListView(generic.ListView):
