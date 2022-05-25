@@ -10,8 +10,6 @@ from django.urls import reverse
 
 
 class User(AbstractUser):
-    personal_token = models.UUIDField(default=uuid.uuid4,
-                                      help_text="Unique ID for this particular book across whole library")
     telegram_id = models.BigIntegerField(primary_key=True, unique=True)
 
     def __str__(self):

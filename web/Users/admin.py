@@ -18,7 +18,7 @@ class UserAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {"fields": ( 'username','first_name','last_name','telegram_id',
 						    'password1', 'password2'),}),)
-    list_display = ["username", "telegram_id", "first_name", "last_name","is_verified", "personal_token"]
+    list_display = ["username", "telegram_id", "first_name", "last_name","is_verified"]
 
 admin.site.register(User, UserAdmin)
 
