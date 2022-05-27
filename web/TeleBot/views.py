@@ -10,7 +10,6 @@ from fpdf import FPDF
 from django.http import Http404
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
 from django.urls import reverse
 import tempfile
 from tempfile import TemporaryDirectory as td
@@ -18,9 +17,6 @@ from django.contrib.auth.mixins import AccessMixin
 from threading import Thread
 import time
 from django.contrib.admin.views.decorators import staff_member_required
-
-
-from django.db.models import Q
 
 class OwnerOnlyMixin(AccessMixin):
     def handle_no_permission(self):
@@ -62,24 +58,23 @@ def index(request):
 	)
 
 def available_reports(request):
-	if(request.user.is_staff):
-		return Report.objects.all()
-	return Report.objects.filter(Q(user__exact = request.user.telegram_id) | 
-							  Q(project__responsible_user__telegram_id__exact = request.user.telegram_id)).order_by('project')
+	return list(filter(lambda rep: (str(request.user) == str(rep.user) or request.user.is_staff or\
+									str(request.user) == str(rep.project.responsible_user)), 
+					   Report.objects.order_by("project")))
 
 def available_projects(request):
 	if request.user.is_staff:
-		return Project.objects.all()
-	return request.user.project_set.all()
+		return list(Project.objects.all())
+	return list(request.user.project_set.all())
 
 def available_users(request):
 	if request.user.is_staff:
-		return User.objects.all()
+		return list(User.objects.all())
 	users = []
 	for project in available_projects(request):
-			if(request.user.telegram_id == project.responsible_user.telegram_id):
+			if(str(request.user) == str(project.responsible_user)):
 				users += [user for user in project.users.all()]
-	return QuerySet(set(users))
+	return list(set(users))
 
 def make_pdf(request, reports, path):
 	temp = TempDir()
@@ -106,19 +101,16 @@ def report(request):
 	reports = available_reports(request)
 	error_message = ''
 	
-	form = FilterForm()
 	if request.method == 'POST':
-		form = FilterForm(request.POST)
-		if(form.is_valid()):
-			data = form.cleaned_data
-			if(data['project']): 
-				reports = reports.filter(project__id__in = data['project'])
-			if(data['user']): 
-				reports = reports.filter(user__telegram_id__in = data['user'])
-			if(data['left_date']):
-				reports = reports.exclude(report_date__lte = data['left_date'])
-			if(data['right_date']):
-				reports = reports.filter(report_date__lte = data['right_date'])
+		data = FilterForm(request.POST)
+		if(data.is_valid()):
+			data = data.cleaned_data
+			print(data)
+			FaceControl = lambda rep: (not data['project'] or str(rep.project) in [str(project.name) for project in data['project']]) and\
+									  (not data['user'] or str(rep.user) in [str(user.username) for user in data['user']]) and\
+									  (not data['left_date'] or data['left_date'] <= rep.report_date) and\
+									  (not data['right_date'] or rep.report_date <= data['right_date'])
+			reports = list(filter(FaceControl, reports))
 		else:
 			error_message = 'incorrect input data'
 			reports = []
@@ -132,7 +124,6 @@ def report(request):
 		users.clear()
 	if len(projects) == 1:
 		projects.clear()
-	print(form)
 	return render(
 		request,
 		'Reports/reports_list.html',
@@ -140,7 +131,7 @@ def report(request):
 			 'projects': projects,
 			 'available_users': users,
 			 'error_message': error_message,
-			 'form': form,
+			 'form': FilterForm(request.POST) if request.method == 'POST' else FilterForm(),
 			 'pdfname': name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"})
 	
 
@@ -181,22 +172,3 @@ def user_list(request):
 				except User.DoesNotExist:
 					pass
 	return render(request, 'Users/user_list.html', {"user_list" : user_list})
-
-@user_passes_test(User.is_verified)
-def send_contact(request):
-     name = request.POST.get("name")
-     email = request.POST.get("email")
-     subject = request.POST.get("subject")
-     message = request.POST.get("message")
-     send_mail("Новое сообщение", message, email, ["codenamedelta91@gmail.com"],
-    html_message="<html> Новое сообщение с сайта"
-      "Имя:" + name + '\n'
-      "Email почта:" + email + '\n'
-      "Тема:" + subject + '\n'
-       "Сообщение:" + message + "\n"
-   "</html>")
-     request.session['sendmessage'] = "Сообщение было отправлено"
-     return HttpResponseRedirect('contact-page')
-
-def contact_page(request):
-    return render(request, "contact.html")

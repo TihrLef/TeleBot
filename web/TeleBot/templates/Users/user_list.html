@@ -5,10 +5,34 @@
 <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
 {% endblock %}
 {% block content %}
-
-  
   <style type="text/css">
-
+ .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 22px;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+	padding: 10px 15px;
+	font-size: 21px;
+	vertical-align: top;
+    color:#000;
+}
 .table tbody tr:hover td{
     background: #acb7e3; /* Цвет фона при наведении */
     color:#000;
@@ -67,7 +91,7 @@
 		font-weight: bold;
 		text-decoration: none;
 		color:#6495ed;
-	
+		font-size:21px;
 	}
 	a.mya:hover
 	{	font-family:Arial;
@@ -77,21 +101,20 @@
 	</style>
 	<br>
 	<h1 align = center>Список пользователей</h1>
-	<br>
     {% if user_list %}
 	<form method="post">
 	{% csrf_token %}
-	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить" id = 'cat1' style = 'display: none;'/><input class="button" type="submit" name="action" value= "Удалить" id = 'cat2' style = 'display: none;'/></p>
+	<p align = center><input class="button" type="submit" name="action" value= "Подтвердить" id = 'cat1'/><input class="button" type="submit" name="action" value= "Удалить" id = 'cat2'/></p>
 	<table align = center width = 85%  id="myTable" class="table">
-    <thead class="table-dark">
+    <thead>
 		<tr>
 			<th width = 25% onclick="sortTable(0)"  align=left>Nickname</th>
 			<th width = 15% onclick="sortTable(1)"  align=left>Имя</th>
 			<th width = 20% onclick="sortTable(2)">Фамилия</th>
 			<th width = 15% onclick="sortTable(3)">Роль</th>
-			<th width = 2% onclick="sortTable(4)">#</th>
-			<th width = 10% onclick="sortTable(5)">Число проектов</th>
-			<th width = 10% onclick="sortTable(6)">Число отчётов</th>
+			<th width = 2% onclick="sortTable(4)"></th>
+			<th width = 10% onclick="sortTable(5)">Число<br>проектов</th>
+			<th width = 10% onclick="sortTable(6)">Число<br>отчётов</th>
 		</tr> 
     </thead>
     <tbody>
@@ -100,35 +123,25 @@
       <tr>
         <td><a class="mya" href="{{ us.get_absolute_url }}">{{ us.username }}</a></td>
 		<td>				{{us.first_name}}</a></td>
-		<td >	{{us.last_name}}</td>
-		<td >	{{us.get_role}}</td>
-		<td >  
+		<td align=center>	{{us.last_name}}</td>
+		<td align=center>	{{us.get_role}}</td>
+		<td align=center>  
 			{% if not us.is_active %}
-  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb' onchange = 'showOrHide("sb", "cat1", "cat2");'/>
+  				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb'/>
   			{% endif %}
 		</td>
-		<td >	{{us.project_set.all.count}}</td>
-		<td >	{{us.report_set.all.count}}</td>
+		<td align=center>	{{us.project_set.all.count}}</td>
+		<td align=center>	{{us.report_set.all.count}}</td>
       </tr>
       {% endfor %}
       </tbody>
 	</table>
 	<br><br>
-	
 	</form>
-	
 	
     {% else %}
       <p>Которых пока нет... Стоп, а кто тогда вы?</p>
     {% endif %} 
-    <script type="text/javascript">
-  function showOrHide(bloggood, cat_1, cat_2) {
-    bloggood = document.getElementById(bloggood);
-    cat_1 = document.getElementById(cat_1);
-    cat_2 = document.getElementById(cat_2);
-    if (bloggood.checked) {cat_1.style.display = "inline-block";cat_2.style.display = "inline-block";}
-    else {cat_1.style.display = "none"; cat_2.style.display = "none";}
-  }
-</script>
+
  
 {% endblock %}

@@ -4,7 +4,7 @@ from datetime import datetime, date
 from django.urls import reverse    
 # Create your models here.
 class Project(models.Model):
-	name = models.TextField(unique = True, max_length=200)
+	name = models.CharField(unique = True, max_length=200)
 	start_date = models.DateField(default = datetime.now, null=True, blank=True)
 	end_date = models.DateField(null=True, blank=True)
 	users = models.ManyToManyField(User)

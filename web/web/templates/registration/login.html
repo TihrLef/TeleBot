@@ -4,80 +4,142 @@
 {% load static %}
 {% block title %}<title>Вход</title>{% endblock %}
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Кодировка веб-страницы -->
-  <meta charset="utf-8">
-  <!-- Настройка viewport -->
- 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Название</title>
-
-  <!-- Bootstrap CSS (jsDelivr CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
 <style>
-body{
-background:#333;}
+body {
+
+	font-family: Arial, Helvetica, sans-serif;
+background: -webkit-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: -moz-linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+background: linear-gradient(0deg, rgb(33, 20, 94) 32%, rgb(79, 69, 246) 88%) no-repeat fixed;
+}
 form {
-    top:10%;
 	padding: 20px;
 	margin: 0;
-    width:50%;
+  	top: 100px;
   	left: 50%;
-    color:black;
+    	color:black;
   	position: absolute;
   	text-align: left;
   	transform: translateX(-50%);
-  	background-color:#f5f6f7;
-	overflow: auto; overflow-x: hidden;
+  	background-color: #f0f2f5;
+  	border-radius: 8px;
+  	border-top: 8px solid #7f5feb;
+  	border-bottom: 8px solid #7f5feb;
+  	width: 400px;
+  	height: 450px;
+	overflow: auto; overflow-x: hidden; 
 	scrolling: auto;
-  	box-shadow:  inset 0 -3em 3em rgba(0,0,0,0.1),
-             0.3em 0.3em 1em rgba(0,0,0,0.3);
+  	box-shadow: 1px 1px 92.8px 10.2px rgb(25,31,53);
 	
+}
+
+input[type = "password"], input[type=text] {
+  display: block;
+  margin: 20px auto;
+  background: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 14px 10px;
+  width: 320px;
+  outline: none;
+  color: black;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -ms-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
+  
+}
+
+button {
+  border:0;
+  background: #7f5feb;
+  color: #dfdeee;
+  border-radius: 50px;
+  width: 340px;
+  height: 49px;
+  font-size: 16px;
+  position: relative;
+  top: 80%;
+  left: 8%;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+
+
+.container {
+    
+}
+
+span.psw {
+    float: right;
+    padding-top: 8px;
+   
+}
+span.reg{
+	position: relative;
+    top: 92%;
+    left: 12.5%
+    
+}
+   .colortext {
+     color: red; /* Красный цвет выделения */
+   }
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
+    }
+    span.reg{
+        
+    	display:block;
+        float:none;
+    }
 }
 </style>
 </head>
 <body >
 
+
 <form method="post" action="{%url 'login' %}">
-<div class="border border-secondary">
+
  {% csrf_token %}
   <div class="container">
     <label for="header"><h2>Вход </h2></label>
-    
     {% if form.non_field_errors %}
-	<div class="alert alert-danger alert-dismissible" role="alert">
-        <div id="form_errors">
-	{% for error in form.non_field_errors %}
-		{% if error == "Эта учетная запись отключена." %}
-			Этот аккаунт ещё не подтверждён. Пожалуйста, дождитесь подтверждения
-		{% else %}
-			{{ error }}
-		{% endif %}
-		
-	{% endfor %}
-		</div>
-    		</div>	
-	{% endif %}
+{% for error in form.non_field_errors %}
+{% if error == "Эта учетная запись отключена." %}
+<span class="colortext">Этот аккаунт ещё не подтверждён. Пожалуйста, дождитесь подтверждения</span>
+{% else %}
+{{ error }}
+{% endif %}
+{% endfor %}
+{% endif %}
+    <p><label for="id_username" ><b>Логин</b></label>
+    <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
+
+    <p><label for="id_password" ><b>Пароль</b></label>
+    <input type="password" name="password" autocomplete ="current-password" required id = "id_password" placeholder="Введите пароль"></p>
+       
+    <button type="submit" id = "button1">Войти</button>
     
-    <div class="mb-3">
-    <p><label for="id_username" class="form-label"><b>Логин</b></label>
-    <input class="form-control" type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlenght="150" required id="id_username" placeholder="Введите логин"></p>
-    </div>
-    <div class="mb-3">
-    <p><label for="id_password" class="form-label"><b>Пароль</b></label>
-    <input class="form-control" type="password" name="password" autocomplete ="current-password" required id = "id_password" placeholder="Введите пароль"></p>
-    </div>
+    
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+    
+  </div>
+  <div class="container" style="background-color:#f1f1f1">
     <br>
-    <div class="d-grid gap-2">
-    <button type="submit" class="btn btn-primary btn-lg" id = "button1">Войти</button>
-    </div>
-    <p padding-top="10px" align="center"><span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span></p>
-</div>
+    <span class="reg"><a href="{%url 'signup'%}">Нет аккаунта? Нажмите для регистрации</a></span>
+  </div>
 </form>
-  
- <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-  </script>
+
 
 </body>
 </html>

@@ -1,142 +1,508 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html>
 <head>
-  <!-- Кодировка веб-страницы -->
-  <meta charset="utf-8">
-  <!-- Настройка viewport -->
- 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Название</title>
+<title>Новая вкладка</title>
+<style>
+{% load static %}
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic);
+*{box-sizing: border-box;}
+body {
+  background:#fafdff;
+  font-family: 'Open Sans', sans-serif;
+}
 
-  <!-- Bootstrap CSS (jsDelivr CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  <style>
- {% load static %}
-/*nav.navbar .dropdown:hover > .dropdown-menu {
- display: block; 
+.nav {
+    width: 300px;
+    min-width: 300px;
+    height: 100%;
+    position: fixed;
+    top: 2px;
+    bottom: 0;
+    margin: 0;
+    left: -300px;
+    padding: 10px 20px;
+    -webkit-transition: left 0.3s;
+    -moz-transition: left 0.3s;
+    transition: left 0.3s;
+    background: #21145e;
+    z-index: 2001;
+}
+/**
+ * Кнопка переключения панели
+ * тег <label>
+ */
+.nav-toggle {
+    position: absolute;
+    left: 310px;
+    top: 8px;
+    padding: 0.5em;
+    background: inherit;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.2em;
+    line-height: 1;
+    z-index: 2001;
+    -webkit-transition: color .25s ease-in-out;
+    -moz-transition: color .25s ease-in-out;
+    transition: color .25s ease-in-out;
+}
+ 
+/* определяем текст кнопки 
+ * символ Unicode (TRIGRAM FOR HEAVEN)
+*/
+.nav-toggle:after {
+    content: '\2630';
+    text-decoration: none;
 } 
-@media only screen and (max-device-width: 992px){
-    nav.navbar .dropdown:hover .dropdown-menu{
-        display: none;
-    }
+.nav-toggle:hover {color: #ddbe86;}
+ 
+/**
+ * Скрытый чекбокс (флажок)
+ * имя селектора атрибут флажка
+ */
+ 
+[id='nav-toggle'] {
+    position: absolute;
+    display: none;
+}
+ 
+/**
+ * изменение положения переключателя 
+ * при просмотре на мобильных устройствах
+ * когда навигация раскрыта, распологаем внутри панели
+*/
+ 
+[id='nav-toggle']:checked ~ .nav > .nav-toggle {
+    left: auto;
+    right: 2px;
+    top: 1em;
+}
+ 
+/**
+ * Когда флажок установлен, открывается панель
+ * используем псевдокласс:checked
+ */
+ 
+[id='nav-toggle']:checked ~ .nav {
+    left: 0;
+    box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+    -moz-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+    -webkit-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+    overflow-y: auto;
+}
+ /* 
+ * смещение контента страницы
+ * на размер ширины панели,
+*/
+ /*
+[id='nav-toggle']:checked ~ main > article {
+    -webkit-transform: translateX(320px);
+    -moz-transform: translateX(320px);
+    transform: translateX(320px);
 }*/
 
-        body {
-            transition: margin-left .3s;
-    		padding: 16px;
-    		margin-left: 50px;
-    		padding: 5% 2% 5% 2%;
-    		margin-top: 50px;
-            
-        }
-
-        .article {
-            background: rgba(255, 255, 255, 0.88);
-            padding-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        footer {
-            background: rgba(255, 255, 255, 0.7);
-            line-height: 30px;
-            padding: 0 15px 0 15px;
-        }
-        .element {
-  @include float-right;
+ 
+/*
+ * изменение символа переключателя,
+ * привычный крестик (MULTIPLICATION X), 
+*/
+ 
+[id='nav-toggle']:checked ~ .nav > .nav-toggle:after {
+    content: '\2715';
 }
+ 
+/**
+ * профиксим баг в Android <= 4.1.2
+ * см: http://timpietrusky.com/advanced-checkbox-hack
+ */
+ 
+body {
+    -webkit-animation: bugfix infinite 1s;
+}
+ 
+@-webkit-keyframes bugfix {
+    to {
+      padding: 0;
+    }
+}
+ 
+/**
+ * позаботимся о средних и маленьких экранах
+ * мобильных устройств
+ */
+ 
+@media screen and (min-width: 320px) {
+    html,
+    body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+}
+ 
+@media screen and (max-width: 320px) {
+    html,
+    body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .nav {
+      width: 100%;
+      box-shadow: none
+    }
+}
+ 
+/**
+ * Формируем стиль заголовка (логотип) панели 
+*/
+ 
+.nav h2 {
+    width: 80%;
+    padding-top: 5px;
+    margin: 10px 0;
+    text-align: center;
+    text-shadow: rgba(255, 255, 255, .1) -1px -1px 1px, rgba(0, 0, 0, .5) 1px 1px 1px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    line-height: 1.0em;
+    opacity: 0;
+    transform: scale(0.1, 0.1);
+    -ms-transform: scale(0.1, 0.1);
+    -moz-transform: scale(0.1, 0.1);
+    -webkit-transform: scale(0.1, 0.1);
+    transform-origin: 0% 0%;
+    -ms-transform-origin: 0% 0%;
+    -moz-transform-origin: 0% 0%;
+    -webkit-transform-origin: 0% 0%;
+    transition: opacity 0.8s, transform 0.8s;
+    -ms-transition: opacity 0.8s, -ms-transform 0.8s;
+    -moz-transition: opacity 0.8s, -moz-transform 0.8s;
+    -webkit-transition: opacity 0.8s, -webkit-transform 0.8s;
+}
+ 
+.nav h2 a {
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+ 
+ 
+/*плавное появление заголовка (логотипа) при раскрытии панели */
+ 
+[id='nav-toggle']:checked ~ .nav h2 {
+    opacity: 1;
+    transform: scale(1, 1);
+    -ms-transform: scale(1, 1);
+    -moz-transform: scale(1, 1);
+    -webkit-transform: scale(1, 1);
+}
+ 
+/**
+ * формируем непосредственно само меню
+ * используем неупорядоченный список для пунктов меню
+ * прикрутим трансфомации и плавные переходы
+ */
+ 
+.nav > ul {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+ 
+.nav > ul > li {
+    line-height: 2.5;
+    opacity: 0;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    -webkit-transition: opacity .5s .1s, -webkit-transform .5s .1s;
+    -moz-transition: opacity .5s .1s, -moz-transform .5s .1s;
+    -ms-transition: opacity .5s .1s, -ms-transform .5s .1s;
+    transition: opacity .5s .1s, transform .5s .1s;
+}
+ 
+[id='nav-toggle']:checked ~ .nav > ul > li {
+    opacity: 1;
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    transform: translateX(0);
+}
+ 
+/* определяем интервалы появления пунктов меню */
+ 
+.nav > ul > li:nth-child(2) {
+    -webkit-transition: opacity .5s .2s, -webkit-transform .5s .2s;
+    transition: opacity .5s .2s, transform .5s .2s;
+}
+ 
+.nav > ul > li:nth-child(3) {
+    -webkit-transition: opacity .5s .3s, -webkit-transform .5s .3s;
+    transition: opacity .5s .3s, transform .5s .3s;
+}
+
+
+ 
+/**
+ * оформление ссылок пунктов меню
+ */
+ 
+.nav > ul > li > a {
+	padding-top: 10px;
+    display: inline-block;
+    position: relative;
+    font-weight: 300;
+    font-size: 1.0em;
+    color: #ffffff;
+    text-align: left;
+    width: 100%;
+    font-family: sans-serif;
+    text-decoration: none;
+    /* плавный переход */
+    -webkit-transition: color .5s ease, padding .5s ease;
+    -moz-transition: color .5s ease, padding .5s ease;
+    transition: color .5s ease, padding .5s ease;
+}
+ 
+/**
+ * состояние ссылок меню при наведении
+ */
+ 
+.nav > ul > li > a:hover,
+.nav > ul > li > a:focus {
+    color: #ddbe86;
+    padding-left: 15px;
+}
+ 
+/**
+ * линия подчеркивания ссылок меню
+ */
+ 
+.nav > ul > li > a:before {
+    content: '';
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    -webkit-transition: width 0s ease;
+    transition: width 0s ease;
+}
+ 
+.nav > ul > li > a:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: #ddbe86;
+    -webkit-transition: width .5s ease;
+    transition: width .5s ease;
+}
+ 
+/**
+ * анимируем линию подчеркивания 
+ * ссылок при наведении
+ */
+ 
+.nav > ul > li > a:hover:before {
+    width: 0%;
+    background: #ddbe86;
+    -webkit-transition: width .5s ease;
+    transition: width .5s ease;
+}
+ 
+.nav > ul > li > a:hover:after {
+    width: 0%;
+    background: transparent;
+    -webkit-transition: width 0s ease;
+    transition: width 0s ease;
+}
+ 
+/*************/
+
+nav {
+  background: #21145e;
+  box-shadow: 0 8px 8px 0 #ECF1F2;
+  border-top: 2px solid #ECF1F2;
+  text-align: right;
+  position: fixed;
+  z-index:1999;
+  top: 2px;
+  width:100%;
+  border-radius: 0px 0px 20px 0; 
+}
+nav a {
+  font-family: sans-serif;
+  text-decoration: none;
+  display: block;
+  transition: .3s linear;
+}
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.topmenu > li {
+  display: inline-block;
+  position: relative;
+  margin-right: -4px;
+  
+}
+
+.topmenu > li > a {
+  font-weight: bold;
+  padding: 20px 30px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color:white;
+}
+.active:after, .submenu-link:after {
+  content: "🢝";
+  font-family: sans-serif;
+  color: inherit;
+  margin-left: 10px;
+}
+.topmenu .active, .topmenu > li > a:hover, .submenu li a:hover {color: #ddbe86;}
+.submenu {
+  position: absolute;
+  left: -1px;
+  z-index: 5;
+  width: 180px;
+  border-bottom: 1px solid #ECF1F2;
+  visibility: hidden;
+  opacity: 0;  
+  transform: translateY(10px);
+  transition: .3s ease-in-out;
+}
+.submenu li {position: relative;}
+.submenu a {
+  background: #21145e;
+  border-top: 1px solid #ECF1F2;
+  border-right: 1px solid #ECF1F2;
+  border-left: 1px solid #ECF1F2;
+  color: white;
+  text-align: left;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 10px 20px;
+}
+.submenu .submenu {
+  position: absolute;
+  top: 0;
+  right: calc(100% - 1px);
+  left: -webkit-calc(100% - 1px);
+}
+nav li:hover > .submenu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+
+
+.navbar1 {
+  overflow: hidden;
+  background-color: #21145e;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-radius: 20px 0px 0px 0; 
+}
+
+.navbar1 a {
+  float: right;
+  font-family: sans-serif;
+  display: block;
+  color: #f2f2f2;
+  text-align: right;
+  padding: 11px 16px;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.navbar1 a:hover {
+  color: #ddbe86;
+}
+#main {
+    transition: margin-left .3s;
+    padding: 16px;
+    margin-left: 50px;
+    font-size: 20px;
+    padding: 5% 2% 5% 2%;
+    margin-top: 50px;
+    /*height: 1000px;*/
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+
 </style>
-</head>
 {% block head %}{% endblock %}
+</head>
 <body>
 
- <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" >
- 	<div class="container-fluid">
-    <a href="" class="navbar-brand">
-    Название
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarContent">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-    {%if request.user.is_staff%}
-    <li class="nav-item">
-    <a href="{% url 'projects'%}" class="nav-link">Проекты</a>
-    </li>
-    <li class="nav-item">
-    <a href="{% url 'reports'%}" class="nav-link">Отчеты</a>
-    </li>
-    <li class="nav-item">
-    <a href="{% url 'users'%}" class="nav-link">Пользователи</a>
-    </li>
-    {%else%}
-    <li class="nav-item">
-    <a href="{% url 'projects'%}" class="nav-link">Мои проекты</a>
-    </li>
-    <li class="nav-item">
-    <a href="{% url 'reports'%}" class="nav-link">Мои отчеты</a>
-    </li>
-    {%endif%}
-     <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="{{user.get_absolute_url}}" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {{request.user.username}}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink"> 
-            <li><a class="dropdown-item" href="{{request.user.get_absolute_url}}">Профиль</a></li>
-            {%if request.user.is_staff%}
-            <li><a class="dropdown-item" href="{% url 'adminka' %}">Админ-панель</a></li>
-             {%endif%}
-          </ul>
-        </li>
-    </ul>
-    </div>
-    <form class="form-inline my-2 my-lg-0">
-      <button class="btn btn-outline-danger my-2 my-sm-0" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Выход</button>
-    </form>
+<input type="checkbox" id="nav-toggle" hidden>
     
-    </div>
- </nav>
+
+<nav>
+  <ul class="topmenu">
+  	
+    &emsp;<li><a href="{{user.get_absolute_url}}" class="active">{{request.user.username}}</a>
+      <ul class="submenu">
+        <li><a href="{{request.user.get_absolute_url}}">Профиль</a></li> 
+		{%if request.user.is_staff%}<li><a href="{% url 'adminka' %}">Админ-панель</a></li> {%endif%}
+        <li><a href="{% url 'logout' %}">Выход</a></li>        
+      </ul>
+    </li>
+  
+  </ul>
+</nav>
+
+
+<div class="navbar1">
+  <a href="#wrong"></a>
+  
+</div>
+
 <div id="main">
   {% block content %} {% endblock %}
 </div>
+{%if request.user.is_staff%}
+	<nav class="nav">
+        <label for="nav-toggle" class="nav-toggle" onclick></label>
+        <h2 class="logo"> 
+            <a href="{{request.user.get_absolute_url}}">Администратор</a> 
+        </h2>
+        <ul>
+  			<li> <a href="{% url 'projects'%}">Проекты</a>
+  			<li> <a href="{% url 'reports'%}">Отчеты</a>
+            <li> <a href="{% url 'users'%}">Пользователи</a>
+        </ul>
+    </nav>
 
-
-<!-- Модальное окно -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Подтвердите выход</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-      </div>
-      <div class="modal-body">
-        Вы действительно хотите выйти?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-        <a href="{% url 'logout' %}" class="btn btn-primary">Выход</a>
-      </div>
-    </div>
-  </div>
-</div>
-<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-bottom" style=" padding: 0 !important; height:35px;">
-
-<div class="container-fluid">
-	
-    <div class="pull-right">
-    	<ul class="navbar-nav">
-    	<li class="nav-item">
-    		<a href="" class="nav-link">Сообщить об ошибке</a>
-    	</li>
-    	</ul>
-    </div>
-    </div>
-</nav>
+{%else%}
+	<nav class="nav">
+        <label for="nav-toggle" class="nav-toggle" onclick></label>
+        <h2 class="logo"> 
+            <a href="{{request.user.get_absolute_url}}">Пользователь</a> 
+        </h2>
+        <ul>
+  			<li> <a href="{% url 'projects'%}">Мои проекты</a>
+  			<li> <a href="{% url 'reports'%}">Мои отчеты</a>
+        </ul>
+    </nav>
 
     
- <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-  </script>
-  
+{%endif%}
+
 </body>
 </html> 

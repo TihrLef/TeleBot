@@ -3,7 +3,7 @@ from django.urls import re_path
 import django
 import Projects.views
 from . import views
-from .views import(contact_page, send_contact,)
+
 from Projects.models import Project
 from Users.models import User
 from Reports.models import Report
@@ -29,6 +29,4 @@ urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
 urlpatterns += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
 urlpatterns += [re_path(r'^projects/create$',  Projects.views.project_add, name = "project-create")]
 urlpatterns += [re_path(r'^project/(?P<pk>\d+)/change/$', Projects.views.project_change, name = "project-change")]
-urlpatterns += [re_path(r'^contact-page/$', contact_page, name = "contact-page"), ]
-urlpatterns += [re_path(r'^contact-page/send-contact/$', send_contact, name = "send-contact"), ]
 #urlpatterns += [re_path(r'^requests/$', staff_member_required(views.admin_approval), name='unver_users')]

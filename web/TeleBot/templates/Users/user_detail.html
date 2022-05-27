@@ -1,11 +1,35 @@
 
 {% extends "base_generic.html" %}
 {% block content %}
-<meta charset="utf-8">
- 
- 
-<style>
 
+<style>
+ .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 22px;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+	padding: 10px 15px;
+	font-size: 21px;
+	vertical-align: top;
+    color:#000;
+}
 .table tbody tr:hover td{
     background: #acb7e3; /* Цвет фона при наведении */
     color:#000;
@@ -20,9 +44,41 @@
 .table tbody tr:nth-child(even){
 	background: #f2f5fc;
 }
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
+	margin: 0;
+  	top: 100px;
+  	left: 50%;
+    color:black;
+  	position: absolute;
+  	text-align: left;
+  	transform: translateX(-50%);
+  	background-color: #f0f2f5;
+  	border-radius: 8px;
+  	border-top: 8px solid #21145e;
+  	border-bottom: 8px solid #21145e;
+  	width: 600px;
+  overflow: auto; overflow-x: hidden; 
+  	height: 500px;
+	scrolling: auto;
+   text-align: center;
+  font-family: Arial;
+  color: #21145e;
+  
+}
 
-
-
+.title {
+  color: #21145e;
+  font-size: 32px;
+}
+.reg{
+font-size: 20px;
+color: #2a1ca6;
+}
+.reg:hover{
+color: #3222c7;
+}
 
 button {
   border: none;
@@ -41,6 +97,7 @@ button {
 
 a {
   text-decoration: none;
+  font-size: 22px;
   color: black;
 }
 
@@ -53,23 +110,20 @@ button:hover, a:hover {
 {%if request.user == user%}
 <h2 style="text-align:center" class="title">Страница пользователя</h2>
 {%endif%}
-  <p  align="left"><b>Имя: </b>{{user.first_name }}<br></p>
-  <p  align="left"><b>Фамилия: </b>{{user.last_name }}<br></p>
-  <p  align="left"><b>Username: </b>{{user.username }}<br></p>
-  <p  align="left"><b>Роль: </b>{{user.get_role}} <br></p>
+  <p font-size="24px" align="left"><b>Имя: </b>{{user.first_name }}<br></p>
+  <p font-size="24px" align="left"><b>Фамилия: </b>{{user.last_name }}<br></p>
+  <p font-size="24px" align="left"><b>Username: </b>{{user.username }}<br></p>
+  <p font-size="24px" align="left"><b>Роль: </b>{{user.get_role}} <br></p>
  
   
 {%if request.user == user%}
-	
-    <div class="modal-footer">
-        <a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Изменить пароль</a>
-        <a href="{%url 'edit'%}" class="btn btn-primary">Редактировать профиль</a>
-      </div>
+	<span><a href="{%url 'password_change'%}" class="reg" align="center">Изменить пароль<br></a></span>	<br>
+	<span><a href="{%url 'edit'%}" class="reg" align="center">Редактировать профиль<br></a></span>
 	{%endif%}
 	
-	<p  align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
+	<p font-size="24px" align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
     <table class="table">
-    <thead class="table-dark">
+    <thead>
     <tr>
 			<th width = 25% onclick="sortTable(0)"  align=left>Название проекта</th>
 			<th width = 20% onclick="sortTable(1)"  align=left>Статус</th>
@@ -79,8 +133,8 @@ button:hover, a:hover {
     <tbody>
     {% for project in user.project_set.all|dictsort:"start_date" %}
     <tr>
-		<td><a href="{{ project.get_absolute_url }}" >{{project.name}}</a></td>
-        <td >{{project.status}}</td>
+		<td><a href="{{ project.get_absolute_url }}" class="reg" align=center>{{project.name}}</a></td>
+        <td align=center>{{project.status}}</td>
     </tr>
         
 	{% endfor %}
@@ -89,7 +143,6 @@ button:hover, a:hover {
 
 	
 {% endblock %}
-
 
 
 

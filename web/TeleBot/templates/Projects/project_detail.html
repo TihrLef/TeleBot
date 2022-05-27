@@ -4,10 +4,34 @@
 <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
 {% endblock %}
 {% block content %}
-
- 
     <style type="text/css">
-
+ .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 22px;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+	padding: 10px 15px;
+	font-size: 21px;
+	vertical-align: top;
+    color:#000;
+}
 .table tbody tr:hover td{
     background: #acb7e3; /* Цвет фона при наведении */
     color:#000;
@@ -22,7 +46,24 @@
 .table tbody tr:nth-child(even){
 	background: #f2f5fc;
 }
-	
+	/*
+	   TABLE {
+		border-collapse: collapse; 
+		border: 5px groove #ccc; 
+	   }
+	   TD, TH {
+		height: 60px;
+		padding: 7px; 
+		border: 5px groove #ccc;
+		border-left:0;
+		border-right:0;
+	   }
+	   TH {
+		background: #4b0082; 
+		color: #fffff0;
+		height: 55px;
+		
+	   }*/
        
 		th.sorted[data-order="-1"]::after {
 			content: "▼"
@@ -44,7 +85,7 @@
 			font-weight: bold;
 			text-decoration: none;
 			color:#6495ed;
-			
+			font-size:21px;
 		}
 		a.mya:hover
 		{	font-family:Arial;
@@ -52,18 +93,17 @@
 			color:#0f93ff;
 		}
 	</style>
-	<table class="table-success" width = 100% >
-		<tr class="table-success">
-			<td class="table-success" width = 55%>
+	<table class="empty" align = center width = 100% >
+		<tr class="empty">
+			<td class="empty" width = 55%>
 				<h1 align = center>{{ project.name }} </h1>	
 				{% if user.is_staff or project.responsible_user == user %}
-					<h4 align = center><big><big>  </big></big><a  href = "{{ project.get_change_url}}" class="btn btn-primary">Изменить</a></h5>
+					<h4 align = center><big><big>  </big></big><a class="mya" href = "{{ project.get_change_url}}">(изменить)</a></h5>
 				{% endif %}
 			</td>
-			<td class="table-success" width = 10%></td>
-			<td class="table-success" width = 35% > 
-            <div style="background:#f6faf5;border-radius: 10px;">
-				<p><strong> Ответственный:</strong><big><big> </big></big><a class = "mya" href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
+			<td class="empty" width = 10%></td>
+			<td class="empty" width = 35%> 
+				<p><strong>Ответственный:</strong><big><big> </big></big><a class = "mya" href="{{ project.responsible_user.get_absolute_url }}">{{ project.responsible_user }}</a></p>
 				<p><strong>
 					{% if project.status == "Не начался" %} Начнётся:
 					{% else %} Начался:
@@ -77,8 +117,7 @@
 				<p><strong>Список участников:</strong></p> <big><big>  </big></big>
 				{% for user in project.users.all %}
 					<a class = "mya" href="{{ user.get_absolute_url }}">{{user.username}}</a>   
-				{% endfor %}
-                <div>
+				{% endfor %}						
 			</td>
 		</tr>
 	</table>
@@ -86,18 +125,18 @@
 
     <h2 align = center>{% if user.is_staff or user == project.responsible_user %}Все{% else %}Ваши{% endif %} отчёты по проекту</h2>
 	{% if reports %}
-	<table  width = 85% cellspacing="0"  id="myTable" class="table">
-    <thead class="table-dark">
+	<table align = center width = 85% cellspacing="0" border="2" id="myTable" class="table">
+    <thead>
 		<tr>
-			<th width = 15% onclick="sortTable(0)">Неделя</th>
-			<th width = 25% onclick="sortTable(1)">Автор</th>
-			<th width = 70% onclick="sortTable(2)">Отчёт</th>
+			<th width = 15% onclick="sortTable(0)" align=center>Неделя</th>
+			<th width = 25% onclick="sortTable(1)" align=left>Автор</th>
+			<th width = 70% onclick="sortTable(2)" align=center>Отчёт</th>
 		</tr>
         </thead>
         <tbody>
     {% for report in reports %}
 		<tr> 
-			<td>{{report.report_date|date:'d-m-Y'}}</td>
+			<td align=center>{{report.report_date|date:'d-m-Y'}}</td>
 			<td><a class = "mya" href="{{ report.user.get_absolute_url }}">{{report.user}}</a>
 			<td>{{report.message}}</ul>
 		<tr>
@@ -107,7 +146,7 @@
 	</table>
 	{% else %} 
 	<br><br><br>
-	<h3 align = center>нет отчётов</h3>
+	<h3 align = center>(которых нет)</h3>
 	{% endif %}
 <script type="text/javascript">
 function sortTable(n) {

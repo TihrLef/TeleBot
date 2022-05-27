@@ -4,10 +4,34 @@
 <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
 {% endblock %}
 {% block content %}
-
-  
   <style type="text/css">
-
+    .table {
+	width: 100%;
+	border: none;
+	border-collapse: collapse; 
+	margin-bottom: 20px;
+}
+.table thead th {
+	font-weight: bold;
+    
+	text-align: left;
+	border: none;
+    color: #e4f2f2;
+	padding: 10px 15px;
+	background: #21145e;
+	font-size: 22px;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+}
+.table tbody td {
+	text-align: left;
+	border-left: 0px solid #ddd;
+	border-right: 0px solid #ddd;
+	padding: 10px 15px;
+	font-size: 21px;
+	vertical-align: top;
+    color:#000;
+}
 .table tbody tr:hover td{
     background: #acb7e3; /* Цвет фона при наведении */
     color:#000;
@@ -51,7 +75,7 @@
 		font-weight: bold;
 		text-decoration: none;
 		color:#6495ed;
-		
+		font-size:21px;
 	}
 	a.mya:hover
 	{	font-family:Arial;
@@ -63,19 +87,18 @@
 	<br>
 	<h1 align = center>Список {% if user.is_staff %}всех{% else %}ваших{% endif %} проектов</h1>
 	{% if user.is_staff  %}
-		<a  href="{% url 'project-create'%}" class="btn btn-primary">Добавить</a>
-	<h4></h4>
+		<h4 align = center><big> <big>  </big></big>  <a class="mya" href = "{% url 'project-create'%}"> (добавить) </a> </h5>
 	{% endif %}
     {% if project_list and user.is_staff or user.project_set.all.count %}
 	<table align = center width = 85% cellspacing="0" id="myTable" class="table">
-    <thead class="table-dark">
+    <thead>
 		<tr>
-			<th width = 25% onclick="sortTable(0)" align=left>Название проекта        </th>
+			<th width = 30% onclick="sortTable(0)" align=left>Название проекта        </th>
 			<th width = 19% onclick="sortTable(1)" align=left>Ответственный</th>
 			<th width = 10% onclick="sortTable(2)">Статус</th>
-			<th width = 11% onclick="sortTable(3)">Дата начала</th>
-			<th width = 11% onclick="sortTable(4)">Дата конца</th>
-			<th width = 11% onclick="sortTable(5)">Число людей</th>
+			<th width = 11% onclick="sortTable(3)">Дата<br>начала</th>
+			<th width = 11% onclick="sortTable(4)">Дата<br>конца</th>
+			<th width = 9% onclick="sortTable(5)">Число<br>людей</th>
 			<th width = 9% onclick="sortTable(6)">Отчётов</th>
 		</tr> 
     </thead>
@@ -85,18 +108,18 @@
       <tr>
         <td><a class="mya" href="{{ project.get_absolute_url }}">{{ project.name }}</a></td>
 		<td><a class="mya" href="{{ project.responsible_user.get_absolute_url }}">{{project.responsible_user}}</a></td>
-		<td >{{project.status}}</td>
-		<td >{{project.start_date|date:'d-m-Y'}}</td>
-		<td >{{project.end_date|date:'d-m-Y'}}</td>
-		<td >{{project.users.all.count}}</td>
-		<td >{{project.report_set.all.count}}</td>
+		<td align=center>{{project.status}}</td>
+		<td align=center>{{project.start_date|date:'d-m-Y'}}</td>
+		<td align=center>{{project.end_date|date:'d-m-Y'}}</td>
+		<td align=center>{{project.users.all.count}}</td>
+		<td align=center>{{project.report_set.all.count}}</td>
       </tr>
 	  {% endif %} 
       {% endfor %}
       </tbody>
 	</table>
 	<br><br>
-	
+	<h3 align = center> Всё! Больше проектов нет! </h2>
 	
     {% else %}
 	<br><br><br><br><br><br><br><br>
