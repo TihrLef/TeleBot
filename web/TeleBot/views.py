@@ -164,6 +164,21 @@ def user_detail(request,pk):
 	)
 
 @staff_member_required
+def archive_user(request, pk):
+	user = User.objects.get(pk = pk)
+	if user.is_active:
+		user.is_active = False
+		user.role = "Archived"
+	else:
+		user.is_active = True
+		if user.is_staff:
+			user.role = "Administrator"
+		else:
+			user.role = "Verified"
+	user.save()
+	return redirect(reverse('user-detail', args=[pk]))
+
+@staff_member_required
 def user_list(request):
 	user_list = User.objects.all
 	if request.method == "POST":
@@ -188,12 +203,12 @@ def send_contact(request):
      email = request.POST.get("email")
      subject = request.POST.get("subject")
      message = request.POST.get("message")
-     send_mail("Новое сообщение", message, email, ["codenamedelta91@gmail.com"],
-    html_message="<html> Новое сообщение с сайта"
-      "Имя:" + name + '\n'
-      "Email почта:" + email + '\n'
-      "Тема:" + subject + '\n'
-       "Сообщение:" + message + "\n"
+     send_mail("Новое сообщение", message, email, ["telebotsupp@yandex.ru"],
+    html_message="<html> Новое сообщение с сайта<br>"
+      "Имя:" + name + '<br>'
+      "Email почта:" + email + '<br>'
+      "Тема:" + subject + '<br>'
+       "Сообщение:" + message + "<br>"
    "</html>")
      request.session['sendmessage'] = "Сообщение было отправлено"
      return HttpResponseRedirect('contact-page')

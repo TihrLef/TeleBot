@@ -59,13 +59,18 @@ button:hover, a:hover {
   <p  align="left"><b>Роль: </b>{{user.get_role}} <br></p>
  
   
-{%if request.user == user%}
+
 	
     <div class="modal-footer">
+	    {%if request.user == user%}
         <a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Изменить пароль</a>
         <a href="{%url 'edit'%}" class="btn btn-primary">Редактировать профиль</a>
+        {%endif%}
+		{%if request.user.is_staff%}
+        <a type="button" class="btn btn-primary" href="{%url 'archive-user' user.telegram_id%}">{%if user.role == "Archived"%}Убрать из архива{%else%} Архивировать{%endif%}</a>
+        {%endif%}
       </div>
-	{%endif%}
+
 	
 	<p  align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
     <table class="table">
