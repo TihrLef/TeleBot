@@ -58,9 +58,7 @@ def user_not_found(update, _):
 def user_not_confirmed(update, _):
     telegram_user = update.message.from_user
 
-    user = User.objects.get(
-        telegram_id=telegram_user.id
-    )
+    user = User.objects.get(telegram_id=telegram_user.id)
 
     if user.is_active:
         return user_confirmed(update, _)
@@ -77,9 +75,7 @@ def user_not_confirmed(update, _):
 def user_confirmed(update, _):
     telegram_user = update.message.from_user
 
-    user = User.objects.get(
-        telegram_id=telegram_user.id
-    )
+    user = User.objects.get(telegram_id=telegram_user.id)
 
     update.message.reply_text(
         "Привет, " + user.first_name + "!"
@@ -93,9 +89,7 @@ def user_confirmed(update, _):
 def project_select(update, context):
     if update.message:  # Первый заход
         telegram_user = update.effective_message.from_user
-        user = User.objects.get(
-            telegram_id=telegram_user.id
-        )
+        user = User.objects.get(telegram_id=telegram_user.id)
         context.chat_data["user"] = user
     else:  # Возвращение назад
         user = context.chat_data["user"]
@@ -150,11 +144,7 @@ def week_select(update, context):
     inline_buttons = []
     for week in weeks:
         try:
-            Report.objects.get(
-                project=project,
-                user=user,
-                report_date=week.monday()
-            )
+            Report.objects.get(project=project, user=user, report_date=week.monday())
             report_exist = True
         except Report.DoesNotExist:
             report_exist = False
@@ -179,7 +169,6 @@ def menu(update, context):
     query.answer()
 
     if query.data != 'back_to_menu' and query.data != 'ok':
-
         week = context.chat_data["week"] = Week.fromstring(query.data)
     else:
         week = context.chat_data["week"]
@@ -189,11 +178,7 @@ def menu(update, context):
     inline_buttons = []
 
     try:
-        Report.objects.get(
-            user=user,
-            project=project,
-            report_date=week.monday()
-        )
+        Report.objects.get(user=user, project=project, report_date=week.monday())
         inline_buttons.extend(
             [
                 [InlineKeyboardButton("Изменить отчет", callback_data="edit")],
@@ -257,7 +242,6 @@ def add_report(update, context):
 
     inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok")]])
 
-    # TODO Проверка, что report успешно сохранился
     update.message.reply_text(f'Успешно добавлен отчет на проект: {project.name}\n'
                               f'Неделя: {week_to_str(week)}\n'
                               f'Текст: {report.message}\n', reply_markup=inline_markup)
@@ -273,11 +257,7 @@ def edit_request(update, context):
     user = context.chat_data["user"]
     week = context.chat_data["week"]
 
-    report = Report.objects.get(
-        project=project,
-        user=user,
-        report_date=week.monday()
-    )
+    report = Report.objects.get(project=project, user=user, report_date=week.monday())
 
     inline_button = [[InlineKeyboardButton("Отменить", callback_data="back_to_menu")]]
     inline_markup = InlineKeyboardMarkup(inline_button)
@@ -288,7 +268,7 @@ def edit_request(update, context):
     return EDITING_REP
 
 
-def editReport(update, context):
+def edit_report(update, context):
     msg = context.chat_data["cancel_msg"]
     context.bot.edit_message_text(text=msg.text, chat_id=msg.chat_id, message_id=msg.message_id)
 
@@ -298,11 +278,7 @@ def editReport(update, context):
 
     message = update.message.text
 
-    report = Report.objects.get(
-        project=project,
-        user=user,
-        report_date=week.monday()
-    )
+    report = Report.objects.get(project=project, user=user, report_date=week.monday())
     report.message = message
     report.save()
 
@@ -315,18 +291,14 @@ def editReport(update, context):
     return TO_MENU
 
 
-def deleteRequest(update, context):
+def delete_request(update, context):
     query = update.callback_query
     query.answer()
     project = context.chat_data["project"]
     user = context.chat_data["user"]
     week = context.chat_data["week"]
 
-    report = Report.objects.get(
-        project=project,
-        user=user,
-        report_date=week.monday()
-    )
+    report = Report.objects.get(project=project, user=user, report_date=week.monday())
 
     inline_button = [
         [InlineKeyboardButton("Да", callback_data="delete"), InlineKeyboardButton("Нет", callback_data="back_to_menu")]
@@ -339,7 +311,7 @@ def deleteRequest(update, context):
     return DELETING_REP
 
 
-def deleteReport(update, context):
+def delete_report(update, context):
     query = update.callback_query
     query.answer()
 
@@ -347,11 +319,7 @@ def deleteReport(update, context):
     user = context.chat_data["user"]
     week = context.chat_data["week"]
 
-    report = Report.objects.get(
-        project=project,
-        user=user,
-        report_date=week.monday()
-    )
+    report = Report.objects.get(project=project, user=user, report_date=week.monday())
     report.delete()
 
     inline_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Ок", callback_data="ok")]])
@@ -363,7 +331,7 @@ def deleteReport(update, context):
     return TO_MENU
 
 
-def completeChanging(update, _):
+def complete_changing(update, _):
     query = update.callback_query
     query.answer()
 
@@ -376,21 +344,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # 1 -- правильное подключение
-        request = Request(
-            connect_timeout=0.5,
-            read_timeout=1.0,
-        )
+        request = Request(connect_timeout=0.5, read_timeout=1.0)
 
-        bot = Bot(
-            request=request,
-            token=settings.TOKEN,
-        )
+        bot = Bot(request=request, token=settings.TOKEN)
 
         # 2 -- обработчики
-        bot_updater = Updater(
-            bot=bot,
-            use_context=True,
-        )
+        bot_updater = Updater(bot=bot, use_context=True)
         bot_dispatchder = bot_updater.dispatcher
 
         help_command = CommandHandler("help", help)
@@ -421,20 +380,20 @@ class Command(BaseCommand):
                 PROCESSING_ACTION: [
                     CallbackQueryHandler(add_request, pattern='^' + "add" + '$'),
                     CallbackQueryHandler(edit_request, pattern='^' + "edit" + '$'),
-                    CallbackQueryHandler(deleteRequest, pattern='^' + "remove" + '$'),
+                    CallbackQueryHandler(delete_request, pattern='^' + "remove" + '$'),
                     CallbackQueryHandler(week_select, pattern='^' + "back_to_weeks" + '$'),
-                    CallbackQueryHandler(completeChanging, pattern='^' + "complete" + '$')
+                    CallbackQueryHandler(complete_changing, pattern='^' + "complete" + '$')
                 ],
                 ADDING_REP: [
                     MessageHandler(Filters.text, add_report),
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 EDITING_REP: [
-                    MessageHandler(Filters.text, editReport),
+                    MessageHandler(Filters.text, edit_report),
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 DELETING_REP: [
-                    CallbackQueryHandler(deleteReport, pattern="^delete$"),
+                    CallbackQueryHandler(delete_report, pattern="^delete$"),
                     CallbackQueryHandler(menu, pattern="^back_to_menu$")
                 ],
                 TO_MENU: [
