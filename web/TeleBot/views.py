@@ -23,6 +23,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from django.db.models import Q
 
+class StaffMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
+	
 class OwnerOnlyMixin(AccessMixin):
     def handle_no_permission(self):
         return super().handle_no_permission()
@@ -145,8 +151,20 @@ def report(request):
 			 'pdfname': name[len(path):] + r"/simple_demo" + str(request.user) + ".pdf"})
 	
 
-class UsersListView(generic.ListView):
+class UsersListView(StaffMixin, generic.ListView):
 	model = User
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user_list'] = User.objects.exclude(role = "Archived")
+		return context
+
+	
+class ArchivedUsersListView(StaffMixin, generic.ListView):
+	model = User
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user_list'] = User.objects.filter(role = "Archived")
+		return context
 
 class UserDetailView(OwnerOnlyMixin, generic.DetailView):
 	model = User
@@ -156,7 +174,7 @@ def user_detail(request,pk):
 	try:
 		tele_id=User.objects.get(telegram_id=pk)
 	except User.DoesNotExist:
-		raise Http404("РўР°РєРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!")
+		raise Http404("Такого пользователя не существует!")
 	
 	return render(
 		request,
@@ -175,14 +193,15 @@ def archive_user(request, pk):
 		if user.is_staff:
 			user.role = "Administrator"
 		else:
-			user.role = "Verified"
+			if user.last_login is None:
+				user.role = "Unverified"
+			else:	
+				user.role = "Verified"
 	user.save()
 	return redirect(reverse('user-detail', args=[pk]))
 @staff_member_required
 def user_role_change(request, pk):
     user = User.objects.get(pk = pk)
-    print("anything")
-    
     if request.method == "POST":
         user.role = request.POST['role']
         if user.role == "Administrator":
@@ -201,10 +220,10 @@ def user_role_change(request, pk):
     return HttpResponseRedirect(reverse('user-detail', args=[user.pk]))
 @staff_member_required
 def user_list(request):
-	user_list = User.objects.all
+	user_list = User.objects.exclude(role = "Archived")
 	if request.method == "POST":
 		id_list = request.POST.getlist('boxes')
-		if request.POST['action'] == "РЈРґР°Р»РёС‚СЊ":
+		if request.POST['action'] == "Удалить":
 			for user_id in id_list:
 				try:
 					User.objects.filter(pk=int(user_id)).delete()
@@ -214,6 +233,7 @@ def user_list(request):
 			for user_id in id_list:
 				try:
 					User.objects.filter(pk=int(user_id)).update(is_active=True)
+					User.objects.filter(pk=int(user_id)).update(role = "Verified")
 				except User.DoesNotExist:
 					pass
 	return render(request, 'Users/user_list.html', {"user_list" : user_list})

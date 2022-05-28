@@ -9,8 +9,13 @@
   
 
 	<br>
-	<h1 align = center>Список пользователей</h1>
+	<h1 align = center>Список {%if "archive" in request.path%}архивированных{%endif%} пользователей</h1>
 	<br>
+	{%if "archive" in request.path%}
+	<a type="button" class="btn btn-primary" href="{%url 'users'%}">Вернуться к списку пользователей</a>	
+	{%else%}
+	<a type="button" class="btn btn-primary" href="{%url 'archive'%}">Перейти в архив</a>
+	{%endif%}
     {% if user_list %}
 	<form method="post">
 	{% csrf_token %}
@@ -36,7 +41,7 @@
 		<td >	{{us.last_name}}</td>
 		<td >	{{us.get_role}}</td>
 		<td >  
-			{% if not us.is_active %}
+			{% if us.role == "Unverified" %}
   				<input class="form-check-input" type="checkbox" value={{us.telegram_id}} name="boxes" id = 'sb' onchange = 'showOrHide("sb", "cat1", "cat2");'/>
   			{% endif %}
 		</td>
