@@ -42,6 +42,7 @@ def user_not_found(update, _):
 
     new_user = User.objects.create(
         is_active=False,
+		role = "Unverified",
         telegram_id=telegram_user.id,
         username=telegram_user.username,
     )
@@ -66,13 +67,20 @@ def user_not_confirmed(update, _):
     if user.is_active:
         return user_confirmed(update, _)
 
-    update.message.reply_text(
-        "К сожалению, администратор ещё не проверил ваш аккаунт."
-        "\nОжидайте проверки и назначения проектов."
-        "\nДля проверки наличия проектов можете воспользоваться веб-приложением: " + settings.REF_TO_SERVER + "."
-        "\nВаш персональный токен: " + str(user.personal_token) + "."
-        "\n\nОтправьте /help для получения информации о боте."
-    )
+	if user.role == "Unverified"
+	    update.message.reply_text(
+	        "К сожалению, администратор ещё не проверил ваш аккаунт."
+	        "\nОжидайте проверки и назначения проектов."
+	        "\nДля проверки наличия проектов можете воспользоваться веб-приложением: " + settings.REF_TO_SERVER + "."
+	        "\nВаш персональный токен: " + str(user.personal_token) + "."
+	        "\n\nОтправьте /help для получения информации о боте."
+	    )
+	if user.role == "Archived":
+	    update.message.reply_text(
+	        "Ваш аккаунт архивирон."
+	        "\nЕсли это было сделано по ошибке, пожалуйста, сообщите об этом руководству"
+	        "\n\nОтправьте /help для получения информации о боте."
+	    )
     return USER_NOT_CONFIRMED
 
 

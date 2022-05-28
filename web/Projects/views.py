@@ -32,22 +32,15 @@ def project_list(request):
 		
 class ProjectDetailView(ProjectAccessMixin, generic.DetailView):
 	model = Project
-	@user_passes_test(User.is_verified)	
-	def project_detail(request,pk):
-		print("try tyk-tyk to def")
-		try:
-			project=Project.objects.get(pk=pk)
-		except Project.DoesNotExist:
-			raise Http404("Такого проекта не существует!")
-		if request.user.is_staff or request.user == project.responsible_user:
-			reports = project.report_set.all()
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		if self.request.user.is_staff or self.request.user == context['project'].responsible_user:
+			reports = context['project'].report_set.all()
 		else:
-			reports = project.report_set.all().filter(user=request.user)
-		return render(
-			request,
-			'Projects/project_detail.html',
-			context={'project':project, 'reports':reports}
-		)
+			reports = context['project'].report_set.all().filter(user=self.request.user)
+		context['reports'] = reports
+		return context
 
 @user_passes_test(User.is_verified)	
 def project_detail(request,pk):
@@ -59,7 +52,7 @@ def project_detail(request,pk):
 		if request.user.is_staff or request.user == project.responsible_user:
 			reports = project.report_set.all()
 		else:
-			reports = project.report_set.all().filter(user=request.user)
+			reports = project.report_set.all().filter(user=request.user) 
 		return render(
 			request,
 			'Projects/project_detail.html',

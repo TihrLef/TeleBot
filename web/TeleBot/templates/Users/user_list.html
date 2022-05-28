@@ -7,74 +7,7 @@
 {% block content %}
 
   
-  <style type="text/css">
 
-.table tbody tr:hover td{
-    background: #acb7e3; /* Цвет фона при наведении */
-    color:#000;
-   }
-
-.table thead tr th:first-child, .table tbody tr td:first-child {
-	border-left: 0px solid #21145e;
-}
-.table thead tr th:last-child, .table tbody tr td:last-child {
-	border-right: 0px solid #21145e;
-}
-.table tbody tr:nth-child(even){
-	background: #f2f5fc;
-}
-  /* TABLE {
-    border-collapse: collapse; 
-    border: 5px groove #ccc; 
-   }
-   TH {
-    background: #4b0082; 
-    color: #fffff0; 
-	
-   }
-   TD, TH {
-    height: 50px;
-    padding: 8px; 
-    border: 5px groove #ccc;
-	border-left:0;
-	border-right:0;
-   }*/
-	th.sorted[data-order="-1"]::after {
-		content: "▼"
-	}
-
-	th.sorted[data-order="1"]::after {
-		content: "▲"
-	}
-	input.button {
-		border:0;
-		background: #21145e;
-		color: #dfdeee;
-		border-radius: 50px;
-		width: 200px;
-		height: 49px;
-		font-size: 16px;
-		transition: 0.3s;
-		cursor: pointer;
-		opacity: 0.85;
-	}
-
-	input.button:hover {
-		opacity: 0.7;
-	}
-	a.mya
-	{	font-family:Arial;
-		font-weight: bold;
-		text-decoration: none;
-		color:#6495ed;
-	
-	}
-	a.mya:hover
-	{	font-family:Arial;
-		/*font-size:22px;*/
-		color:#0f93ff;
-	}
-	</style>
 	<br>
 	<h1 align = center>Список пользователей</h1>
 	<br>
@@ -119,7 +52,7 @@
 	
 	
     {% else %}
-      <p>Которых пока нет... Стоп, а кто тогда вы?</p>
+      <p>Список пользователей пуст.</p>
     {% endif %} 
     <script type="text/javascript">
   function showOrHide(bloggood, cat_1, cat_2) {

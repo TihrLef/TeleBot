@@ -4,50 +4,7 @@
 <meta charset="utf-8">
  
  
-<style>
 
-.table tbody tr:hover td{
-    background: #acb7e3; /* Цвет фона при наведении */
-    color:#000;
-   }
-
-.table thead tr th:first-child, .table tbody tr td:first-child {
-	border-left: 0px solid #21145e;
-}
-.table thead tr th:last-child, .table tbody tr td:last-child {
-	border-right: 0px solid #21145e;
-}
-.table tbody tr:nth-child(even){
-	background: #f2f5fc;
-}
-
-
-
-
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background:#21145e;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-  border-radius: 40px;
-}
-
-
-a {
-  text-decoration: none;
-  color: black;
-}
-
-button:hover, a:hover {
-  opacity: 0.7;
-}
-</style>
 
 
 {%if request.user == user%}
