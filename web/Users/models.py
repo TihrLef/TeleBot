@@ -13,7 +13,7 @@ class User(AbstractUser):
 	ROLES = (
 		('Unverified', 'Unverified'),
 		('Verified', 'Verified'),
-		('Administrator', 'Aaministrtor'),
+		('Administrator', 'Administrator'),
 		('Archived', 'Archived'),
    )
 	personal_token = models.UUIDField(default=uuid.uuid4, help_text="Unique ID for this particular book across whole library")
@@ -44,4 +44,6 @@ class User(AbstractUser):
 	
 	def is_verified(self):
 		return (self.is_active) or (self.is_staff)
-	
+class Post(models.Model):
+      role_choices = (('Verified', 'Verified'), ('Unverified', 'Unverified'), ('Administrator', 'Administrator'),)	
+      role = models.CharField(max_length=50, choices = role_choices)

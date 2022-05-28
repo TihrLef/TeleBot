@@ -26,6 +26,7 @@ urlpatterns += [re_path(r'^project/(?P<pk>\d+)$', Projects.views.project_detail,
 urlpatterns += [re_path("success",  user_passes_test(User.is_verified)(TemplateView.as_view(template_name="success.html")), name="success"),]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)$',  user_passes_test(User.is_verified)(views.UserDetailView.as_view()), name='user-detail') ]
 urlpatterns += [re_path(r'^user/(?P<pk>\d+)/archive-user$', views.archive_user, name='archive-user') ]
+urlpatterns += [re_path(r'^user/(?P<pk>\d+)/role-user-change$', views.user_role_change, name='role-user-change') ]
 urlpatterns += [re_path(r'^reports/$', views.report, name = "reports")]
 urlpatterns += [re_path(r'^help/$', views.make_pdf, name = "maker_pdf")]
 urlpatterns += [re_path(r'^projects/create$',  Projects.views.project_add, name = "project-create")]

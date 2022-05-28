@@ -21,32 +21,6 @@
 	background: #f2f5fc;
 }
 
-
-
-
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background:#21145e;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-  border-radius: 40px;
-}
-
-
-a {
-  text-decoration: none;
-  color: black;
-}
-
-button:hover, a:hover {
-  opacity: 0.7;
-}
 </style>
 
 
@@ -58,16 +32,15 @@ button:hover, a:hover {
   <p  align="left"><b>Username: </b>{{user.username }}<br></p>
   <p  align="left"><b>Роль: </b>{{user.get_role}} <br></p>
  
-  
-
-	
     <div class="modal-footer">
 	    {%if request.user == user%}
         <a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Изменить пароль</a>
         <a href="{%url 'edit'%}" class="btn btn-primary">Редактировать профиль</a>
+      
         {%endif%}
 		{%if request.user.is_staff%}
         <a type="button" class="btn btn-primary" href="{%url 'archive-user' user.telegram_id%}">{%if user.role == "Archived"%}Убрать из архива{%else%} Архивировать{%endif%}</a>
+        <button class="btn btn-primary my-2 my-sm-0" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">Изменить роль</button>
         {%endif%}
       </div>
 
@@ -92,8 +65,49 @@ button:hover, a:hover {
  </tbody>
     </table>
 
-	
+	    <!---->
+               <!-- Модальное окно -->
+<form method="POST" action="{% url 'role-user-change' user.telegram_id %}"> 
+{%csrf_token%}
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Измените роль:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+     
+      <div class="modal-body">
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Verified" id="id_role1" {%if user.role == "Verified" %} checked {%endif%}>
+  <label class="form-check-label" for="id_role1">
+    Подтвержденный пользователь
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Unverified" id="id_role2" {%if user.role == "Unverified" %} checked {%endif%}>
+  <label class="form-check-label" for="id_role2">
+    Неподтвержденный пользователь
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Administrator" id="id_role3" {%if user.role == "Administrator"%} checked {%endif%}>
+  <label class="form-check-label" for="id_role3">
+    Администратор
+  </label>
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+	<!---->
 {% endblock %}
+
 
 
 

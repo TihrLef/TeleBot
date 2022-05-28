@@ -17,6 +17,7 @@ from tempfile import TemporaryDirectory as td
 from django.contrib.auth.mixins import AccessMixin
 from threading import Thread
 import time
+from Users.forms import UserModelForm
 from django.contrib.admin.views.decorators import staff_member_required
 
 
@@ -51,8 +52,8 @@ class TempDir:
 		self.name = str(temp.name)
 		time.sleep(lifetime)
 
-# Ответ на вызов основного сайта
-# Адрес: /TeleBot
+# РћС‚РІРµС‚ РЅР° РІС‹Р·РѕРІ РѕСЃРЅРѕРІРЅРѕРіРѕ СЃР°Р№С‚Р°
+# РђРґСЂРµСЃ: /TeleBot
 @user_passes_test(User.is_verified)
 def index(request):
 	return render(
@@ -155,7 +156,7 @@ def user_detail(request,pk):
 	try:
 		tele_id=User.objects.get(telegram_id=pk)
 	except User.DoesNotExist:
-		raise Http404("Такого персонажа не существует!")
+		raise Http404("РўР°РєРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚!")
 	
 	return render(
 		request,
@@ -177,13 +178,33 @@ def archive_user(request, pk):
 			user.role = "Verified"
 	user.save()
 	return redirect(reverse('user-detail', args=[pk]))
-
+@staff_member_required
+def user_role_change(request, pk):
+    user = User.objects.get(pk = pk)
+    print("anything")
+    
+    if request.method == "POST":
+        user.role = request.POST['role']
+        if user.role == "Administrator":
+            user.is_staff=True
+            user.is_active=True
+        if user.role == "Verified":
+            user.is_staff=False
+            user.is_active=True
+        if user.role == "Unverified":
+            user.is_staff=False
+            user.is_active=False
+        #form = UserModelForm(request.POST)
+        #if(form.is_valid()):
+            #user.role = form.cleaned_data['role']
+        user.save()
+    return HttpResponseRedirect(reverse('user-detail', args=[user.pk]))
 @staff_member_required
 def user_list(request):
 	user_list = User.objects.all
 	if request.method == "POST":
 		id_list = request.POST.getlist('boxes')
-		if request.POST['action'] == "Удалить":
+		if request.POST['action'] == "РЈРґР°Р»РёС‚СЊ":
 			for user_id in id_list:
 				try:
 					User.objects.filter(pk=int(user_id)).delete()
@@ -203,14 +224,14 @@ def send_contact(request):
      email = request.POST.get("email")
      subject = request.POST.get("subject")
      message = request.POST.get("message")
-     send_mail("Новое сообщение", message, email, ["telebotsupp@yandex.ru"],
-    html_message="<html> Новое сообщение с сайта<br>"
-      "Имя:" + name + '<br>'
-      "Email почта:" + email + '<br>'
-      "Тема:" + subject + '<br>'
-       "Сообщение:" + message + "<br>"
+     send_mail("РќРѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ", message, email, ["telebotsupp@yandex.ru"],
+    html_message="<html> РќРѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ СЃ СЃР°Р№С‚Р°<br>"
+      "Р�РјСЏ:" + name + '<br>'
+      "Email РїРѕС‡С‚Р°:" + email + '<br>'
+      "РўРµРјР°:" + subject + '<br>'
+       "РЎРѕРѕР±С‰РµРЅРёРµ:" + message + "<br>"
    "</html>")
-     request.session['sendmessage'] = "Сообщение было отправлено"
+     request.session['sendmessage'] = "РЎРѕРѕР±С‰РµРЅРёРµ Р±С‹Р»Рѕ РѕС‚РїСЂР°РІР»РµРЅРѕ"
      return HttpResponseRedirect('contact-page')
 
 def contact_page(request):

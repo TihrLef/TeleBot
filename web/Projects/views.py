@@ -90,7 +90,7 @@ def project_add(request):
 	# Если это GET (или какой-либо ещё), создать форму по умолчанию.
 	else:
 		form = ProjectModelForm()
-	return render(request, 'Projects/project_form.html', {'form': form})
+	return render(request, 'Projects/project_form.html', context = {'available_users': User.objects.all().filter(is_active=True), 'form': form})
 	
 @user_passes_test(User.is_verified)	
 def project_change(request, pk):
@@ -122,4 +122,4 @@ def project_change(request, pk):
 			form = ProjectModelForm(instance=project)
 	else:
 		return HttpResponseRedirect(reverse('projects'))
-	return render(request, 'Projects/project_form.html', {'form': form})
+	return render(request, 'Projects/project_form.html', context = {'available_users': User.objects.all().filter(is_active=True), 'selected_users': project.users.all(), 'form': form})
