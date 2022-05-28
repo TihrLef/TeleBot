@@ -6,4 +6,5 @@ from .models import User
 def default_to_non_active(sender, instance, created, **kwargs):
     if created:
         instance.is_active = False
+        instance.role = "Unverified"
         instance.save()

@@ -76,11 +76,11 @@ def available_projects(request):
 def available_users(request):
 	if request.user.is_staff:
 		return User.objects.all()
-	users = []
+	users = User.objects.none()
 	for project in available_projects(request):
 			if(request.user.telegram_id == project.responsible_user.telegram_id):
-				users += [user for user in project.users.all()]
-	return QuerySet(set(users))
+				users = users | project.users.all()
+	return users
 
 def make_pdf(request, reports, path):
 	temp = TempDir()
