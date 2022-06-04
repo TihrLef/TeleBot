@@ -1,0 +1,113 @@
+
+{% extends "base.html" %}
+{% block content %}
+<meta charset="utf-8">
+
+
+
+<style>
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
+
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 0px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 0px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+
+</style>
+
+{%if request.user == user%}
+<h2 style="text-align:center" class="title">Страница пользователя</h2>
+{%endif%}
+  <p  align="left"><b>Имя: </b>{{user.first_name }}<br></p>
+  <p  align="left"><b>Фамилия: </b>{{user.last_name }}<br></p>
+  <p  align="left"><b>Username: </b>{{user.username }}<br></p>
+  <p  align="left"><b>Роль: </b>{{user.get_role}} <br></p>
+ 
+    <div class="modal-footer">
+	    {%if request.user == user%}
+        <a type="button" class="btn btn-primary" href="{%url 'password_change'%}">Изменить пароль</a>
+        <a href="{%url 'edit'%}" class="btn btn-primary">Редактировать профиль</a>
+      
+        {%endif%}
+		{%if request.user.is_staff%}
+        <a type="button" class="btn btn-primary" href="{%url 'archive-user' user.telegram_id%}">{%if user.role == "Archived"%}Убрать из архива{%else%} Архивировать{%endif%}</a>
+        <button class="btn btn-primary my-2 my-sm-0" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop1">Изменить роль</button>
+        {%endif%}
+      </div>
+
+	
+	<p  align="center" color="#21145e" ><b>Привязанные проекты:</b><br></p>
+    <table class="table">
+    <thead class="table-dark">
+    <tr>
+			<th width = 25% onclick="sortTable(0)"  align=left>Название проекта</th>
+			<th width = 20% onclick="sortTable(1)"  align=left>Статус</th>
+	</tr> 
+    
+    </thead>
+    <tbody>
+    {% for project in user.project_set.all|dictsort:"start_date" %}
+    <tr>
+		<td><a href="{{ project.get_absolute_url }}" >{{project.name}}</a></td>
+        <td >{{project.status}}</td>
+    </tr>
+        
+	{% endfor %}
+ </tbody>
+    </table>
+
+	    <!---->
+               <!-- Модальное окно -->
+<form method="POST" action="{% url 'role-user-change' user.telegram_id %}"> 
+{%csrf_token%}
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Измените роль:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+     
+      <div class="modal-body">
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Verified" id="id_role1" {%if user.role == "Verified" %} checked {%endif%}>
+  <label class="form-check-label" for="id_role1">
+    Подтвержденный пользователь
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Unverified" id="id_role2" {%if user.role == "Unverified" %} checked {%endif%}>
+  <label class="form-check-label" for="id_role2">
+    Неподтвержденный пользователь
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="role" value = "Administrator" id="id_role3" {%if user.role == "Administrator"%} checked {%endif%}>
+  <label class="form-check-label" for="id_role3">
+    Администратор
+  </label>
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+	<!---->
+{% endblock %}
+
+
+
+
+

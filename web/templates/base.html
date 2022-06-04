@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <!-- Кодировка веб-страницы -->
+  <meta charset="utf-8">
+  <!-- Настройка viewport -->
+ 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Название</title>
+
+  <!-- Bootstrap CSS (jsDelivr CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+  
+ {% load static %}
+/*nav.navbar .dropdown:hover > .dropdown-menu {
+ display: block; 
+} 
+@media only screen and (max-device-width: 992px){
+    nav.navbar .dropdown:hover .dropdown-menu{
+        display: none;
+    }
+}*/
+
+        body {
+            transition: margin-left .3s;
+    		padding: 16px;
+    		margin-left: 50px;
+    		padding: 5% 2% 5% 2%;
+    		margin-top: 50px;
+        }
+
+        .article {
+            background: rgba(255, 255, 255, 0.88);
+            padding-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.7);
+            line-height: 30px;
+            padding: 0 15px 0 15px;
+        }
+        .element {
+  @include float-right;
+}
+</style>
+  <style type="text/css">
+
+.table tbody tr:hover td{
+    background: #acb7e3; /* Цвет фона при наведении */
+    color:#000;
+   }
+
+.table thead tr th:first-child, .table tbody tr td:first-child {
+	border-left: 0px solid #21145e;
+}
+.table thead tr th:last-child, .table tbody tr td:last-child {
+	border-right: 0px solid #21145e;
+}
+.table tbody tr:nth-child(even){
+	background: #f2f5fc;
+}
+  /* TABLE {
+    border-collapse: collapse; 
+    border: 5px groove #ccc; 
+   }
+   TH {
+    background: #4b0082; 
+    color: #fffff0; 
+	
+   }
+   TD, TH {
+    height: 50px;
+    padding: 8px; 
+    border: 5px groove #ccc;
+	border-left:0;
+	border-right:0;
+   }*/
+	th.sorted[data-order="-1"]::after {
+		content: "▼"
+	}
+
+	th.sorted[data-order="1"]::after {
+		content: "▲"
+	}
+	input.button {
+		border:0;
+		background: #21145e;
+		color: #dfdeee;
+		border-radius: 50px;
+		width: 200px;
+		height: 49px;
+		font-size: 16px;
+		transition: 0.3s;
+		cursor: pointer;
+		opacity: 0.85;
+	}
+
+	input.button:hover {
+		opacity: 0.7;
+	}
+	a.mya
+	{	font-family:Arial;
+		font-weight: bold;
+		text-decoration: none;
+		color:#6495ed;
+	
+	}
+	a.mya:hover
+	{	font-family:Arial;
+		/*font-size:22px;*/
+		color:#0f93ff;
+	}
+	</style>
+</head>
+{% block head %}{% endblock %}
+<body>
+
+ <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" >
+ 	<div class="container-fluid">
+    <a href="" class="navbar-brand">
+    Название
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+    {%if request.user.is_staff%}
+    <li class="nav-item">
+    <a href="{% url 'projects'%}" class="nav-link">Проекты</a>
+    </li>
+    <li class="nav-item">
+    <a href="{% url 'reports'%}" class="nav-link">Отчеты</a>
+    </li>
+    <li class="nav-item">
+    <a href="{% url 'users'%}" class="nav-link">Пользователи</a>
+    </li>
+    {%else%}
+    <li class="nav-item">
+    <a href="{% url 'projects'%}" class="nav-link">Мои проекты</a>
+    </li>
+    <li class="nav-item">
+    <a href="{% url 'reports'%}" class="nav-link">Мои отчеты</a>
+    </li>
+    {%endif%}
+     <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="{{user.get_absolute_url}}" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {{request.user.username}}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink"> 
+            <li><a class="dropdown-item" href="{{request.user.get_absolute_url}}">Профиль</a></li>
+            {%if request.user.is_staff%}
+            <li><a class="dropdown-item" href="{% url 'adminka' %}">Админ-панель</a></li>
+             {%endif%}
+          </ul>
+        </li>
+    </ul>
+    </div>
+    <form class="form-inline my-2 my-lg-0">
+      <button class="btn btn-outline-danger my-2 my-sm-0" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Выход</button>
+    </form>
+    
+    </div>
+ </nav>
+<div id="main">
+  {% block content %} {% endblock %}
+</div>
+
+
+<!-- Модальное окно -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Подтвердите выход</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        Вы действительно хотите выйти?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <a href="{% url 'logout' %}" class="btn btn-primary">Выход</a>
+      </div>
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-bottom" style=" padding: 0 !important; height:35px;">
+
+<div class="container-fluid">
+	
+    <div class="pull-right">
+    	<ul class="navbar-nav">
+    	<li class="nav-item">
+    		<a href="{%url 'contact-page'%}" class="nav-link">Сообщить об ошибке</a>
+    	</li>
+    	</ul>
+    </div>
+    </div>
+</nav>
+
+    
+ <!-- Bootstrap Bundle JS (jsDelivr CDN) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+  </script>
+  <script type="text/javascript">
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  // Set the sorting direction to ascending:
+  dir = "asc";
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+	// Start by saying: no switching is done:
+	switching = false;
+	rows = table.getElementsByTagName("TR");
+	/* Loop through all table rows (except the
+	first, which contains table headers): */
+	for (i = 1; i < (rows.length - 1); i++) {
+	  // Start by saying there should be no switching:
+	  shouldSwitch = false;
+	  /* Get the two elements you want to compare,
+	  one from current row and one from the next: */
+	  x = rows[i].getElementsByTagName("TD")[n];
+	  y = rows[i + 1].getElementsByTagName("TD")[n];
+	  /* Check if the two rows should switch place,
+	  based on the direction, asc or desc: */
+	  if (dir == "asc") {
+		if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+		  // If so, mark as a switch and break the loop:
+		  shouldSwitch = true;
+		  break;
+		}
+	  } else if (dir == "desc") {
+		if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+		  // If so, mark as a switch and break the loop:
+		  shouldSwitch = true;
+		  break;
+		}
+	  }
+	}
+	if (shouldSwitch) {
+	  /* If a switch has been marked, make the switch
+	  and mark that a switch has been done: */
+	  rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+	  switching = true;
+	  // Each time a switch is done, increase this count by 1:
+	  switchcount ++;
+	} else {
+	  /* If no switching has been done AND the direction is "asc",
+	  set the direction to "desc" and run the while loop again. */
+	  if (switchcount == 0 && dir == "asc") {
+		dir = "desc";
+		switching = true;
+	  }
+	}
+  }
+}
+</script>
+  
+</body>
+</html>

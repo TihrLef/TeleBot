@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  Добрый день, {{ user.username }}!
+  <p><a href="{% url 'logout' %}">Выйти</a></p>
+{% else %}
+  <p>Для доступа к сайте, пожалуйста, авторизуйтесь</p>
+  <a href="{% url 'login' %}">Авторизоваться</a> |
+  <a href="{% url 'signup' %}">Зарегистрироваться </a>
+{% endif %}
+{% endblock %}

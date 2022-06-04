@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block head %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/NRMSLib.js' %}"></script>
+{% endblock %}
+{% block content %}
+	<br><br><br><br><br><br><br><br><br><br><br><br> 
+	<h1 align=center> {% block text %} Оно работает! {% endblock %}</h1>
+	<script type="text/javascript">
+		effect.rain.start({
+		'number': 100, //количество капель дождя
+		'image': '*', //символ дождя, но можно написать адрес на картинку, например: 0001.gif
+		'speed': 5, //скорость таймера
+		'speed_x': 1, //скорость движения по x
+		'speed_y': 2, //скорость движения по y
+		'indent': 50, //отступ со всех сторон относительно рабочей области экрана
+		'type': 1, //тип движения, может быть 1 или 2, 1 - случайное движение, 2 - движение по синусойде
+		'color': ['#0096FF','#00C0FF','#1051E3']
+		});
+	</script>
+
+{% endblock %}

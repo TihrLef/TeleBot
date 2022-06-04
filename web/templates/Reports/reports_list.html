@@ -1,4 +1,4 @@
-{% extends "base_generic.html" %}
+{% extends "base.html" %}
 {% load static %}
 <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
 {% block content %}
@@ -79,10 +79,12 @@
 {% if error_message%}
 <span>{{error_message}}</span>
 {% else%}
-
+{{pdfname}}
+<br>
+<img src="{% static 'img/reklama1.png' %}" alt="night.jpg">
         {% if reports%}
 <p align=left><a href="{% static pdfname %}" class="btn btn-secondary">Загрузить pdf</a></p>
-
+{{root}}
         {% endif%}
 
             {% if reports%}
