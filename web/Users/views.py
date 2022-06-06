@@ -26,23 +26,18 @@ from Users.forms import UserModelForm
 from django.contrib.admin.views.decorators import staff_member_required
 
 
-
-
-
-
-
 class StaffMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
 	
-class OwnerOnlyMixin(AccessMixin):
+class OwnerOrStaffMixin(AccessMixin):
     def handle_no_permission(self):
         return super().handle_no_permission()
     def dispatch(self, request, pk, *args, **kwargs):
         user_page = self.get_object()
-        if request.user.telegram_id != user_page.telegram_id and not request.user.is_staff :
+        if request.user.telegram_id != user_page.telegram_id and not request.user.is_staff:
             return self.handle_no_permission()
         return super().dispatch(request, pk, *args, **kwargs)
 	
@@ -110,7 +105,7 @@ def profile_edit(request):
         if user_form.is_valid():
             user_form.save()
             messages.success(request, 'Your profile is updated successfully')
-            return redirect(to='/TeleBot/success')
+            return redirect(to='success')
     else:
         user_form = UpdateUserForm(instance=request.user)
     return render(request, "edit.html", {'user_form': user_form})
@@ -131,7 +126,7 @@ class ArchivedUsersListView(StaffMixin, generic.ListView):
 		context['user_list'] = User.objects.filter(role = "Archived")
 		return context
 
-class UserDetailView(OwnerOnlyMixin, generic.DetailView):
+class UserDetailView(OwnerOrStaffMixin, generic.DetailView):
 	model = User
 
 @staff_member_required

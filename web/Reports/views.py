@@ -55,8 +55,8 @@ def make_pdf(request, reports, path):
 	name = temp.name
 	pdf = FPDF()
 	pdf.add_page()
-	pdf.add_font("Sans", style = "", fname = r"static/Fonts/OpenSans/OpenSans-Regular.ttf", uni=True)
-	pdf.add_font("Sans", style = "B", fname = r"static/Fonts/OpenSans/OpenSans-Bold.ttf", uni=True)
+	pdf.add_font("Sans", style = "", fname = r"Reports/static/Fonts/OpenSans/OpenSans-Regular.ttf", uni=True)
+	pdf.add_font("Sans", style = "B", fname = r"Reports/static/Fonts/OpenSans/OpenSans-Bold.ttf", uni=True)
 	for report in reports:
 		pdf.set_font("Sans", style = "B", size = 12)
 		pdf.multi_cell(w = 200, h = 8, txt = 'Project name: ' + report.project.name, align = "L", ln = 1)
@@ -91,7 +91,7 @@ def report(request):
 			error_message = 'incorrect input data'
 			reports = []
 
-	path = r"static/"
+	path = r"Reports/static/pdf_folder"
 	name = make_pdf(request, reports, path)
 	
 	projects = available_projects(request)

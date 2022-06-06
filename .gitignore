@@ -155,3 +155,4 @@ cython_debug/
 /.idea/TeleBot.iml
 /.idea/workspace.xml
 web/db.sqlite3
+*.pyc

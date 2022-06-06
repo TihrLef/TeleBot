@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import reverse
 from django.contrib.auth.mixins import AccessMixin
-from TeleBot import urls
 from Projects.models import Project
 from Users.models import User
 from .forms import ProjectModelForm

@@ -2,5 +2,5 @@
 {% block content %}
 <br><br>
 Изменения успешно сохранены.<br>
-<a href="{% url 'index' %}">Вернуться на главную страницу</a>
+<td><a class="mya" href="{{ request.user.get_absolute_url }}">Вернуться к профилю.</a></td>
 {% endblock %}
