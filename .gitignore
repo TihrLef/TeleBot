@@ -4,7 +4,6 @@
 Makefile
 .project
 .pydecproject
-*.pdf
 .pydevproject
 ### Python template
 # Byte-compiled / optimized / DLL files
