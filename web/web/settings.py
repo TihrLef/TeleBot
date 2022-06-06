@@ -131,6 +131,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATICFILES_DIRS = [
     'Reports/static/pdf_folder',
+	'Reports/static',
 	'web/static',
 ]
 
